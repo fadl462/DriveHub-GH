@@ -7,8 +7,42 @@ if(pickupDate&&returnDate){pickupDate.min=localDate(today);returnDate.min=localD
 const year=document.getElementById('year');if(year)year.textContent=new Date().getFullYear();
 document.querySelectorAll('[data-car]').forEach(link=>link.addEventListener('click',()=>{const vehicle=document.getElementById('vehicle');if(vehicle)vehicle.value=link.dataset.car;}));
 const toast=document.getElementById('toast');let toastTimer;function showToast(message){if(!toast)return;toast.textContent=message;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),4500);}
-const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventListener('submit',e=>{e.preventDefault();if(!pickupDate||!returnDate)return;const pickup=pickupDate.value,ret=returnDate.value;if(!pickup||!ret){showToast('Please choose your pickup and return dates.');return;}if(ret<pickup){showToast('Please choose a return date on or after your pickup date.');return;}const days=Math.round((new Date(ret+'T12:00:00')-new Date(pickup+'T12:00:00'))/86400000)+1;const vehicle=document.getElementById('vehicle')?.value||'Any available car';const location=document.getElementById('pickup')?.value||'DriveHub GH Office, Westland';const msg=`Hello DriveHub GH, I would like to enquire about a self-drive rental.\n\nPreferred vehicle: ${vehicle}\nPickup location: ${location}\nPickup date: ${pickup}\nReturn date: ${ret}\nRental days (pickup and return dates counted): ${days}\n\nPlease confirm availability, rate and rental requirements.`;window.open('https://wa.me/233204116245?text='+encodeURIComponent(msg),'_blank','noopener');showToast('WhatsApp is opening with your rental enquiry. Please send the message to contact our team.');});
+const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventListener('submit',e=>{e.preventDefault();if(!pickupDate||!returnDate)return;const pickup=pickupDate.value,ret=returnDate.value;if(!pickup||!ret){showToast('Please choose your pickup and return dates.');return;}if(ret<pickup){showToast('Please choose a return date on or after your pickup date.');return;}const days=Math.round((new Date(ret+'T12:00:00')-new Date(pickup+'T12:00:00'))/86400000)+1;const vehicle=document.getElementById('vehicle')?.value||'Any available car';const location=document.getElementById('pickup')?.value||'DriveHub GH Office, Westland';const purpose=document.getElementById('ridePurpose')?.value||'Not specified';const msg=`Hello DriveHub GH, I would like to enquire about a self-drive rental.\n\nPreferred vehicle: ${vehicle}\nTrip purpose: ${purpose}\nPickup location: ${location}\nPickup date: ${pickup}\nReturn date: ${ret}\nRental days (pickup and return dates counted): ${days}\n\nPlease confirm availability, rate and rental requirements.`;window.open('https://wa.me/233204116245?text='+encodeURIComponent(msg),'_blank','noopener');showToast('WhatsApp is opening with your rental enquiry. Please send the message to contact our team.');});
 
+
+
+/* Find Your Ride: category selection, live trip summary, inclusive rental-day count. */
+(()=>{
+ const root=document.querySelector('.ride-page'); if(!root)return;
+ const vehicle=document.getElementById('vehicle'),pickup=document.getElementById('pickupDate'),ret=document.getElementById('returnDate');
+ const purpose=document.getElementById('ridePurpose'),duration=document.getElementById('durationText');
+ const summaryVehicle=document.getElementById('summaryVehicle'),summaryNote=document.getElementById('summaryVehicleNote');
+ const summaryPickup=document.getElementById('summaryPickup'),summaryReturn=document.getElementById('summaryReturn'),summaryDays=document.getElementById('summaryDays');
+ const progress=[...root.querySelectorAll('.ride-progress span')];
+ const labels={'Any available car':['Surprise me','We’ll help find your fit.'],'SUV':['SUV','Room for bigger plans.'],'Saloon / Sedan':['Saloon','A smooth city drive.'],'Compact car':['Compact','Easy, everyday freedom.'],'Mitsubishi Outlander':['Mitsubishi Outlander','Your SUV of choice.']};
+ const localDate=d=>{const x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};
+ const formatDate=v=>{if(!v)return 'Choose a date';const d=new Date(v+'T12:00:00');return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});};
+ function refresh(){
+  const choice=vehicle?.value||'Any available car',label=labels[choice]||[choice,'Selected for your journey.'];
+  if(summaryVehicle)summaryVehicle.textContent=label[0];if(summaryNote)summaryNote.textContent=label[1];
+  const a=pickup?.value||'',b=ret?.value||'';if(summaryPickup)summaryPickup.textContent=formatDate(a);if(summaryReturn)summaryReturn.textContent=formatDate(b);
+  let days=0;if(a&&b&&b>=a)days=Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/86400000)+1;
+  if(summaryDays)summaryDays.textContent=days?`${days} ${days===1?'day':'days'}`:'— days';
+  if(duration){if(days)duration.textContent=`${days} ${days===1?'rental day':'rental days'} · pickup and return dates both count`;else duration.textContent='Choose your dates to see your rental duration.';}
+  if(progress.length>=3){progress[0].classList.add('progress-active');progress[1].classList.toggle('progress-active',Boolean(a&&b&&days));progress[2].classList.toggle('progress-active',Boolean(a&&b&&days&&purpose?.value));}
+ }
+ root.querySelectorAll('[data-ride-vehicle]').forEach(btn=>btn.addEventListener('click',()=>{
+  if(vehicle)vehicle.value=btn.dataset.rideVehicle;
+  root.querySelectorAll('[data-ride-vehicle]').forEach(card=>{const active=card===btn;card.classList.toggle('is-selected',active);card.setAttribute('aria-pressed',String(active));});refresh();
+ }));
+ root.querySelectorAll('[data-purpose]').forEach(btn=>btn.addEventListener('click',()=>{
+  if(purpose)purpose.value=btn.dataset.purpose;
+  root.querySelectorAll('[data-purpose]').forEach(chip=>{const active=chip===btn;chip.classList.toggle('is-active',active);chip.setAttribute('aria-pressed',String(active));});refresh();
+ }));
+ if(pickup&&ret){pickup.min=localDate(new Date());ret.min=pickup.value||localDate(new Date());pickup.addEventListener('change',()=>{ret.min=pickup.value||localDate(new Date());if(ret.value&&ret.value<ret.min)ret.value=ret.min;refresh();});ret.addEventListener('change',refresh);}
+ const query=new URLSearchParams(location.search);const requested=query.get('vehicle');if(requested&&vehicle){const normalized=requested.toLowerCase();const match=[...root.querySelectorAll('[data-ride-vehicle]')].find(b=>b.dataset.rideVehicle.toLowerCase()===normalized||(normalized.includes('outlander')&&b.dataset.rideVehicle==='SUV'));if(match)match.click();}
+ refresh();
+})();
 
 /* DriveHub GH Concierge: real model responses through the same-origin Cloudflare Pages Function. */
 (()=>{
