@@ -96,13 +96,39 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
  const root=document.querySelector('.concierge-page'); if(!root)return;
  const messages=document.getElementById('conciergeMessages'),form=document.getElementById('conciergeForm'),input=document.getElementById('conciergeInput'),suggestions=document.getElementById('conciergeSuggestions'),reset=document.getElementById('conciergeReset');
  const phone='233204116245'; let history=[]; let busy=false;
+ const openingByTime=()=>{
+  let hour=new Date().getHours();
+  try{hour=Number(new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Accra',hour:'2-digit',hourCycle:'h23'}).format(new Date()));}catch(e){}
+  const groups=hour>=5&&hour<12?[
+   ['Good morning.','What are we planning?','A fresh day, a new destination. Tell me what you need the car for and I’ll help narrow the fleet.','Are we thinking family time, business, or a little escape?'],
+   ['Morning!','Where will the road take you?','Share a little about your day or trip. I’ll help you find a vehicle that fits.','What kind of drive do you have in mind?'],
+   ['Good morning.','Let’s find your fit.','From city errands to longer journeys, let’s match your plans with the right car.','Where are you headed, and who’s coming along?']
+  ]:hour>=12&&hour<17?[
+   ['Good afternoon.','What can I help you plan?','Tell me the journey, the dates, or the kind of car you’re considering. We’ll take it from there.','What matters most: space, comfort, or everyday flexibility?'],
+   ['Afternoon!','Let’s make the next move easy.','I can help you compare our six vehicles and prepare a clear rental enquiry.','What does your next trip look like?'],
+   ['Good afternoon.','Where are we going?','A family plan, a work trip, or time away? I’ll help you shortlist the right ride.','What are you planning today?']
+  ]:hour>=17&&hour<22?[
+   ['Good evening.','Where can I take you?','Planning tomorrow or getting away soon? Tell me a little and I’ll help you choose your ride.','Is it family time, business, or a getaway?'],
+   ['Evening!','Let’s plan a better drive.','Tell me what’s ahead and I’ll help match your plans to the DriveHub fleet.','Where are you headed, and when do you need the car?'],
+   ['Good evening.','What are we setting up?','From a spacious SUV to a versatile everyday drive, let’s find what suits your plans.','What would make this trip feel just right?']
+  ]:[
+   ['Still planning?','Let’s make it simple.','I’m here to help you shortlist a car and prepare your rental enquiry whenever you’re ready.','What would you like to figure out first?'],
+   ['Hello, night owl.','Where will you go next?','We can start with the vehicle, the dates, or the details you want to know before renting.','What’s on your mind?'],
+   ['Welcome.','Your next trip starts here.','Tell me a little about your plans and I’ll help you take the next step.','Need a recommendation, rental details, or help with dates?']
+  ];
+  const chosen=groups[Math.floor(Math.random()*groups.length)];
+  const note=hour<12?'Tell me your plans, and we’ll find a fit.':hour<17?'Start with your dates, route, or what matters most.':hour<22?'A few details are enough to get us started.':'Ask about a car, dates, or what to prepare.';
+  return {title:chosen[0],accent:chosen[1],note,message:chosen[2],question:chosen[3]};
+ };
+ const setOpening=()=>{const o=openingByTime();const title=document.getElementById('partnerGreetingText'),accent=document.getElementById('partnerGreetingAccent'),note=document.getElementById('partnerGreetingNote'),message=document.getElementById('partnerWelcomeMessage'),question=document.getElementById('partnerWelcomeQuestion');if(title)title.textContent=o.title;if(accent)accent.textContent=o.accent;if(note)note.textContent=o.note;if(message)message.textContent=o.message;if(question)question.textContent=o.question;return o;};
+ setOpening();
  const escapeHtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  function addMessage(text,who){
   const wrap=document.createElement('div');wrap.className='chat-message '+(who==='user'?'user-message':'assistant-message');
   const now=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
   if(who!=='user'){const avatar=document.createElement('div');avatar.className='message-avatar';avatar.textContent='DH';wrap.appendChild(avatar);}
   const content=document.createElement('div');content.className='message-content';
-  const sender=document.createElement('span');sender.className='message-sender';sender.textContent=(who==='user'?'YOU':'DRIVEHUB AI CONCIERGE')+' · '+now;
+  const sender=document.createElement('span');sender.className='message-sender';sender.textContent=(who==='user'?'YOU':'DRIVEHUB AI PARTNER')+' · '+now;
   const bubble=document.createElement('div');bubble.className='message-bubble';
   String(text).split(/\n{2,}/).forEach(part=>{const p=document.createElement('p');p.textContent=part; bubble.appendChild(p);});
   content.append(sender,bubble);wrap.appendChild(content);messages.appendChild(wrap);messages.scrollTop=messages.scrollHeight;return wrap;
@@ -132,7 +158,7 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
  async function send(text){
   const clean=String(text||'').trim();if(!clean||busy)return;
   addMessage(clean,'user');if(suggestions)suggestions.remove();messages.querySelectorAll('.chat-suggestions').forEach(el=>el.remove());input.value='';setBusy(true);
-  const typing=document.createElement('div');typing.className='chat-message assistant-message chat-typing';typing.innerHTML='<div class="message-avatar">DH</div><div class="message-content"><span class="message-sender">DRIVEHUB AI CONCIERGE</span><div class="message-bubble">Thinking through your question…</div></div>';messages.appendChild(typing);messages.scrollTop=messages.scrollHeight;
+  const typing=document.createElement('div');typing.className='chat-message assistant-message chat-typing';typing.innerHTML='<div class="message-avatar">DH</div><div class="message-content"><span class="message-sender">DRIVEHUB AI PARTNER</span><div class="message-bubble">Thinking through your question…</div></div>';messages.appendChild(typing);messages.scrollTop=messages.scrollHeight;
   history.push({role:'user',content:clean});history=history.slice(-12);
   try{
    const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:history})});
@@ -150,7 +176,7 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
  }
  form?.addEventListener('submit',e=>{e.preventDefault();send(input.value);});
  root.addEventListener('click',e=>{const chip=e.target.closest('[data-prompt]');if(!chip)return;const prompt=chip.dataset.prompt;if(prompt){if(chip.classList.contains('concierge-topic'))document.querySelectorAll('.concierge-topic').forEach(b=>b.classList.toggle('is-active',b===chip));send(prompt);}});
- reset?.addEventListener('click',()=>{if(busy)return;messages.innerHTML='';history=[];addAssistant('Welcome back. I’m your DriveHub GH AI Concierge. Tell me where you’re going, when you need a car, or what you’d like to know about renting.');addSuggestions(['Help me choose a car','How does pricing work?','What documents do I need?']);input.focus();});
+ reset?.addEventListener('click',()=>{if(busy)return;messages.innerHTML='';history=[];const opening=setOpening();addAssistant(opening.message+'\n\n'+opening.question);addSuggestions(['Help me choose a car','Compare two SUVs','What do I need to rent?']);input.focus();});
  const pickup=document.getElementById('tripPickup'),ret=document.getElementById('tripReturn');const localDate=d=>{const x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10);};if(pickup&&ret){pickup.min=localDate(new Date());ret.min=localDate(new Date());pickup.addEventListener('change',()=>{ret.min=pickup.value||localDate(new Date());if(ret.value&&ret.value<ret.min)ret.value=ret.min;});}
  document.getElementById('conciergeTripForm')?.addEventListener('submit',e=>{e.preventDefault();if(!pickup.value||!ret.value)return;if(ret.value<pickup.value){ret.setCustomValidity('Return date must be on or after pickup date.');ret.reportValidity();return;}ret.setCustomValidity('');const days=Math.round((new Date(ret.value+'T12:00:00')-new Date(pickup.value+'T12:00:00'))/86400000)+1;const vehicle=document.getElementById('tripVehicle').value;const purpose=document.getElementById('tripPurpose').value;const region=document.getElementById('tripRegion')?.value||'Not specified';const exactLocation=document.getElementById('tripLocation')?.value||'Not specified';const msg=`Hello DriveHub GH, please help me plan a self-drive rental.\n\nPreferred vehicle: ${vehicle}\nPickup region: ${region}\nTown / exact pickup location: ${exactLocation}\nPickup date: ${pickup.value}\nReturn date: ${ret.value}\nRental duration: ${days} calendar days (pickup and return dates both counted)\nMain use: ${purpose}\n\nPlease confirm availability, total price, documents and pickup arrangements before I commit.`;window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener');});
 })();

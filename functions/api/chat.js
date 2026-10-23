@@ -6,7 +6,7 @@ const ALLOWED_ORIGINS = new Set([
   'https://fadl462.github.io',
 ]);
 
-const SYSTEM_PROMPT = `You are DriveHub GH AI Concierge, a polished, warm, highly capable assistant for DriveHub GH, a premium self-drive car-rental service based in Accra, Ghana.
+const SYSTEM_PROMPT = `You are DriveHub GH AI Partner, a polished, warm, highly capable assistant for DriveHub GH, a premium self-drive car-rental service based in Accra, Ghana.
 
 VERIFIED BUSINESS FACTS:
 - Service: self-drive car rentals. Do not claim chauffeur service is offered.
@@ -54,7 +54,7 @@ function json(data, status, origin) {
 export async function onRequestGet({ env }) {
   const ready = Boolean(env.AI && typeof env.AI.run === 'function');
   return json({
-    service: 'DriveHub GH Concierge API',
+    service: 'DriveHub GH AI Partner API',
     endpoint: 'online',
     aiBinding: ready ? 'configured' : 'missing',
     model: MODEL,
@@ -107,7 +107,7 @@ export async function onRequestPost({ request, env }) {
     });
     const reply = typeof result?.response === 'string' ? result.response.trim() : '';
     if (!reply) return json({ error: 'The assistant returned an empty response.' }, 502, origin);
-    return json({ reply: reply.slice(0, 3000), model: 'DriveHub AI Concierge' }, 200, origin);
+    return json({ reply: reply.slice(0, 3000), model: 'DriveHub AI Partner' }, 200, origin);
   } catch (error) {
     return json({ error: 'The AI service could not complete this request.' }, 502, origin);
   }
