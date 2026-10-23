@@ -239,3 +239,71 @@
  .fleet-vehicle-copy,.fleet-vehicle-featured .fleet-vehicle-copy{padding:20px 18px 19px}
  .booking-panel{border-radius:13px}
 }
+
+
+/* Experience page — clearer message, editorial layout, calm premium surfaces */
+.experience-page{background:var(--paper)}
+.experience-page .header-cta span,.experience-page .button span,.experience-page .text-link span{display:none}
+.experience-page .header-cta,.experience-page .button{gap:0;border-radius:9px}
+.experience-hero{min-height:525px;position:relative;display:flex;align-items:center;overflow:hidden;background:#191719;color:#fff}
+.experience-hero-image{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2200&q=88') center 54%/cover;transform:scale(1.01)}
+.experience-hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,17,19,.94) 0%,rgba(20,17,19,.82) 34%,rgba(20,17,19,.3) 76%,rgba(20,17,19,.2) 100%),linear-gradient(0deg,rgba(20,17,19,.28),transparent 48%)}
+.experience-hero-content{position:relative;z-index:1;padding:78px 0 90px;margin-left:8.2%;max-width:670px}
+.experience-hero-content h1{font-size:clamp(52px,6.8vw,86px);line-height:1.02;margin:25px 0 19px;letter-spacing:-.075em}
+.experience-hero-content h1 em{color:#e5a5aa}
+.experience-hero-content p{font-size:14px;line-height:1.85;color:#e3dcdf;max-width:430px;margin-bottom:27px}
+.experience-hero-content .button{box-shadow:0 10px 25px #be1e2d30}
+.experience-hero-foot{position:absolute;bottom:25px;left:8.2%;right:8.2%;display:flex;justify-content:space-between;color:#ffffffa8;font-size:8px;font-weight:700;letter-spacing:.17em}
+.experience-intro{padding:86px 9%;display:grid;grid-template-columns:1fr .85fr;gap:10%;align-items:center;background:#f5f2ed}
+.experience-intro h2,.experience-section-heading h2{font-size:clamp(43px,5.3vw,66px);line-height:1.05;margin:20px 0 0}
+.experience-intro h2 em,.experience-section-heading h2 em{color:var(--red)}
+.experience-intro-copy{max-width:490px}
+.experience-intro-copy p{font-size:13px;line-height:1.9;color:#6f676b;margin:0 0 14px}
+.experience-intro-copy p:last-child{margin-bottom:0}
+.experience-benefits{padding:76px 8.2% 88px;background:#eae5df}
+.experience-section-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:25px;margin-bottom:34px}
+.experience-section-heading h2{font-size:clamp(39px,4.7vw,57px)}
+.experience-benefit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.experience-benefit-card{position:relative;min-height:260px;background:#fff;border:1px solid #ffffffa8;border-radius:16px;padding:28px 27px 27px;box-shadow:0 12px 30px rgba(34,25,25,.055);transition:transform .25s,box-shadow .25s}
+.experience-benefit-card:hover{transform:translateY(-4px);box-shadow:0 18px 36px rgba(34,25,25,.09)}
+.experience-card-number{position:absolute;right:24px;top:25px;font-size:9px;letter-spacing:.15em;color:#a49b9d}
+.experience-benefit-icon{width:42px;height:42px;display:grid;place-items:center;background:#fae9e9;border:1px solid #f1d7d9;border-radius:12px;color:var(--red);font-size:19px;margin-bottom:29px}
+.experience-benefit-card h3{font:700 19px var(--display);letter-spacing:-.045em;margin:0 0 12px}
+.experience-benefit-card p{font-size:11px;line-height:1.85;color:#777075;max-width:280px;margin:0}
+.experience-editorial{min-height:480px;position:relative;display:grid;grid-template-columns:1fr 1fr;align-items:stretch;background:#191719;color:#fff;overflow:hidden}
+.experience-editorial-photo{min-height:480px;background:url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1500&q=88') center/cover}
+.experience-editorial-copy{padding:76px clamp(35px,7vw,100px);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;background:#191719}
+.experience-editorial-copy h2{font-size:clamp(41px,4.7vw,60px);line-height:1.08;margin:22px 0 17px}
+.experience-editorial-copy h2 em{color:#e5a5aa}
+.experience-editorial-copy p{font-size:12px;line-height:1.9;color:#d2cbd0;max-width:390px;margin-bottom:24px}
+.experience-editorial-copy .button{margin-top:2px}
+.experience-bottom{padding:54px 8.2%;display:grid;grid-template-columns:1fr .7fr;gap:9%;align-items:center;background:var(--ink);color:#fff}
+.experience-bottom h2{font-size:clamp(38px,4.6vw,56px);line-height:1.07;margin:19px 0 0}
+.experience-bottom-action{max-width:390px}
+.experience-bottom-action p{font-size:12px;line-height:1.8;color:#d2cbd0;margin-bottom:20px}
+.experience-page .footer{border-radius:0}
+.experience-page .footer-brand img,.experience-page .footer-column a,.experience-page .footer-contact a{transition:opacity .2s}
+.experience-page .footer-column a:hover,.experience-page .footer-contact a:hover{opacity:.7}
+@media(max-width:800px){
+ .experience-hero{min-height:500px}.experience-hero-content{margin-left:7%;width:84%}
+ .experience-intro{padding:68px 7%;grid-template-columns:1fr;gap:24px}
+ .experience-benefits{padding:62px 6% 68px}.experience-section-heading{display:block}.experience-section-heading h2{margin-top:17px}
+ .experience-benefit-grid{gap:12px}.experience-benefit-card{padding:24px 20px;min-height:250px}
+ .experience-editorial{grid-template-columns:1fr}.experience-editorial-photo{min-height:320px}.experience-editorial-copy{padding:55px 7% 60px}
+ .experience-bottom{padding:48px 7%;grid-template-columns:1fr;gap:25px}
+}
+@media(max-width:560px){
+ .experience-hero{min-height:540px;align-items:flex-end}
+ .experience-hero-image{background-position:58% center}
+ .experience-hero-overlay{background:linear-gradient(90deg,#141113dc 0%,#14111386 100%),linear-gradient(0deg,#141113d9 0%,transparent 75%)}
+ .experience-hero-content{padding:68px 0 85px;margin-left:7%;width:86%}
+ .experience-hero-content h1{font-size:clamp(45px,11vw,62px);margin:21px 0 15px}
+ .experience-hero-content p{font-size:12px;line-height:1.8}
+ .experience-hero-foot{left:7%;right:7%;font-size:7px}
+ .experience-intro{padding:55px 7%}.experience-intro h2{font-size:47px}.experience-intro-copy p{font-size:12px}
+ .experience-benefits{padding:53px 6%}.experience-section-heading h2{font-size:42px}
+ .experience-benefit-grid{grid-template-columns:1fr;gap:13px}.experience-benefit-card{min-height:0;padding:23px 22px 25px;border-radius:14px}.experience-benefit-icon{margin-bottom:19px}.experience-benefit-card h3{font-size:18px}.experience-benefit-card p{font-size:11px}
+ .experience-editorial-photo{min-height:250px}.experience-editorial-copy{padding:46px 7% 50px}.experience-editorial-copy h2{font-size:44px}
+ .experience-bottom h2{font-size:43px}.experience-bottom-action p{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){.experience-benefit-card,.experience-page *{scroll-behavior:auto;transition:none!important}}
