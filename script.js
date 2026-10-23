@@ -20,20 +20,35 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
  const summaryImage=document.getElementById('summaryVehicleImage'),summaryPurposeLabel=document.getElementById('summaryPurposeLabel');
  const summaryPickup=document.getElementById('summaryPickup'),summaryReturn=document.getElementById('summaryReturn'),summaryDays=document.getElementById('summaryDays');
  const progress=[...root.querySelectorAll('.ride-progress span')];
- const labels={'Any available car':['Surprise me','We’ll help find your fit.'],'SUV':['SUV','Room for bigger plans.'],'Saloon / Sedan':['Saloon','A smooth city drive.'],'Compact car':['Compact','Easy, everyday freedom.'],'Mitsubishi Outlander':['Mitsubishi Outlander','Your SUV of choice.']};
+ const labels={
+  'Help me choose':['Help me choose','We’ll match a car to your plans.'],
+  'Toyota Prado':['Toyota Prado','Space and presence for bigger plans.'],
+  'Mitsubishi Outlander':['Mitsubishi Outlander','Versatile comfort for everyday plans and getaways.'],
+  'Toyota RAV4':['Toyota RAV4','A versatile choice for city days and escapes.'],
+  'Hyundai Santa Fe':['Hyundai Santa Fe','A refined option for relaxed travel.'],
+  'Honda CR-V':['Honda CR-V','Comfort and versatility for everyday journeys.'],
+  'Toyota Land Cruiser V8':['Toyota Land Cruiser V8','Full-size presence for longer journeys and special occasions.'],
+  // Legacy links are normalised below; these labels keep old bookmarks readable.
+  'Any available car':['Help me choose','We’ll match a car to your plans.'],
+  'SUV':['Choose from our SUV fleet','Select a model below.']
+ };
  const localDate=d=>{const x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};
  const formatDate=v=>{if(!v)return 'Choose a date';const d=new Date(v+'T12:00:00');return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});};
  function refresh(){
-  const choice=vehicle?.value||'Any available car',label=labels[choice]||[choice,'Selected for your journey.'];
+  const choice=vehicle?.value||'Toyota Prado',label=labels[choice]||[choice,'Selected for your journey.'];
   if(summaryVehicle)summaryVehicle.textContent=label[0];if(summaryNote)summaryNote.textContent=label[1];
   const imageByChoice={
-   'Any available car':['https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1000&q=88','A premium car ready for your journey'],
-   'SUV':['https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=1000&q=88','SUV ready for a bigger journey'],
-   'Saloon / Sedan':['https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1000&q=88','Sporty saloon car for a stylish drive'],
-   'Compact car':['https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=88','Compact car for easy everyday travel'],
-   'Mitsubishi Outlander':['https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=1000&q=88','SUV ready for a bigger journey']
+   'Help me choose':['assets/fleet/toyota-prado.webp','DriveHub GH fleet preview'],
+   'Any available car':['assets/fleet/toyota-prado.webp','DriveHub GH fleet preview'],
+   'SUV':['assets/fleet/toyota-prado.webp','DriveHub GH SUV fleet preview'],
+   'Toyota Prado':['assets/fleet/toyota-prado.webp','Toyota Prado from the DriveHub GH fleet'],
+   'Mitsubishi Outlander':['assets/fleet/mitsubishi-outlander.webp','Mitsubishi Outlander from the DriveHub GH fleet'],
+   'Toyota RAV4':['assets/fleet/toyota-rav4.webp','Toyota RAV4 from the DriveHub GH fleet'],
+   'Hyundai Santa Fe':['assets/fleet/hyundai-santa-fe.webp','Hyundai Santa Fe from the DriveHub GH fleet'],
+   'Honda CR-V':['assets/fleet/honda-cr-v.webp','Honda CR-V from the DriveHub GH fleet'],
+   'Toyota Land Cruiser V8':['assets/fleet/toyota-land-cruiser-v8.webp','Toyota Land Cruiser V8 from the DriveHub GH fleet']
   };
-  const visual=imageByChoice[choice]||imageByChoice['Any available car'];
+  const visual=imageByChoice[choice]||imageByChoice['Help me choose'];
   if(summaryImage&&summaryImage.getAttribute('src')!==visual[0]){summaryImage.style.opacity='0.45';summaryImage.onload=()=>{summaryImage.style.opacity='1';};summaryImage.src=visual[0];summaryImage.alt=visual[1];}
   const purposeText=purpose?.value||'City driving';
   const purposeLabels={'City driving':'MADE FOR CITY DAYS','Family trip':'MADE FOR FAMILY TIME','Business':'MADE FOR BUSINESS','Weekend away':'MADE FOR GETAWAYS','Other':'MADE FOR YOUR PLANS'};
@@ -53,7 +68,26 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   root.querySelectorAll('[data-purpose]').forEach(chip=>{const active=chip===btn;chip.classList.toggle('is-active',active);chip.setAttribute('aria-pressed',String(active));});refresh();
  }));
  if(pickup&&ret){pickup.min=localDate(new Date());ret.min=pickup.value||localDate(new Date());pickup.addEventListener('change',()=>{ret.min=pickup.value||localDate(new Date());if(ret.value&&ret.value<ret.min)ret.value=ret.min;refresh();});ret.addEventListener('change',refresh);}
- const query=new URLSearchParams(location.search);const requested=query.get('vehicle');if(requested&&vehicle){const normalized=requested.toLowerCase();const match=[...root.querySelectorAll('[data-ride-vehicle]')].find(b=>b.dataset.rideVehicle.toLowerCase()===normalized||((normalized.includes('outlander')||normalized.includes('prado')||normalized.includes('rav4')||normalized.includes('santa fe')||normalized.includes('cr-v'))&&b.dataset.rideVehicle==='SUV'));if(match)match.click();vehicle.value=requested;refresh();}
+ const query=new URLSearchParams(location.search);const requested=query.get('vehicle');
+ const modelNames=['Toyota Prado','Mitsubishi Outlander','Toyota RAV4','Hyundai Santa Fe','Honda CR-V','Toyota Land Cruiser V8'];
+ function selectModel(name){
+  const match=[...root.querySelectorAll('[data-ride-vehicle]')].find(b=>b.dataset.rideVehicle.toLowerCase()===String(name).toLowerCase());
+  if(match){match.click();return true;}return false;
+ }
+ if(requested&&vehicle){
+  const normalized=requested.toLowerCase().trim();
+  const exact=modelNames.find(name=>name.toLowerCase()===normalized);
+  if(exact)selectModel(exact);
+  else if(['help me choose','any available car','any car'].includes(normalized)){vehicle.value='Help me choose';root.querySelectorAll('[data-ride-vehicle]').forEach(card=>{card.classList.remove('is-selected');card.setAttribute('aria-pressed','false');});refresh();}
+  else if(normalized==='suv')selectModel('Toyota Prado');
+  else if(normalized.includes('outlander'))selectModel('Mitsubishi Outlander');
+  else if(normalized.includes('prado'))selectModel('Toyota Prado');
+  else if(normalized.includes('rav4'))selectModel('Toyota RAV4');
+  else if(normalized.includes('santa fe'))selectModel('Hyundai Santa Fe');
+  else if(normalized.includes('cr-v')||normalized.includes('crv'))selectModel('Honda CR-V');
+  else if(normalized.includes('v8')||normalized.includes('land cruiser'))selectModel('Toyota Land Cruiser V8');
+  else {vehicle.value='Help me choose';refresh();}
+ }
  refresh();
 })();
 
@@ -75,7 +109,22 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
  }
  function addAssistant(text,withWhatsApp=false){
   const wrap=addMessage(text,'assistant');
-  if(withWhatsApp){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='https://wa.me/'+phone+'?text='+encodeURIComponent('Hello DriveHub GH, I need help with a self-drive rental enquiry.');a.target='_blank';a.rel='noopener';a.textContent='Continue with the DriveHub team on WhatsApp ↗';p.appendChild(a);wrap.querySelector('.message-bubble').appendChild(p);}
+  const bubble=wrap.querySelector('.message-bubble');
+  const fleetModels=[
+   ['Toyota Prado','Toyota%20Prado'],
+   ['Mitsubishi Outlander','Mitsubishi%20Outlander'],
+   ['Toyota RAV4','Toyota%20RAV4'],
+   ['Hyundai Santa Fe','Hyundai%20Santa%20Fe'],
+   ['Honda CR-V','Honda%20CR-V'],
+   ['Toyota Land Cruiser V8','Toyota%20Land%20Cruiser%20V8']
+  ];
+  const mentioned=fleetModels.filter(([name])=>String(text).toLowerCase().includes(name.toLowerCase()));
+  if(mentioned.length){
+   const actions=document.createElement('div');actions.className='concierge-car-actions';
+   mentioned.forEach(([name,encoded])=>{const a=document.createElement('a');a.href='find-your-ride.html?vehicle='+encoded;a.textContent='View '+name+' ↗';actions.appendChild(a);});
+   bubble.appendChild(actions);
+  }
+  if(withWhatsApp){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='https://wa.me/'+phone+'?text='+encodeURIComponent('Hello DriveHub GH, I need help with a self-drive rental enquiry.');a.target='_blank';a.rel='noopener';a.textContent='Continue with the DriveHub team on WhatsApp ↗';p.appendChild(a);bubble.appendChild(p);}
   messages.scrollTop=messages.scrollHeight;
  }
  function setBusy(on){busy=on;input.disabled=on;form.querySelector('button[type="submit"]').disabled=on;form.querySelector('button[type="submit"] span').textContent=on?'Thinking…':'Send';form.setAttribute('aria-busy',String(on));}
