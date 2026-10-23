@@ -569,5 +569,4 @@
 }
 @media(prefers-reduced-motion:reduce){.orbit-one,.orbit-two{animation:none}.chat-reset:hover,.chat-suggestions button:hover,.chat-composer button:hover,.trip-submit:hover,.concierge-final-cta>a:hover{transform:none}}
 /* Brand signature in the conversation's open state */
-.concierge-chat .chat-messages:after{content:"DRIVEHUB  /  ACCRA, GHANA";display:block;align-self:center;margin-top:auto;padding:16px 0 2px;color:#b7adaf;font:700 8px var(--sans);letter-spacing:.22em;opacity:.68;pointer-events:none}
-@media(max-width:680px){.concierge-chat .chat-messages:after{font-size:7px;padding-top:13px}}
+@media(max-width:680px){}
