@@ -17,6 +17,7 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
  const vehicle=document.getElementById('vehicle'),pickup=document.getElementById('pickupDate'),ret=document.getElementById('returnDate');
  const purpose=document.getElementById('ridePurpose'),duration=document.getElementById('durationText');
  const summaryVehicle=document.getElementById('summaryVehicle'),summaryNote=document.getElementById('summaryVehicleNote');
+ const summaryImage=document.getElementById('summaryVehicleImage'),summaryPurposeLabel=document.getElementById('summaryPurposeLabel');
  const summaryPickup=document.getElementById('summaryPickup'),summaryReturn=document.getElementById('summaryReturn'),summaryDays=document.getElementById('summaryDays');
  const progress=[...root.querySelectorAll('.ride-progress span')];
  const labels={'Any available car':['Surprise me','We’ll help find your fit.'],'SUV':['SUV','Room for bigger plans.'],'Saloon / Sedan':['Saloon','A smooth city drive.'],'Compact car':['Compact','Easy, everyday freedom.'],'Mitsubishi Outlander':['Mitsubishi Outlander','Your SUV of choice.']};
@@ -25,6 +26,18 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
  function refresh(){
   const choice=vehicle?.value||'Any available car',label=labels[choice]||[choice,'Selected for your journey.'];
   if(summaryVehicle)summaryVehicle.textContent=label[0];if(summaryNote)summaryNote.textContent=label[1];
+  const imageByChoice={
+   'Any available car':['https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1000&q=88','A premium car ready for your journey'],
+   'SUV':['https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=1000&q=88','SUV ready for a bigger journey'],
+   'Saloon / Sedan':['https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1000&q=88','Sporty saloon car for a stylish drive'],
+   'Compact car':['https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=88','Compact car for easy everyday travel'],
+   'Mitsubishi Outlander':['https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=1000&q=88','SUV ready for a bigger journey']
+  };
+  const visual=imageByChoice[choice]||imageByChoice['Any available car'];
+  if(summaryImage&&summaryImage.getAttribute('src')!==visual[0]){summaryImage.style.opacity='0.45';summaryImage.onload=()=>{summaryImage.style.opacity='1';};summaryImage.src=visual[0];summaryImage.alt=visual[1];}
+  const purposeText=purpose?.value||'City driving';
+  const purposeLabels={'City driving':'MADE FOR CITY DAYS','Family trip':'MADE FOR FAMILY TIME','Business':'MADE FOR BUSINESS','Weekend away':'MADE FOR GETAWAYS','Other':'MADE FOR YOUR PLANS'};
+  if(summaryPurposeLabel)summaryPurposeLabel.textContent=purposeLabels[purposeText]||'MADE FOR YOUR PLANS';
   const a=pickup?.value||'',b=ret?.value||'';if(summaryPickup)summaryPickup.textContent=formatDate(a);if(summaryReturn)summaryReturn.textContent=formatDate(b);
   let days=0;if(a&&b&&b>=a)days=Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/86400000)+1;
   if(summaryDays)summaryDays.textContent=days?`${days} ${days===1?'day':'days'}`:'— days';
