@@ -19,7 +19,6 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
  const summaryVehicle=document.getElementById('summaryVehicle'),summaryNote=document.getElementById('summaryVehicleNote');
  const summaryImage=document.getElementById('summaryVehicleImage'),summaryPurposeLabel=document.getElementById('summaryPurposeLabel');
  const summaryPickup=document.getElementById('summaryPickup'),summaryReturn=document.getElementById('summaryReturn'),summaryDays=document.getElementById('summaryDays');
- const pickupRegion=document.getElementById('pickupRegion'),pickupTown=document.getElementById('pickup'),summaryPickupArea=document.getElementById('summaryPickupArea');
  const progress=[...root.querySelectorAll('.ride-progress span')];
  const labels={
   'Help me choose':['Help me choose','We’ll match a car to your plans.'],
@@ -57,7 +56,6 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   const a=pickup?.value||'',b=ret?.value||'';if(summaryPickup)summaryPickup.textContent=formatDate(a);if(summaryReturn)summaryReturn.textContent=formatDate(b);
   let days=0;if(a&&b&&b>=a)days=Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/86400000)+1;
   if(summaryDays)summaryDays.textContent=days?`${days} ${days===1?'day':'days'}`:'— days';
-  if(summaryPickupArea){const region=pickupRegion?.value||'',town=pickupTown?.value.trim()||'';summaryPickupArea.textContent=region&&town?`${town}, ${region}`:region||town||'Choose a region and town';}
   if(duration){if(days)duration.textContent=`${days} ${days===1?'rental day':'rental days'} · pickup and return dates both count`;else duration.textContent='Choose your dates to see your rental duration.';}
   if(progress.length>=3){progress[0].classList.add('progress-active');progress[1].classList.toggle('progress-active',Boolean(a&&b&&days));progress[2].classList.toggle('progress-active',Boolean(a&&b&&days&&purpose?.value));}
  }
@@ -70,7 +68,6 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   root.querySelectorAll('[data-purpose]').forEach(chip=>{const active=chip===btn;chip.classList.toggle('is-active',active);chip.setAttribute('aria-pressed',String(active));});refresh();
  }));
  if(pickup&&ret){pickup.min=localDate(new Date());ret.min=pickup.value||localDate(new Date());pickup.addEventListener('change',()=>{ret.min=pickup.value||localDate(new Date());if(ret.value&&ret.value<ret.min)ret.value=ret.min;refresh();});ret.addEventListener('change',refresh);}
- pickupRegion?.addEventListener('change',refresh);pickupTown?.addEventListener('input',refresh);
  const query=new URLSearchParams(location.search);const requested=query.get('vehicle');
  const modelNames=['Toyota Prado','Mitsubishi Outlander','Toyota RAV4','Hyundai Santa Fe','Honda CR-V','Toyota Land Cruiser V8'];
  function selectModel(name){
@@ -114,17 +111,17 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   const wrap=addMessage(text,'assistant');
   const bubble=wrap.querySelector('.message-bubble');
   const fleetModels=[
-   ['Toyota Prado','Toyota%20Prado'],
-   ['Mitsubishi Outlander','Mitsubishi%20Outlander'],
-   ['Toyota RAV4','Toyota%20RAV4'],
-   ['Hyundai Santa Fe','Hyundai%20Santa%20Fe'],
-   ['Honda CR-V','Honda%20CR-V'],
-   ['Toyota Land Cruiser V8','Toyota%20Land%20Cruiser%20V8']
+   ['Toyota Prado','toyota-prado'],
+   ['Mitsubishi Outlander','mitsubishi-outlander'],
+   ['Toyota RAV4','toyota-rav4'],
+   ['Hyundai Santa Fe','hyundai-santa-fe'],
+   ['Honda CR-V','honda-cr-v'],
+   ['Toyota Land Cruiser V8','toyota-land-cruiser-v8']
   ];
   const mentioned=fleetModels.filter(([name])=>String(text).toLowerCase().includes(name.toLowerCase()));
   if(mentioned.length){
    const actions=document.createElement('div');actions.className='concierge-car-actions';
-   mentioned.forEach(([name,encoded])=>{const a=document.createElement('a');a.href='find-your-ride.html?vehicle='+encoded;a.textContent='View '+name+' ↗';actions.appendChild(a);});
+   mentioned.forEach(([name,slug])=>{const a=document.createElement('a');a.href='fleet.html#'+slug;a.textContent='View '+name+' & enquire ↗';a.setAttribute('aria-label','View '+name+' on the fleet page and enquire about this vehicle');actions.appendChild(a);});
    bubble.appendChild(actions);
   }
   if(withWhatsApp){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='https://wa.me/'+phone+'?text='+encodeURIComponent('Hello DriveHub GH, I need help with a self-drive rental enquiry.');a.target='_blank';a.rel='noopener';a.textContent='Continue with the DriveHub team on WhatsApp ↗';p.appendChild(a);bubble.appendChild(p);}
