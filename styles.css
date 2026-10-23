@@ -708,3 +708,92 @@
  .fleet-page-models .fleet-model-copy p{min-height:0;}
  .fleet-page-models .fleet-model-year{min-height:0;}
 }
+
+
+/* Fleet refinement: full vehicle visibility, equal card proportions, and six-card grid. */
+.fleet-page-models .fleet-model-collection { padding: 30px 5.2% 68px; }
+.fleet-page-models .fleet-model-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  align-items: stretch;
+}
+.fleet-page-models .fleet-model-card,
+.fleet-page-models .fleet-model-card-featured,
+.fleet-page-models .fleet-model-card:nth-child(4),
+.fleet-page-models .fleet-model-card:nth-child(5) {
+  grid-column: auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  border-radius: 17px;
+  overflow: hidden;
+}
+.fleet-page-models .fleet-model-image,
+.fleet-page-models .fleet-model-card-featured .fleet-model-image {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 4 / 3;
+  flex: 0 0 auto;
+  overflow: hidden;
+  background: #f0e9e1;
+}
+.fleet-page-models .fleet-model-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  padding: 0;
+}
+.fleet-page-models .fleet-model-copy {
+  flex: 1;
+  min-height: 245px;
+  padding: 20px 21px 21px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.fleet-page-models .fleet-model-copy h3 {
+  font-size: clamp(19px, 1.65vw, 24px);
+  min-height: 2.2em;
+  margin-bottom: 9px;
+}
+.fleet-page-models .fleet-model-copy p {
+  min-height: 44px;
+  margin-bottom: 15px;
+}
+.fleet-page-models .fleet-model-year { min-height: 28px; }
+.fleet-page-models .fleet-model-link { margin-top: auto; }
+.fleet-page-models .fleet-model-note { margin-top: 23px; }
+@media (max-width: 980px) {
+  .fleet-page-models .fleet-model-collection { padding: 27px 4.5% 58px; }
+  .fleet-page-models .fleet-model-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .fleet-page-models .fleet-model-card,
+  .fleet-page-models .fleet-model-card-featured,
+  .fleet-page-models .fleet-model-card:nth-child(4),
+  .fleet-page-models .fleet-model-card:nth-child(5) { grid-column: auto; }
+  .fleet-page-models .fleet-model-image,
+  .fleet-page-models .fleet-model-card-featured .fleet-model-image { aspect-ratio: 4 / 3; }
+  .fleet-page-models .fleet-model-copy { min-height: 238px; padding: 18px; }
+  .fleet-page-models .fleet-model-copy h3 { font-size: 22px; min-height: 2.2em; }
+}
+@media (max-width: 640px) {
+  .fleet-page-models .fleet-model-collection { padding: 20px 16px 44px; }
+  .fleet-page-models .fleet-model-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .fleet-page-models .fleet-model-card,
+  .fleet-page-models .fleet-model-card-featured,
+  .fleet-page-models .fleet-model-card:nth-child(4),
+  .fleet-page-models .fleet-model-card:nth-child(5) { grid-column: auto; }
+  .fleet-page-models .fleet-model-image,
+  .fleet-page-models .fleet-model-card-featured .fleet-model-image { aspect-ratio: 4 / 3; }
+  .fleet-page-models .fleet-model-copy { min-height: 0; padding: 19px; }
+  .fleet-page-models .fleet-model-copy h3 { font-size: 23px; min-height: 0; }
+  .fleet-page-models .fleet-model-copy p { min-height: 0; }
+  .fleet-page-models .fleet-model-year { min-height: 0; }
+}
