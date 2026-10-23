@@ -22,11 +22,13 @@ Cloudflare docs: https://developers.cloudflare.com/pages/functions/bindings/
 
 ## Test
 
-Open `https://drivehub-gh.pages.dev/faqs`, hard-refresh with `Ctrl + Shift + R`, then ask: **“What is the difference between an SUV and a Compact for a family trip?”**
+First open `https://drivehub-gh.pages.dev/api/chat` in a browser tab. It should return JSON showing `"endpoint":"online"` and `"aiBinding":"configured"`. If `aiBinding` is `missing`, the code is deployed but Cloudflare has not attached the Workers AI binding to that environment. Add the binding as described above and redeploy.
+
+Then open `https://drivehub-gh.pages.dev/faqs`, hard-refresh with `Ctrl + Shift + R`, then ask: **“What is the difference between an SUV and a Compact for a family trip?”**
 
 Then ask **“How much is an SUV per day?”** The assistant should not invent a price; it should explain that the team must confirm the current rate.
 
-If the assistant says the AI service is not configured, verify that the Pages project has a Workers AI binding named `AI` in Production and redeploy. If it reports a temporary service issue, check the deployment/function logs in Cloudflare.
+If the assistant says the AI service is not configured, verify that the Pages project has a Workers AI binding named `AI` in Production and redeploy. If it reports a temporary service issue, check the deployment/function logs in Cloudflare. The chat now has a limited fleet-guidance fallback if the live AI endpoint fails; this prevents a dead-end conversation, but only the configured Workers AI model provides full generative responses.
 
 ## Cost and limits
 

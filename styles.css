@@ -889,3 +889,14 @@
   .ride-page .ride-fleet-grid .category-copy{padding:10px 9px 11px}
   .ride-page .ride-fleet-grid .category-copy strong{font-size:11px}
 }
+
+
+/* Location precision: select a Ghana region, then type the town or exact pickup point. */
+.home-page .booking-fields{grid-template-columns:1.05fr 1.25fr .9fr .9fr 1.05fr auto}
+.home-page .booking-fields .input-wrap select{min-width:0;width:100%;height:100%;border:0;outline:0;background:transparent;color:#383136;font:10px var(--sans);padding:0 3px}
+.ride-location-grid{display:grid;grid-template-columns:minmax(150px,.8fr) minmax(0,1.4fr);gap:12px;margin-bottom:19px}
+.ride-location-grid .ride-location-field{margin-bottom:0}
+.ride-input select{min-width:0;width:100%;height:100%;border:0;outline:0;background:transparent;font:11px var(--sans);color:var(--ink);padding:0 2px}
+.trip-field select{appearance:auto}
+@media(max-width:1050px){.home-page .booking-fields{grid-template-columns:repeat(3,minmax(0,1fr))}.home-page .booking-submit{grid-column:1/-1}.home-page .booking-fields label{min-width:0}}
+@media(max-width:760px){.ride-location-grid{grid-template-columns:1fr;gap:12px}.home-page .booking-fields{grid-template-columns:1fr 1fr}.home-page .booking-fields label:first-child,.home-page .booking-fields label:nth-child(2),.home-page .booking-submit{grid-column:1/-1}.home-page .booking-fields .input-wrap select{font-size:11px}}

@@ -15,6 +15,8 @@ WHAT THIS UPDATE CONNECTS
 - The AI Concierge prompt now knows the six models and their published positioning, recommends from this fleet only, avoids inventing specifications, prices, or availability, and asks a focused follow-up when needed.
 - When the AI mentions a fleet model in its reply, it provides a direct “View [model]” link that opens the booking builder with that model selected.
 - The Concierge trip planner also uses the same six model names.
+- Homepage, Find Your Ride, and Concierge trip forms now ask for a Ghana region plus a typed town/village/landmark or exact pickup address. The selected region and typed location are included in the WhatsApp enquiry.
+- The Concierge has a limited fleet-guidance fallback if the AI endpoint fails, and `/api/chat` provides a safe health check to confirm whether the Workers AI binding is attached.
 - Rental-day counting remains inclusive of both pickup and return dates.
 
 PUBLISH
@@ -25,7 +27,7 @@ PUBLISH
 5. Test /fleet, /find-your-ride, /faqs and the homepage. Use Ctrl+Shift+R after deployment.
 
 CLOUDFLARE AI
-The AI Concierge still requires the existing Cloudflare Pages Workers AI binding named AI in the Production environment. If it is already configured, do not change it. If the AI reports that it is not configured, check Settings > Bindings and redeploy.
+The AI Concierge still requires the existing Cloudflare Pages Workers AI binding named AI in the Production environment. If it is already configured, do not change it. Open `/api/chat` to check service status. If `aiBinding` is `missing`, add the Workers AI binding named `AI` in Settings > Bindings for Production and redeploy. The built-in fallback can still provide limited guidance when the AI endpoint is unavailable, but full generative chat requires this binding.
 
 IMPORTANT LIMITS
 This is a connected enquiry and recommendation experience, not a live reservation or payment system. The website does not currently read live availability, confirm prices, take payment, or complete bookings. The DriveHub GH team must confirm vehicle availability, rates, rental requirements, exact year/trim/colour and suitability. Vehicle images remain illustrative model visuals.

@@ -61,7 +61,10 @@
         </section>
         <section class="ride-step-block ride-details-block">
           <div class="ride-step-title"><span>03</span><div><h3>Make it personal.</h3><p>Where are you heading?</p></div></div>
-          <label class="ride-field ride-location-field"><span>Pickup location</span><span class="ride-input"><span class="field-symbol">⌖</span><input type="text" id="pickup" value="DriveHub GH Office, Westland" required maxlength="120" autocomplete="street-address"></span></label>
+          <div class="ride-location-grid">
+            <label class="ride-field"><span>Region</span><span class="ride-input"><span class="field-symbol">⌖</span><select id="pickupRegion" required><option value="Ahafo">Ahafo</option><option value="Ashanti">Ashanti</option><option value="Bono">Bono</option><option value="Bono East">Bono East</option><option value="Central">Central</option><option value="Eastern">Eastern</option><option value="Greater Accra" selected>Greater Accra</option><option value="North East">North East</option><option value="Northern">Northern</option><option value="Oti">Oti</option><option value="Savannah">Savannah</option><option value="Upper East">Upper East</option><option value="Upper West">Upper West</option><option value="Volta">Volta</option><option value="Western">Western</option><option value="Western North">Western North</option></select></span></label>
+            <label class="ride-field ride-location-field"><span>Town / exact pickup location</span><span class="ride-input"><span class="field-symbol">⌖</span><input type="text" id="pickup" value="" placeholder="Town, village, landmark or address" required maxlength="120" autocomplete="street-address"></span></label>
+          </div>
           <div class="ride-purpose-label">What’s the occasion?</div>
           <div class="ride-purpose-grid" role="group" aria-label="Choose your trip purpose">
             <button type="button" class="purpose-chip is-active" data-purpose="City driving" aria-pressed="true">City days</button>

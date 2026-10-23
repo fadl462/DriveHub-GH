@@ -49,6 +49,21 @@ function json(data, status, origin) {
   return new Response(JSON.stringify(data), { status, headers });
 }
 
+
+// Safe health check so the site owner can verify the deployed endpoint and AI binding.
+export async function onRequestGet({ env }) {
+  const ready = Boolean(env.AI && typeof env.AI.run === 'function');
+  return json({
+    service: 'DriveHub GH Concierge API',
+    endpoint: 'online',
+    aiBinding: ready ? 'configured' : 'missing',
+    model: MODEL,
+    message: ready
+      ? 'The endpoint and Workers AI binding are ready.'
+      : 'The endpoint is online, but the Workers AI binding named AI is missing in this deployment environment.'
+  }, 200);
+}
+
 export async function onRequestOptions({ request }) {
   const origin = request.headers.get('Origin') || '';
   if (origin && !ALLOWED_ORIGINS.has(origin)) return new Response(null, { status: 403 });
