@@ -200,3 +200,42 @@
 @media(max-width:900px){.fleet-hero{min-height:430px}.fleet-hero-content{margin-left:7%;width:82%}.fleet-collection{padding:68px 6% 62px}.fleet-showcase{grid-template-columns:1fr 1fr}.fleet-vehicle-featured{grid-column:1/-1;display:grid;grid-template-columns:1.1fr 1fr}.fleet-vehicle-featured .fleet-vehicle-image{height:100%;min-height:260px}.fleet-vehicle-featured .fleet-vehicle-copy{padding:26px}.fleet-vehicle-copy h3{font-size:20px}.fleet-bottom-cta{padding:42px 6%}}
 @media(max-width:600px){.fleet-hero{min-height:500px;align-items:flex-end}.fleet-hero-photo{background-position:60% center}.fleet-hero-shade{background:linear-gradient(90deg,#141113db 0%,#14111388 100%),linear-gradient(0deg,#141113c9 0%,transparent 70%)}.fleet-hero-content{padding:65px 0 86px;margin-left:7%;width:86%}.fleet-hero-content h1{font-size:clamp(48px,12vw,67px);margin:23px 0 16px}.fleet-hero-content p{font-size:12px;max-width:310px}.fleet-hero-caption{right:7%;bottom:25px}.fleet-collection{padding:58px 6% 52px}.fleet-collection-head{display:block;margin-bottom:24px}.fleet-collection-head h2{font-size:40px;margin-top:15px}.fleet-collection-head>.text-link{margin-top:17px}.fleet-showcase{grid-template-columns:1fr;gap:14px}.fleet-vehicle-featured{display:flex;grid-column:auto}.fleet-vehicle-featured .fleet-vehicle-image,.fleet-vehicle-image{height:235px;min-height:0}.fleet-vehicle-copy,.fleet-vehicle-featured .fleet-vehicle-copy{padding:21px 18px 19px}.fleet-vehicle-copy h3{font-size:21px}.fleet-vehicle-copy p{font-size:11px;margin-bottom:19px}.fleet-note{align-items:flex-start;margin-top:17px}.fleet-bottom-cta{padding:40px 7%;display:block}.fleet-bottom-cta h2{font-size:42px;margin-bottom:25px}}
 @media(prefers-reduced-motion:reduce){.fleet-vehicle,.fleet-image-arrow,.fleet-enquire span{transition:none}}
+
+
+/* Rounded, softly elevated components across DriveHub GH */
+:root{--card-radius:15px;--soft-shadow:0 12px 32px rgba(33,24,25,.075);--soft-shadow-hover:0 18px 38px rgba(33,24,25,.12)}
+.button,.header-cta{border-radius:8px}
+.booking-panel{border-radius:16px;box-shadow:var(--soft-shadow);overflow:hidden}
+.booking-icon{border-radius:8px}
+.input-wrap{border-radius:7px;overflow:hidden}
+.booking-submit{border-radius:7px}
+.car-card{border-radius:15px;overflow:hidden;box-shadow:0 7px 22px rgba(33,24,25,.055);padding:8px 8px 0}
+.car-card:hover{box-shadow:var(--soft-shadow-hover)}
+.car-photo{border-radius:10px;overflow:hidden}
+.round-arrow{display:none!important}
+.fleet-vehicle{border-radius:16px;overflow:hidden;box-shadow:0 8px 25px rgba(33,24,25,.065);border:1px solid rgba(40,29,29,.035)}
+.fleet-vehicle:hover{box-shadow:var(--soft-shadow-hover)}
+.fleet-vehicle-image{border-radius:0;overflow:hidden}
+.fleet-image-arrow{display:none!important}
+.fleet-enquire span{display:none!important}
+.fleet-vehicle-copy{padding:24px 22px 22px}
+.fleet-note{padding:0 2px}
+.step,.faq-item,.trust-item,.testimonial,.experience-card,.process-card{border-radius:12px}
+.step{padding:18px;border:1px solid #e4dcd6;background:#fff;box-shadow:0 6px 20px rgba(33,24,25,.045)}
+.faq-item{overflow:hidden}
+.trust-band{border-radius:14px;box-shadow:0 8px 24px rgba(33,24,25,.045)}
+/* Homepage polish: soft corners and gentle lift, without changing its layout */
+.home-page .booking-panel{border-radius:16px;box-shadow:0 15px 38px rgba(33,24,25,.09)}
+.home-page .booking-panel:hover{box-shadow:0 18px 42px rgba(33,24,25,.12)}
+.home-page .booking-heading .booking-icon{border-radius:8px}
+.home-page .input-wrap{border-radius:7px}
+.home-page .booking-submit,.home-page .button,.home-page .header-cta{border-radius:8px}
+.home-page .home-detail-item{border-radius:8px}
+.home-page .home-welcome{border-radius:0}
+.home-page .footer-brand img{border-radius:0}
+@media(max-width:600px){
+ .fleet-vehicle,.car-card{border-radius:13px}
+ .fleet-vehicle-image{height:235px}
+ .fleet-vehicle-copy,.fleet-vehicle-featured .fleet-vehicle-copy{padding:20px 18px 19px}
+ .booking-panel{border-radius:13px}
+}
