@@ -44,7 +44,7 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
    if(!response.ok||!data.reply)throw new Error(data.error||'Assistant temporarily unavailable');
    typing.remove();history.push({role:'assistant',content:data.reply});history=history.slice(-12);addAssistant(data.reply);
   }catch(err){
-   typing.remove();history.pop();addAssistant('I’m having trouble reaching the AI service right now. I don’t want to guess or give you incorrect rental information. Please try again shortly, or contact our team directly and they’ll help confirm the details.',true);
+   typing.remove();history.pop();addAssistant('I can’t connect right now. Please try again or message our team on WhatsApp.',true);
   }finally{setBusy(false);input.focus();}
  }
  form?.addEventListener('submit',e=>{e.preventDefault();send(input.value);});
