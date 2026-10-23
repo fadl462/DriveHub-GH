@@ -445,3 +445,129 @@
 @media(max-width:680px){.concierge-hero-inner{min-height:390px;padding:58px 7% 42px;display:block}.concierge-intro h1{font-size:clamp(43px,12vw,66px);margin-top:22px}.concierge-intro>p{font-size:12px;max-width:440px}.concierge-proof{font-size:7px;flex-wrap:wrap}.concierge-orbit{position:absolute;right:-64px;bottom:-65px;transform:scale(.62);opacity:.35;pointer-events:none}.concierge-hero-bottom{padding:0 7%;font-size:7px}.concierge-workspace{padding:53px 5% 58px}.concierge-workspace-head{align-items:flex-start;gap:15px}.concierge-workspace-head h2{font-size:38px}.concierge-live{font-size:7px;white-space:nowrap;padding-top:9px}.concierge-layout{grid-template-columns:1fr}.concierge-sidebar{min-height:0;padding:17px 12px;display:grid;grid-template-columns:1fr 1fr;gap:7px}.concierge-sidebar-label{grid-column:1/-1;padding-bottom:4px}.concierge-topic{align-items:flex-start;min-height:74px;padding:10px 7px}.concierge-topic>span:nth-child(2){gap:4px}.concierge-topic b{font-size:9px}.concierge-topic small{font-size:8px}.concierge-topic i{display:none}.topic-icon{width:28px;height:28px;flex-basis:28px;font-size:13px}.concierge-side-note{grid-column:1/-1;margin-top:5px;padding:14px 5px 3px;display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center}.side-note-mark{grid-row:span 2;font-size:18px}.concierge-side-note p{font-size:13px;margin:0 0 7px;max-width:none}.concierge-side-note a{justify-self:start;font-size:9px}.concierge-chat{min-height:490px}.chat-topbar{height:65px;flex-basis:65px;padding:0 14px}.chat-messages{padding:18px 13px 14px;max-height:430px}.message-bubble{font-size:10px;padding:12px}.chat-suggestions{padding-left:0}.chat-suggestions button{font-size:8px;padding:8px 10px}.chat-composer{margin:0 9px}.chat-composer input{font-size:9px}.chat-composer button{padding:11px 10px;gap:8px}.chat-composer button span{font-size:9px}.chat-footnote{padding:11px 13px 14px}.concierge-trip{grid-template-columns:1fr;gap:27px;padding:55px 6%}.trip-copy h2{font-size:44px}.trip-contact{margin-top:28px}.trip-form{padding:20px}.concierge-final-cta{padding:32px 6%;align-items:flex-start;flex-direction:column}.concierge-final-cta h2{font-size:29px}.concierge-final-cta>a{width:100%;justify-content:space-between}.trip-fields-row{gap:9px}}
 @media(prefers-reduced-motion:reduce){.concierge-topic,.chat-suggestions button,.chat-composer button,.trip-submit{transition:none}}
 
+
+/* DriveHub GH AI Concierge — visual polish pass (page-scoped) */
+.concierge-page{background:var(--paper)}
+.concierge-hero{isolation:isolate;min-height:465px;background:radial-gradient(ellipse at 76% 35%,#4a171e 0%,#21191c 34%,#171517 70%)}
+.concierge-hero:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(#ffffff06 1px,transparent 1px),linear-gradient(90deg,#ffffff06 1px,transparent 1px);background-size:54px 54px;mask-image:linear-gradient(90deg,transparent 5%,#000 75%);opacity:.35}
+.concierge-hero-glow{width:760px;height:760px;right:2%;top:-58%;background:radial-gradient(circle,#be1e2d36 0%,#be1e2d12 38%,transparent 69%);filter:blur(2px)}
+.concierge-hero-inner{min-height:415px;padding-top:82px;padding-bottom:62px}
+.concierge-intro{max-width:720px}
+.concierge-intro h1{font-size:clamp(50px,6.5vw,88px);line-height:.96;margin:26px 0 23px;max-width:780px}
+.concierge-intro>p{max-width:525px;font-size:15px;line-height:1.85;color:#d0c8cb}
+.concierge-proof{font-size:9px;letter-spacing:.13em;gap:12px}
+.concierge-orbit{flex-basis:330px;height:320px;margin-right:2%;filter:drop-shadow(0 22px 50px #0004)}
+.orbit-one{width:300px;height:194px;border-color:#ffffff20;animation:dhOrbit 24s linear infinite}
+.orbit-two{width:235px;height:270px;border-color:#d13a4c80;animation:dhOrbitReverse 32s linear infinite}
+.orbit-core{width:116px;height:116px;border-radius:35px;background:linear-gradient(145deg,#30272b 0%,#171416 72%);box-shadow:0 26px 80px #0009,inset 0 1px #ffffff24,0 0 48px #be1e2d15}
+.orbit-core:after{content:"AI CONCIERGE";position:absolute;bottom:-31px;left:50%;transform:translateX(-50%);font:700 8px var(--sans);letter-spacing:.22em;color:#d9a2a9;white-space:nowrap}
+.orbit-core span{font-size:31px;letter-spacing:-.11em}
+.orbit-label{font-size:9px;color:#c2b8bc}
+.orbit-label-one{top:25px;left:5px}.orbit-label-two{bottom:26px;right:-4px}
+.concierge-hero-bottom{height:54px;background:#ffffff03;font-size:9px}
+.concierge-workspace{padding:88px 8.5% 92px;background:radial-gradient(ellipse at 78% 36%,#fff 0%,#f7f4f0 52%,#f3efea 100%)}
+.concierge-workspace-head{margin-bottom:34px}
+.concierge-kicker,.concierge-sidebar-label,.trip-form-head,.trip-contact>span{font-size:9px;letter-spacing:.17em}
+.concierge-workspace-head h2{font-size:clamp(40px,4.6vw,58px);margin-top:15px}
+.concierge-live{font-size:9px;letter-spacing:.12em}
+.concierge-layout{grid-template-columns:minmax(245px,.72fr) minmax(0,1.65fr);gap:22px}
+.concierge-sidebar{padding:27px 19px 20px;min-height:570px;border-radius:20px;background:linear-gradient(145deg,#f0ece7,#eae5df);box-shadow:0 18px 48px #241a1908}
+.concierge-sidebar-label{padding-bottom:14px}
+.concierge-topic{padding:14px 11px;gap:13px;border-radius:13px}
+.topic-icon{width:38px;height:38px;flex-basis:38px;border-radius:12px;font-size:16px;box-shadow:inset 0 1px #ffffffa8}
+.concierge-topic b{font-size:12px}.concierge-topic small{font-size:10px;line-height:1.5}
+.concierge-topic i{display:none!important}
+.concierge-topic.is-active{border-color:#e5d4d1;box-shadow:0 9px 24px #2017170d,inset 3px 0 var(--red)}
+.concierge-topic:focus-visible,.chat-reset:focus-visible,.chat-suggestions button:focus-visible,.chat-composer button:focus-visible,.trip-submit:focus-visible{outline:3px solid #be1e2d66;outline-offset:3px}
+.concierge-side-note{padding:23px 10px 7px}
+.side-note-mark{font-size:23px}
+.concierge-side-note p{font-size:19px;max-width:225px}
+.concierge-side-note a{font-size:11px}
+.concierge-chat{min-height:570px;border-radius:20px;border-color:#e6ded8;box-shadow:0 24px 70px #2119190c,0 2px 5px #21191905}
+.chat-topbar{height:82px;flex-basis:82px;padding:0 24px;background:linear-gradient(90deg,#fff,#fffdfb)}
+.chat-avatar{width:42px;height:42px;border-radius:14px;font-size:13px;box-shadow:0 5px 16px #19171912}
+.chat-agent b{font-size:12px}.chat-agent span{font-size:10px}
+.chat-reset{width:38px;height:38px;border-radius:12px;font-size:21px;transition:transform .25s,border-color .2s,color .2s}
+.chat-reset:hover{transform:rotate(-35deg)}
+.chat-messages{min-height:340px;max-height:470px;padding:27px 26px 20px;gap:19px;background:radial-gradient(ellipse at 100% 0%,#f8f1ee 0%,transparent 36%),linear-gradient(180deg,#fff,#fdfcfb)}
+.chat-message{gap:12px}
+.message-avatar{flex-basis:30px;width:30px;height:30px;border-radius:10px;font-size:10px;box-shadow:0 4px 10px #19171912}
+.message-content{max-width:calc(100% - 42px)}
+.message-sender{font-size:8px;letter-spacing:.12em;margin-bottom:8px}
+.message-sender time{font-size:8px}
+.message-bubble{padding:16px 18px;font-size:12px;line-height:1.8;border-radius:4px 16px 16px 16px}
+.message-bubble p{margin-bottom:10px}
+.user-message .message-content{max-width:84%}
+.user-message .message-bubble{border-radius:16px 4px 16px 16px;background:linear-gradient(135deg,#272126,#171416)}
+.chat-suggestions{gap:8px;padding-left:42px}
+.chat-suggestions button{font-size:10px;padding:10px 14px;border-color:#e4d9d3;border-radius:999px;transition:transform .2s,border-color .2s,background .2s}
+.chat-suggestions button:hover{transform:translateY(-2px)}
+.chat-composer{margin:0 18px;padding:9px 9px 9px 18px;border-radius:15px;box-shadow:0 8px 28px #1917190b}
+.chat-composer input{font-size:12px;padding:12px 0;min-height:42px}
+.chat-composer button{font-size:11px;padding:13px 15px;border-radius:10px;transition:transform .2s,background .2s}
+.chat-composer button:hover,.trip-submit:hover{transform:translateY(-1px)}
+.chat-composer button:disabled{opacity:.65;cursor:wait;transform:none}
+.chat-footnote{padding:14px 23px 17px;font-size:9px;line-height:1.65}
+.concierge-trip{padding:92px 9%;gap:8%;background:linear-gradient(115deg,#e9e3dd 0%,#f0ebe6 56%,#e9e2dc 100%);position:relative;overflow:hidden}
+.concierge-trip:before{content:"";position:absolute;left:-170px;bottom:-270px;width:480px;height:480px;border:1px solid #be1e2d14;border-radius:50%;box-shadow:0 0 0 45px #be1e2d05,0 0 0 90px #be1e2d04;pointer-events:none}
+.trip-copy,.trip-form{position:relative;z-index:1}
+.trip-copy h2{font-size:clamp(43px,5vw,64px);margin:23px 0 20px}
+.trip-copy>p{font-size:14px;line-height:1.9;max-width:400px}
+.trip-contact{margin-top:48px;padding-top:22px}
+.trip-contact a{font-size:12px}
+.trip-form{padding:31px;border-radius:20px;box-shadow:0 22px 62px #21191910,0 2px 6px #21191905}
+.trip-form-head{padding-bottom:21px;margin-bottom:23px}
+.trip-field{gap:9px;margin-bottom:19px}
+.trip-field label{font-size:11px}
+.trip-field input,.trip-field select{height:49px;border-radius:10px;padding:0 13px;font-size:12px}
+.trip-fields-row{gap:13px}
+.trip-submit{height:52px;border-radius:11px;padding:0 17px;font-size:11px;transition:transform .2s,background .2s}
+.trip-disclaimer{font-size:9px;line-height:1.7;margin-top:13px}
+.concierge-final-cta{padding:45px 8.5%;background:linear-gradient(110deg,#be1e2d 0%,#c91f31 60%,#a91a29 100%);position:relative;overflow:hidden}
+.concierge-final-cta:after{content:"DH";position:absolute;right:25%;bottom:-.7em;font:800 150px/1 var(--display);letter-spacing:-.1em;color:#ffffff0b;pointer-events:none}
+.concierge-final-cta>div,.concierge-final-cta>a{position:relative;z-index:1}
+.concierge-final-cta h2{font-size:clamp(29px,3.4vw,43px)}
+.concierge-final-cta>a{font-size:11px;padding:17px 21px;border-radius:11px;box-shadow:0 8px 25px #650b171c;transition:transform .2s,background .2s}
+.concierge-final-cta>a:hover{transform:translateY(-2px)}
+.concierge-page .footer{border-top:1px solid #e5ddd6}
+@keyframes dhOrbit{from{transform:rotate(-24deg)}to{transform:rotate(336deg)}}
+@keyframes dhOrbitReverse{from{transform:rotate(45deg)}to{transform:rotate(-315deg)}}
+@media(max-width:1000px){
+ .concierge-hero-inner{padding-left:7%;padding-right:7%}.concierge-orbit{flex-basis:250px;transform:scale(.9);margin-right:0}
+ .concierge-layout{grid-template-columns:minmax(220px,.72fr) minmax(0,1.5fr);gap:15px}
+ .concierge-sidebar{padding:22px 12px}.concierge-topic{gap:9px;padding:12px 8px}
+ .topic-icon{width:33px;height:33px;flex-basis:33px}.concierge-topic b{font-size:11px}.concierge-topic small{font-size:9px}
+ .chat-messages{padding:23px 18px 17px}.chat-composer{margin:0 12px}.concierge-trip{padding-left:7%;padding-right:7%}
+}
+@media(max-width:680px){
+ .concierge-hero{min-height:0}.concierge-hero-inner{min-height:410px;padding:60px 7% 52px}
+ .concierge-intro h1{font-size:clamp(44px,12vw,67px);line-height:.99;margin:23px 0 19px}
+ .concierge-intro>p{font-size:13px;line-height:1.8;max-width:410px}
+ .concierge-proof{font-size:7px;line-height:1.8;gap:9px;margin-top:23px}
+ .concierge-orbit{right:-77px;bottom:-72px;transform:scale(.6);opacity:.32}
+ .concierge-hero-bottom{height:47px;padding:0 7%;font-size:7px;letter-spacing:.12em}
+ .concierge-workspace{padding:58px 5% 64px}
+ .concierge-workspace-head{display:block;margin-bottom:24px}.concierge-workspace-head h2{font-size:40px}
+ .concierge-live{margin-top:15px;padding:0;font-size:8px}
+ .concierge-layout{grid-template-columns:1fr;gap:14px}
+ .concierge-sidebar{min-height:0;padding:17px 12px 12px;border-radius:16px;grid-template-columns:1fr 1fr;gap:7px}
+ .concierge-sidebar-label{font-size:8px;grid-column:1/-1;padding:0 5px 4px}
+ .concierge-topic{min-height:78px;padding:10px 8px;gap:8px;align-items:flex-start}
+ .topic-icon{width:29px;height:29px;flex-basis:29px;border-radius:9px;font-size:13px}
+ .concierge-topic b{font-size:10px}.concierge-topic small{font-size:8px;line-height:1.45}
+ .concierge-side-note{margin-top:4px;padding:14px 5px 4px}.side-note-mark{font-size:18px}.concierge-side-note p{font-size:14px;margin-bottom:6px}.concierge-side-note a{font-size:10px}
+ .concierge-chat{min-height:510px;border-radius:16px}
+ .chat-topbar{height:68px;flex-basis:68px;padding:0 14px}.chat-avatar{width:37px;height:37px;border-radius:12px}.chat-agent b{font-size:11px}.chat-agent span{font-size:9px}
+ .chat-messages{min-height:320px;max-height:440px;padding:19px 13px 15px;gap:15px}
+ .message-avatar{flex-basis:26px;width:26px;height:26px;font-size:9px}.message-content{max-width:calc(100% - 36px)}
+ .message-sender{font-size:7px}.message-sender time{font-size:7px}.message-bubble{font-size:12px;padding:13px 14px;line-height:1.7}
+ .user-message .message-content{max-width:88%}.chat-suggestions{padding-left:0;gap:7px}.chat-suggestions button{font-size:10px;padding:9px 11px}
+ .chat-composer{margin:0 9px;padding:7px 7px 7px 12px;gap:7px}.chat-composer input{font-size:11px;padding:9px 0;min-height:38px}.chat-composer button{font-size:10px;padding:11px 11px;gap:8px}.chat-footnote{padding:12px 13px 15px;font-size:8px}
+ .concierge-trip{grid-template-columns:1fr;gap:28px;padding:60px 6%}.trip-copy h2{font-size:clamp(44px,11vw,56px);margin:18px 0 15px}.trip-copy>p{font-size:13px}.trip-contact{margin-top:28px;padding-top:18px}
+ .trip-form{padding:22px 18px;border-radius:16px}.trip-form-head{font-size:8px;padding-bottom:17px;margin-bottom:18px}.trip-field{gap:8px;margin-bottom:16px}.trip-field label{font-size:11px}.trip-field input,.trip-field select{height:47px;font-size:12px}.trip-fields-row{gap:9px}.trip-submit{height:50px;font-size:10px}.trip-disclaimer{font-size:8px}
+ .concierge-final-cta{padding:36px 6%}.concierge-final-cta h2{font-size:31px}.concierge-final-cta>a{width:100%;justify-content:space-between}
+}
+@media(prefers-reduced-motion:reduce){.orbit-one,.orbit-two{animation:none}.chat-reset:hover,.chat-suggestions button:hover,.chat-composer button:hover,.trip-submit:hover,.concierge-final-cta>a:hover{transform:none}}
+/* Brand signature in the conversation's open state */
+.concierge-chat .chat-messages:after{content:"DRIVEHUB  /  ACCRA, GHANA";display:block;align-self:center;margin-top:auto;padding:16px 0 2px;color:#b7adaf;font:700 8px var(--sans);letter-spacing:.22em;opacity:.68;pointer-events:none}
+@media(max-width:680px){.concierge-chat .chat-messages:after{font-size:7px;padding-top:13px}}

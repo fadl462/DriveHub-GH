@@ -1,0 +1,21 @@
+DRIVEHUB GH AI CONCIERGE — VISUAL POLISH UPDATE
+
+Replace these files in the existing DriveHub-GH repository:
+- faqs.html
+- styles.css
+- script.js
+
+Keep the existing assets/ folder, functions/api/chat.js, and all other files.
+The stylesheet additions are scoped to the concierge page so other pages retain their own design.
+
+What changed:
+- More cinematic hero treatment, subtle grid texture and refined orbit visual
+- Stronger typography, contrast, spacing, card surfaces and legibility
+- More polished chat header, message bubbles, suggested prompt chips and composer
+- Improved trip planner fields, button states and responsive spacing
+- Visible keyboard focus and reduced-motion support
+- Fixed topic selection so clicking chat suggestions no longer clears the active sidebar topic
+- Added accessible busy state while the AI is responding
+
+After upload, commit to main and wait for Cloudflare Pages to deploy. Hard refresh /faqs with Ctrl+Shift+R.
+This is a visual/interaction refinement only. It does not configure the Cloudflare Workers AI binding or create a new AI backend.
