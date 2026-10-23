@@ -122,3 +122,39 @@
  .home-page .hero-image,.home-page .hero-kicker,.home-page .hero-content{animation:none!important}
  .home-page *, .home-page *:before, .home-page *:after{scroll-behavior:auto!important;transition:none!important}
 }
+
+/* Homepage cleanup: fewer messages, clearer visual hierarchy */
+.home-page .announcement{height:28px;font-size:8px}
+.home-page .header{height:78px}
+.home-page .hero.home-hero{height:clamp(500px,52vw,660px);min-height:500px;max-height:660px}
+.home-page .hero.home-hero .hero-content{padding-top:clamp(82px,9vw,124px);max-width:700px}
+.home-page .hero.home-hero .eyebrow{font-size:9px}
+.home-page .hero.home-hero h1{font-size:clamp(58px,7vw,92px);line-height:1.02;margin:24px 0 16px;max-width:720px}
+.home-page .hero.home-hero .hero-content>p{font-size:14px;line-height:1.65;margin-bottom:26px;color:#eee9e9}
+.home-page .hero.home-hero .hero-actions{gap:24px}
+.home-page .hero.home-hero .hero-proof,.home-page .hero.home-hero .hero-kicker,.home-page .hero.home-hero .hero-index,.home-page .hero.home-hero .hero-side-note,.home-page .hero.home-hero .hero-scroll-cue{display:none}
+.home-page .hero.home-hero .hero-shade{background:linear-gradient(90deg,rgba(15,13,15,.91) 0%,rgba(15,13,15,.72) 37%,rgba(15,13,15,.2) 75%,rgba(15,13,15,.12) 100%),linear-gradient(0deg,rgba(17,14,16,.25),transparent 42%)}
+.home-page .booking-wrap{margin:0;padding:36px 8% 10px;background:#f5f2ed}
+.home-page .booking-panel{padding:26px 28px 18px;border-top:2px solid var(--red);box-shadow:0 12px 35px #251a1a0b}
+.home-page .booking-heading{margin-bottom:20px}
+.home-page .booking-heading h2{font-size:19px}
+.home-page .booking-heading p{display:none}
+.home-page .booking-icon{width:30px;height:30px}
+.home-page .form-note{margin-left:0}
+.home-page .home-welcome{padding-top:48px;padding-bottom:60px;border-top:1px solid #e2dbd5;margin-top:24px}
+.home-page .home-welcome-grid{grid-template-columns:1.1fr .9fr;gap:8vw;margin-top:18px}
+.home-page .home-welcome-grid h2{font-size:clamp(44px,5.8vw,70px)}
+.home-page .home-welcome-grid p{font-size:13px;line-height:1.6;margin-bottom:18px}
+.home-page .footer{padding-top:38px}
+@media(max-width:720px){
+ .home-page .hero.home-hero{height:590px;min-height:590px}
+ .home-page .hero.home-hero .hero-content{padding:85px 7% 0;max-width:100%}
+ .home-page .hero.home-hero h1{font-size:clamp(49px,11vw,70px);margin:25px 0 18px}
+ .home-page .booking-wrap{padding:22px 5% 6px}
+ .home-page .booking-panel{padding:22px 18px 17px}
+ .home-page .booking-heading{margin-bottom:19px}
+ .home-page .booking-heading h2{font-size:18px}
+ .home-page .home-welcome{padding-top:38px;padding-bottom:42px}
+ .home-page .home-welcome-grid{grid-template-columns:1fr;gap:16px}
+ .home-page .home-welcome-grid h2{font-size:clamp(42px,10vw,58px)}
+}
