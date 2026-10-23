@@ -1,21 +1,20 @@
-DRIVEHUB GH AI CONCIERGE — VISUAL POLISH UPDATE
+DRIVEHUB GH — FLEET PAGE UPDATE
 
-Replace these files in the existing DriveHub-GH repository:
-- faqs.html
+Included:
+- fleet.html
 - styles.css
 - script.js
+- assets/fleet/ (five optimized WebP model visuals)
 
-Keep the existing assets/ folder, functions/api/chat.js, and all other files.
-The stylesheet additions are scoped to the concierge page so other pages retain their own design.
+Install:
+1. Extract this ZIP.
+2. Upload/replace fleet.html, styles.css, and script.js in the root of the existing DriveHub-GH repository.
+3. Upload the included assets/fleet folder into the existing assets folder. Do not delete other assets.
+4. Commit to main and wait for Cloudflare Pages to deploy.
+5. Open /fleet and hard-refresh with Ctrl+Shift+R.
 
-What changed:
-- More cinematic hero treatment, subtle grid texture and refined orbit visual
-- Stronger typography, contrast, spacing, card surfaces and legibility
-- More polished chat header, message bubbles, suggested prompt chips and composer
-- Improved trip planner fields, button states and responsive spacing
-- Visible keyboard focus and reduced-motion support
-- Fixed topic selection so clicking chat suggestions no longer clears the active sidebar topic
-- Added accessible busy state while the AI is responding
-
-After upload, commit to main and wait for Cloudflare Pages to deploy. Hard refresh /faqs with Ctrl+Shift+R.
-This is a visual/interaction refinement only. It does not configure the Cloudflare Workers AI binding or create a new AI backend.
+Notes:
+- Fleet cards now feature Toyota Prado, Mitsubishi Outlander (2018–2023 model range), Toyota RAV4 (2018–2023 model range), Hyundai Santa Fe, and Honda CR-V.
+- Model cards link to Find Your Ride with the selected model carried into the enquiry summary.
+- The visuals are polished illustrative model renders, not verified photographs of individual units. The page includes a short disclosure so customers know exact colour, trim, year and availability are confirmed with their enquiry.
+- No rates, seating capacity, luggage capacity, or live availability are invented.

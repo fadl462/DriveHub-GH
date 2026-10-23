@@ -619,3 +619,54 @@
 
 /* Purposeful vehicle preview: replace the abstract key graphic with a real car image. */
 @media(prefers-reduced-motion:reduce){.summary-car-art img{animation:none;transition:none}.summary-car-art:hover img{transform:none}}
+
+
+
+/* DriveHub GH — model-led fleet collection */
+.fleet-page-models .fleet-hero-photo{
+  background-image:url('assets/fleet/toyota-prado.webp');
+  background-position:center 54%;
+}
+.fleet-page-models .fleet-hero-shade{
+  background:linear-gradient(90deg,rgba(20,17,19,.92) 0%,rgba(20,17,19,.72) 38%,rgba(20,17,19,.22) 78%,rgba(20,17,19,.18) 100%),linear-gradient(0deg,rgba(20,17,19,.35),transparent 48%);
+}
+.fleet-model-collection{padding-top:76px;padding-bottom:84px}
+.fleet-model-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+.fleet-model-card{min-width:0;display:flex;flex-direction:column;background:#fff;border:1px solid #e9e0d8;border-radius:17px;overflow:hidden;box-shadow:0 8px 28px rgba(31,24,24,.035);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.fleet-model-card:hover{transform:translateY(-5px);box-shadow:0 20px 42px rgba(31,24,24,.10);border-color:#d9c8bd}
+.fleet-model-card-featured{grid-column:span 2;display:grid;grid-template-columns:1.12fr 1fr}
+.fleet-model-image{height:238px;position:relative;display:block;overflow:hidden;background:#f0e8df;isolation:isolate}
+.fleet-model-card-featured .fleet-model-image{height:100%;min-height:310px}
+.fleet-model-image img{width:100%;height:100%;display:block;object-fit:cover;object-position:center;transition:transform .65s cubic-bezier(.2,.7,.2,1)}
+.fleet-model-card:hover .fleet-model-image img{transform:scale(1.035)}
+.fleet-model-image:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(22,18,20,.35),transparent 34%,rgba(22,18,20,.03));pointer-events:none}
+.fleet-model-tag{position:absolute;left:17px;top:16px;z-index:1;display:flex;align-items:center;gap:9px;color:#fff;font-size:9px;font-weight:800;letter-spacing:.14em;text-shadow:0 1px 8px rgba(0,0,0,.25)}
+.fleet-model-tag i{width:24px;height:1px;background:rgba(255,255,255,.82);display:block}
+.fleet-model-open{position:absolute;right:15px;bottom:15px;width:35px;height:35px;border:1px solid rgba(255,255,255,.65);border-radius:50%;display:grid;place-items:center;color:#191719;background:rgba(255,255,255,.92);z-index:1;transition:background .2s,color .2s,transform .2s}
+.fleet-model-card:hover .fleet-model-open{background:#c51f32;color:#fff;transform:translate(2px,-2px)}
+.fleet-model-copy{padding:23px 23px 24px;display:flex;flex-direction:column;align-items:flex-start;flex:1}
+.fleet-model-overline{font-size:9px;letter-spacing:.15em;font-weight:800;color:#a51d2d;margin-bottom:10px}
+.fleet-model-copy h3{font-size:clamp(20px,2vw,27px);line-height:1.12;letter-spacing:-.045em;margin:0 0 11px;color:#1b191a}
+.fleet-model-copy p{font-size:13px;line-height:1.65;color:#6e6766;margin:0 0 17px;max-width:390px}
+.fleet-model-year{font-size:11px;color:#8a7e79;border-top:1px solid #eee6e0;padding-top:11px;margin-top:-4px;margin-bottom:15px;width:100%}
+.fleet-model-link{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;margin-top:auto;padding-top:14px;border-top:1px solid #eee6e0;color:#211d1e;font-size:12px;font-weight:800;text-decoration:none}
+.fleet-model-link span{color:#c51f32;font-size:17px;transition:transform .2s}
+.fleet-model-link:hover span{transform:translate(3px,-2px)}
+.fleet-model-note{display:flex;gap:12px;align-items:flex-start;margin-top:22px;padding:15px 17px;background:#f4eee8;border-radius:12px;color:#6e6561}
+.fleet-model-note .fleet-note-mark{flex:0 0 23px}
+.fleet-model-note p{font-size:11px;line-height:1.6;margin:1px 0 0}
+@media(max-width:980px){
+ .fleet-model-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .fleet-model-card-featured{grid-column:span 2}
+ .fleet-model-image{height:220px}
+ .fleet-model-card-featured .fleet-model-image{min-height:290px}
+}
+@media(max-width:640px){
+ .fleet-model-collection{padding:54px 20px 60px}
+ .fleet-model-grid{grid-template-columns:1fr;gap:14px}
+ .fleet-model-card-featured{grid-column:auto;display:flex}
+ .fleet-model-image,.fleet-model-card-featured .fleet-model-image{height:auto;min-height:0;aspect-ratio:8/5}
+ .fleet-model-copy{padding:20px}
+ .fleet-model-copy h3{font-size:24px}
+ .fleet-model-note{padding:13px}
+}

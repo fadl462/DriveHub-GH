@@ -53,7 +53,7 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   root.querySelectorAll('[data-purpose]').forEach(chip=>{const active=chip===btn;chip.classList.toggle('is-active',active);chip.setAttribute('aria-pressed',String(active));});refresh();
  }));
  if(pickup&&ret){pickup.min=localDate(new Date());ret.min=pickup.value||localDate(new Date());pickup.addEventListener('change',()=>{ret.min=pickup.value||localDate(new Date());if(ret.value&&ret.value<ret.min)ret.value=ret.min;refresh();});ret.addEventListener('change',refresh);}
- const query=new URLSearchParams(location.search);const requested=query.get('vehicle');if(requested&&vehicle){const normalized=requested.toLowerCase();const match=[...root.querySelectorAll('[data-ride-vehicle]')].find(b=>b.dataset.rideVehicle.toLowerCase()===normalized||(normalized.includes('outlander')&&b.dataset.rideVehicle==='SUV'));if(match)match.click();}
+ const query=new URLSearchParams(location.search);const requested=query.get('vehicle');if(requested&&vehicle){const normalized=requested.toLowerCase();const match=[...root.querySelectorAll('[data-ride-vehicle]')].find(b=>b.dataset.rideVehicle.toLowerCase()===normalized||((normalized.includes('outlander')||normalized.includes('prado')||normalized.includes('rav4')||normalized.includes('santa fe')||normalized.includes('cr-v'))&&b.dataset.rideVehicle==='SUV'));if(match)match.click();vehicle.value=requested;refresh();}
  refresh();
 })();
 
