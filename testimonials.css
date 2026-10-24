@@ -127,3 +127,63 @@
  .testimonials-section .testimonial-card,.fleet-verified-reviews .testimonial-card{min-height:0;padding:20px}
  .fleet-verified-reviews .testimonials-grid{grid-template-columns:1fr}
 }
+
+
+/* Final testimonial layout: compact, balanced and consistent across both pages. */
+.testimonials-section .testimonials-grid {
+  width: 100%;
+  max-width: 1280px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+}
+.testimonials-section .testimonial-card {
+  min-width: 0;
+  min-height: 218px;
+  height: 100%;
+  padding: 20px 21px 18px;
+  border-radius: 15px;
+  box-sizing: border-box;
+}
+.testimonials-section blockquote {
+  overflow-wrap: anywhere;
+}
+.fleet-verified-reviews .testimonials-grid {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.fleet-verified-reviews .testimonials-grid > .testimonial-card:nth-child(7) {
+  grid-column: 2;
+}
+.testimonials-cta .button {
+  min-height: 42px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.testimonials-cta .button span {
+  margin-left: 8px;
+}
+@media (max-width: 850px) {
+  .testimonials-section .testimonials-grid,
+  .fleet-verified-reviews .testimonials-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .fleet-verified-reviews .testimonials-grid > .testimonial-card:nth-child(7) {
+    grid-column: auto;
+  }
+}
+@media (max-width: 580px) {
+  .testimonials-section .testimonials-grid,
+  .fleet-verified-reviews .testimonials-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .testimonials-section .testimonial-card,
+  .fleet-verified-reviews .testimonial-card {
+    min-height: 0;
+    height: auto;
+  }
+}
