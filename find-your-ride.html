@@ -17,13 +17,33 @@
       <div class="ride-form-main">
         <section class="ride-step-block">
           <div class="ride-step-title"><span>01</span><div><h3>What are you driving?</h3><p>Choose a style to start.</p></div></div>
-          <div class="ride-category-grid" role="group" aria-label="Choose a vehicle category">
-            <button type="button" class="ride-category is-selected" data-ride-vehicle="Any available car" aria-pressed="true"><span class="category-image category-any"></span><span class="category-copy"><strong>Surprise me</strong><small>Find the right fit</small></span><span class="category-check">✓</span></button>
-            <button type="button" class="ride-category" data-ride-vehicle="SUV" aria-pressed="false"><span class="category-image category-suv"></span><span class="category-copy"><strong>SUV</strong><small>Room to roam</small></span><span class="category-check">✓</span></button>
-            <button type="button" class="ride-category" data-ride-vehicle="Saloon / Sedan" aria-pressed="false"><span class="category-image category-saloon"></span><span class="category-copy"><strong>Saloon</strong><small>City in style</small></span><span class="category-check">✓</span></button>
-            <button type="button" class="ride-category" data-ride-vehicle="Compact car" aria-pressed="false"><span class="category-image category-compact"></span><span class="category-copy"><strong>Compact</strong><small>Easy everywhere</small></span><span class="category-check">✓</span></button>
+          <div class="ride-category-grid ride-fleet-grid" role="group" aria-label="Choose one of the DriveHub GH fleet vehicles">
+            <button type="button" class="ride-category is-selected" data-ride-vehicle="Toyota Prado" aria-pressed="true">
+              <span class="category-image" style="background-image:url('assets/fleet/toyota-prado.webp')" role="img" aria-label="Toyota Prado fleet vehicle"></span>
+              <span class="category-copy"><strong>Toyota Prado</strong><small>Room to go further</small></span><span class="category-check">✓</span>
+            </button>
+            <button type="button" class="ride-category" data-ride-vehicle="Mitsubishi Outlander" aria-pressed="false">
+              <span class="category-image" style="background-image:url('assets/fleet/mitsubishi-outlander.webp')" role="img" aria-label="Mitsubishi Outlander fleet vehicle"></span>
+              <span class="category-copy"><strong>Mitsubishi Outlander</strong><small>Made for everyone</small></span><span class="category-check">✓</span>
+            </button>
+            <button type="button" class="ride-category" data-ride-vehicle="Toyota RAV4" aria-pressed="false">
+              <span class="category-image" style="background-image:url('assets/fleet/toyota-rav4.webp')" role="img" aria-label="Toyota RAV4 fleet vehicle"></span>
+              <span class="category-copy"><strong>Toyota RAV4</strong><small>Ready for your route</small></span><span class="category-check">✓</span>
+            </button>
+            <button type="button" class="ride-category" data-ride-vehicle="Hyundai Santa Fe" aria-pressed="false">
+              <span class="category-image" style="background-image:url('assets/fleet/hyundai-santa-fe.webp')" role="img" aria-label="Hyundai Santa Fe fleet vehicle"></span>
+              <span class="category-copy"><strong>Hyundai Santa Fe</strong><small>Comfort in every mile</small></span><span class="category-check">✓</span>
+            </button>
+            <button type="button" class="ride-category" data-ride-vehicle="Honda CR-V" aria-pressed="false">
+              <span class="category-image" style="background-image:url('assets/fleet/honda-cr-v.webp')" role="img" aria-label="Honda CR-V fleet vehicle"></span>
+              <span class="category-copy"><strong>Honda CR-V</strong><small>Easy to make yours</small></span><span class="category-check">✓</span>
+            </button>
+            <button type="button" class="ride-category" data-ride-vehicle="Toyota Land Cruiser V8" aria-pressed="false">
+              <span class="category-image" style="background-image:url('assets/fleet/toyota-land-cruiser-v8.webp')" role="img" aria-label="Toyota Land Cruiser V8 fleet vehicle"></span>
+              <span class="category-copy"><strong>Toyota Land Cruiser V8</strong><small>Space with presence</small></span><span class="category-check">✓</span>
+            </button>
           </div>
-          <input type="hidden" id="vehicle" value="Any available car">
+          <input type="hidden" id="vehicle" value="Toyota Prado">
         </section>
         <section class="ride-step-block ride-dates-block">
           <div class="ride-step-title"><span>02</span><div><h3>When are we going?</h3><p>Your dates can be changed any time.</p></div></div>
@@ -35,7 +55,10 @@
         </section>
         <section class="ride-step-block ride-details-block">
           <div class="ride-step-title"><span>03</span><div><h3>Make it personal.</h3><p>Where are you heading?</p></div></div>
-          <label class="ride-field ride-location-field"><span>Pickup location</span><span class="ride-input"><span class="field-symbol">⌖</span><input type="text" id="pickup" value="DriveHub GH Office, Westland" required maxlength="120" autocomplete="street-address"></span></label>
+          <div class="ride-location-grid">
+            <label class="ride-field"><span>Region</span><span class="ride-input"><span class="field-symbol">⌖</span><select id="pickupRegion" required><option value="" selected disabled>Choose a region</option><option value="Ahafo">Ahafo</option><option value="Ashanti">Ashanti</option><option value="Bono">Bono</option><option value="Bono East">Bono East</option><option value="Central">Central</option><option value="Eastern">Eastern</option><option value="Greater Accra">Greater Accra</option><option value="North East">North East</option><option value="Northern">Northern</option><option value="Oti">Oti</option><option value="Savannah">Savannah</option><option value="Upper East">Upper East</option><option value="Upper West">Upper West</option><option value="Volta">Volta</option><option value="Western">Western</option><option value="Western North">Western North</option></select></span></label>
+            <label class="ride-field ride-location-field"><span>Town / exact pickup location</span><span class="ride-input"><span class="field-symbol">⌖</span><input type="text" id="pickup" value="" placeholder="Town, village, landmark or address" required maxlength="120" autocomplete="street-address"></span></label>
+          </div>
           <div class="ride-purpose-label">What’s the occasion?</div>
           <div class="ride-purpose-grid" role="group" aria-label="Choose your trip purpose">
             <button type="button" class="purpose-chip is-active" data-purpose="City driving" aria-pressed="true">City days</button>
@@ -49,10 +72,11 @@
       </div>
       <aside class="ride-summary" aria-label="Your journey summary">
         <div class="summary-topline"><span>YOUR JOURNEY</span><span class="summary-live"><i></i> YOUR PLAN</span></div>
-        <div class="summary-car-art"><div class="summary-ring ring-a"></div><div class="summary-ring ring-b"></div><div class="summary-car-silhouette"><span>DH</span></div><span class="summary-art-label">THE DRIVEHUB EDIT</span></div>
+        <div class="summary-car-art" aria-label="Preview of your selected drive"><img id="summaryVehicleImage" src="assets/fleet/toyota-prado.webp" alt="Toyota Prado from the DriveHub GH fleet"><span class="summary-visual-kicker">YOUR DRIVE, IN FOCUS</span><span class="summary-art-label" id="summaryPurposeLabel">MADE FOR CITY DAYS</span></div>
         <div class="summary-selected"><span class="summary-caption">YOUR RIDE</span><strong id="summaryVehicle">Surprise me</strong><span id="summaryVehicleNote">We’ll help find your fit.</span></div>
         <div class="summary-divider"></div>
         <div class="summary-dates"><div><span class="summary-caption">PICKUP</span><strong id="summaryPickup">Choose a date</strong></div><div><span class="summary-caption">RETURN</span><strong id="summaryReturn">Choose a date</strong></div></div>
+        <div class="summary-pickup-area"><span class="summary-caption">PICKUP AREA</span><strong id="summaryPickupArea">Choose a region and town</strong></div>
         <div class="summary-duration"><span>Rental duration</span><strong id="summaryDays">— days</strong></div>
         <button class="ride-submit" type="submit"><span>Prepare my enquiry</span><span class="submit-arrow">↗</span></button>
         <p class="summary-note">No payment. No pressure. Just a great start.</p>
