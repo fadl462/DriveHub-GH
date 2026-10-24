@@ -81,3 +81,31 @@
 @media(max-width:760px){.review-page{padding:38px 16px 52px}.review-hero{align-items:flex-start;margin-bottom:25px}.review-hero-mark{display:none}.review-hero h1{font-size:clamp(43px,11vw,62px)}.review-progress{gap:9px;padding:14px}.review-progress small{font-size:9px}.review-progress-line{margin:0 3px}.review-layout{grid-template-columns:1fr}.review-aside{order:2}.review-aside h2{font-size:32px;margin-top:24px}.review-form-card{padding:23px 20px}.review-bottom-note{align-items:flex-start;flex-wrap:wrap}.review-bottom-note p{flex-basis:calc(100% - 35px)}.review-bottom-note a{margin-left:30px}}
 @media(max-width:480px){.review-form{grid-template-columns:1fr;gap:16px}.review-field-full,.review-divider,.review-submit,.review-status{grid-column:1}.review-progress>div small{max-width:100px}.review-progress>span:not(.review-progress-line){font-size:17px}.review-progress-line{min-width:12px}.review-story-field{padding:13px}.review-submit{align-items:flex-start;flex-direction:column}.review-submit small{padding-left:0}.review-aside{padding:25px}.review-bottom-note a{margin-left:0}}
 @media(prefers-reduced-motion:reduce){.review-submit,.review-rating label{transition:none}.review-submit:hover{transform:none}}
+
+
+/* v2 refinements: compact, premium review form without a hero banner */
+.review-page{padding-top:clamp(24px,3vw,42px);padding-bottom:54px}
+.review-hero,.review-progress,.review-bottom-note{display:none!important}
+.review-layout{align-items:start;grid-template-columns:minmax(0,1.45fr) minmax(270px,.75fr);gap:22px}
+.review-aside{align-self:stretch;min-height:0}
+.review-form-card{padding:clamp(22px,3vw,38px)}
+.review-form-heading{margin-bottom:23px}
+.review-form{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 16px}
+.review-field-full,.review-divider,.review-submit,.review-status{grid-column:1/-1}
+.review-rating{flex-direction:row;justify-content:flex-start;gap:7px}
+.review-rating label{font-size:34px;line-height:1;display:inline-block}
+.review-rating input:focus-visible+label{outline:2px solid #c51d35;outline-offset:3px;border-radius:4px}
+.review-story-field{padding:17px}
+.review-story-field textarea{min-height:115px}
+.review-upload{display:flex!important;flex-direction:row!important;align-items:center;gap:11px!important;margin-top:3px;padding:12px 13px;border:1px dashed #d9c7c3;border-radius:11px;background:#fffaf8;cursor:pointer}
+.review-upload:hover{border-color:#c51d35;background:#fff5f5}
+.review-upload .upload-icon{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#f8e6e8;color:#b51c32;font-size:21px;font-weight:400}
+.review-upload>span:nth-child(2){display:flex;flex-direction:column;gap:3px}
+.review-upload b{font-size:10px;color:#413738}
+.review-upload small{font-size:9px;font-weight:500;color:#968888}
+.review-upload input[type=file]{margin-left:auto;max-width:145px;font-size:9px;color:#786d6d}
+.review-submit{justify-content:center;min-height:52px}
+.review-submit span{font-size:13px}
+.review-status{color:#8d7778}
+@media(max-width:900px){.review-layout{grid-template-columns:minmax(0,1fr)}.review-aside{order:2}.review-aside h2{font-size:32px}}
+@media(max-width:600px){.review-page{padding:24px 13px 40px}.review-form-card{padding:21px 16px}.review-form{grid-template-columns:minmax(0,1fr);gap:15px}.review-field-full,.review-divider,.review-submit,.review-status{grid-column:1}.review-story-field{padding:13px}.review-story-field textarea{min-height:105px}.review-upload{align-items:flex-start!important;flex-wrap:wrap}.review-upload input[type=file]{max-width:100%;width:100%;margin:3px 0 0 41px}.review-rating label{font-size:32px}}
