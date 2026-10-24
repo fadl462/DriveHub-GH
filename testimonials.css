@@ -240,3 +240,19 @@
     will-change: auto !important;
   }
 }
+
+
+/* Focused fix: keep the testimonial "Share your experience" CTA visibly red.
+   Scoped only to the testimonial CTA buttons; no layout or animation changes. */
+.testimonials-cta a.button.button-primary {
+  background: #c51d35 !important;
+  color: #ffffff !important;
+  border: 1px solid #c51d35 !important;
+  box-shadow: 0 6px 16px rgba(197, 29, 53, 0.12);
+}
+.testimonials-cta a.button.button-primary:hover,
+.testimonials-cta a.button.button-primary:focus-visible {
+  background: #a9182c !important;
+  border-color: #a9182c !important;
+  color: #ffffff !important;
+}
