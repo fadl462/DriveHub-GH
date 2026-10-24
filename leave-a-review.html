@@ -61,4 +61,45 @@
 
 <footer class="footer"><div class="footer-main"><div class="footer-brand"><a href="index.html"><img src="assets/drivehub-logo.png" alt="DriveHub GH"></a><p>Premium self-drive car rentals for the way you want to move.</p></div><div class="footer-column"><h4>EXPLORE</h4><a href="fleet.html">Our fleet</a><a href="experience.html">The experience</a><a href="how-it-works.html">How it works</a><a href="faqs.html">AI Partner</a></div><div class="footer-column"><h4>GET IN TOUCH</h4><a href="tel:0204116245">020 411 6245</a><a href="mailto:drivehubgh1@gmail.com">drivehubgh1@gmail.com</a></div><div class="footer-contact"><span>LET’S GET YOU THERE</span><a href="https://wa.me/233204116245" target="_blank" rel="noopener">WhatsApp our team ↗</a></div></div><div class="footer-bottom"><span>© <span id="year"></span> DriveHub GH. All rights reserved.</span><span>MADE FOR THE ROAD AHEAD.</span><a href="#top">Back to top ↑</a></div></footer>
 <script src="script.js"></script>
+
+<script>
+(function () {
+  function setupDriveHubRating() {
+    document.querySelectorAll('.review-rating').forEach(function (group) {
+      var radios = Array.from(group.querySelectorAll('input[type="radio"][name="rating"]'));
+      var labels = Array.from(group.querySelectorAll('label[for^="star"]'));
+      if (!radios.length || !labels.length) return;
+
+      function paint(value) {
+        labels.forEach(function (label) {
+          var n = Number(label.getAttribute('for').replace('star', ''));
+          label.classList.toggle('is-active', n <= value && value > 0);
+        });
+        group.setAttribute('aria-label', value ? value + ' out of 5 stars selected' : 'Choose a rating from 1 to 5 stars');
+      }
+
+      radios.forEach(function (radio) {
+        radio.addEventListener('change', function () {
+          if (radio.checked) paint(Number(radio.value));
+        });
+        radio.addEventListener('click', function () {
+          window.setTimeout(function () {
+            var selected = radios.find(function (r) { return r.checked; });
+            paint(selected ? Number(selected.value) : 0);
+          }, 0);
+        });
+      });
+
+      var initial = radios.find(function (radio) { return radio.checked; });
+      paint(initial ? Number(initial.value) : 0);
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupDriveHubRating);
+  } else {
+    setupDriveHubRating();
+  }
+})();
+</script>
+
 </body></html>
