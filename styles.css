@@ -1067,3 +1067,27 @@
 .ride-page .summary-dates strong{display:block;overflow-wrap:anywhere;line-height:1.4;}
 @media(max-width:760px){.ride-page .summary-empty-state{padding:20px}.ride-page .summary-empty-state strong{font-size:17px}.ride-page .summary-car-art img{padding:8px 12px}}
 .ride-page .summary-car-art [hidden]{display:none!important;}
+
+
+/* Find Your Ride — final summary image framing */
+.ride-page .summary-car-art{
+  height:218px;
+  margin:10px -8px 16px;
+  background:radial-gradient(ellipse at 50% 60%,#4a3437 0%,#2a2225 62%,#211b1e 100%);
+}
+.ride-page .summary-car-art img{
+  object-fit:contain;
+  object-position:center center;
+  padding:2px 7px;
+  background:transparent;
+  transform:none;
+}
+.ride-page .summary-car-art:hover img{transform:scale(1.015)}
+.ride-page .summary-car-art:after{
+  background:linear-gradient(180deg,#15121430 0%,transparent 22%,transparent 76%,#15121465 100%);
+}
+.ride-page .ride-step-title p:empty{display:none}
+@media(max-width:760px){
+  .ride-page .summary-car-art{height:180px;margin:8px -6px 14px}
+  .ride-page .summary-car-art img{padding:3px 8px}
+}
