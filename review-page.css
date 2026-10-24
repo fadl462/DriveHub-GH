@@ -230,3 +230,44 @@ body{min-width:0}
   .review-field-full,.review-divider,.review-submit{grid-column:1}
   .review-rating label{font-size:32px}
 }
+
+
+/* Definitive star-rating state fix: highlight only the selected rating and lower values. */
+.review-rating{
+  display:inline-flex!important;
+  flex-direction:row!important;
+  direction:ltr!important;
+  gap:5px!important;
+}
+.review-rating label{
+  color:#ddd2ce!important;
+}
+.review-rating input:checked + label{
+  color:#c51d35!important;
+}
+/* 2 stars: highlight 1 and 2; 3 stars: highlight 1–3; etc. */
+.review-rating input:checked + label,
+.review-rating input:checked + label ~ label{
+  color:#c51d35!important;
+}
+/* Prevent general page rules from painting every star red. */
+.review-rating input:checked ~ label{
+  color:#ddd2ce!important;
+}
+.review-rating:has(#star1:checked) label[for="star1"],
+.review-rating:has(#star2:checked) label[for="star1"],
+.review-rating:has(#star2:checked) label[for="star2"],
+.review-rating:has(#star3:checked) label[for="star1"],
+.review-rating:has(#star3:checked) label[for="star2"],
+.review-rating:has(#star3:checked) label[for="star3"],
+.review-rating:has(#star4:checked) label[for="star1"],
+.review-rating:has(#star4:checked) label[for="star2"],
+.review-rating:has(#star4:checked) label[for="star3"],
+.review-rating:has(#star4:checked) label[for="star4"],
+.review-rating:has(#star5:checked) label[for="star1"],
+.review-rating:has(#star5:checked) label[for="star2"],
+.review-rating:has(#star5:checked) label[for="star3"],
+.review-rating:has(#star5:checked) label[for="star4"],
+.review-rating:has(#star5:checked) label[for="star5"]{
+  color:#c51d35!important;
+}
