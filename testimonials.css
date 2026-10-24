@@ -187,3 +187,43 @@
     height: auto;
   }
 }
+
+
+/* Restore the prominent red review CTA and its directional arrow. */
+.testimonials-cta .button,
+.testimonials-cta a.button,
+.testimonials-cta .button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 42px;
+  padding: 0 20px;
+  border: 1px solid #be1e2d;
+  border-radius: 999px;
+  background: #be1e2d;
+  color: #fff;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 5px 12px rgba(190, 30, 45, 0.14);
+  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.testimonials-cta .button:hover,
+.testimonials-cta a.button:hover,
+.testimonials-cta .button-primary:hover {
+  background: #a81725;
+  border-color: #a81725;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 7px 16px rgba(190, 30, 45, 0.2);
+}
+.testimonials-cta .button span,
+.testimonials-cta a.button span {
+  display: inline-block;
+  margin-left: 0;
+  color: currentColor;
+  font-size: 15px;
+  line-height: 1;
+}
