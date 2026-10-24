@@ -155,10 +155,10 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   const mentioned=fleetModels.filter(([name])=>String(text).toLowerCase().includes(name.toLowerCase()));
   if(mentioned.length){
    const actions=document.createElement('div');actions.className='concierge-car-actions';
-   mentioned.forEach(([name,slug])=>{const a=document.createElement('a');a.href='/find-your-ride?vehicle='+encodeURIComponent(name);a.textContent='Choose '+name+' & enquire ↗';a.setAttribute('aria-label','Choose '+name+' and open a preselected rental enquiry');actions.appendChild(a);});
+   mentioned.forEach(([name,slug])=>{const a=document.createElement('a');a.href='/find-your-ride?vehicle='+encodeURIComponent(name);a.textContent='Choose '+name+' & enquire ';a.setAttribute('aria-label','Choose '+name+' and open a preselected rental enquiry');actions.appendChild(a);});
    bubble.appendChild(actions);
   }
-  if(withWhatsApp){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='https://wa.me/'+phone+'?text='+encodeURIComponent('Hello DriveHub GH, I need help with a self-drive rental enquiry.');a.target='_blank';a.rel='noopener';a.textContent='Continue with the DriveHub team on WhatsApp ↗';p.appendChild(a);bubble.appendChild(p);}
+  if(withWhatsApp){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='https://wa.me/'+phone+'?text='+encodeURIComponent('Hello DriveHub GH, I need help with a self-drive rental enquiry.');a.target='_blank';a.rel='noopener';a.textContent='Continue with the DriveHub team on WhatsApp ';p.appendChild(a);bubble.appendChild(p);}
   messages.scrollTop=messages.scrollHeight;
  }
  function setBusy(on){busy=on;input.disabled=on;form.querySelector('button[type="submit"]').disabled=on;form.querySelector('button[type="submit"] span').textContent=on?'Thinking…':'Send';form.setAttribute('aria-busy',String(on));}
