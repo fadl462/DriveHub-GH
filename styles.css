@@ -1069,25 +1069,22 @@
 .ride-page .summary-car-art [hidden]{display:none!important;}
 
 
-/* Find Your Ride — final summary image framing */
-.ride-page .summary-car-art{
-  height:218px;
-  margin:10px -8px 16px;
-  background:radial-gradient(ellipse at 50% 60%,#4a3437 0%,#2a2225 62%,#211b1e 100%);
+/* Find Your Ride — compact logo in the AI Partner helper bar */
+.ride-bottom-note .bottom-note-mark{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 38px;
+  width:38px;
+  height:30px;
+  overflow:hidden;
 }
-.ride-page .summary-car-art img{
+.ride-bottom-note .bottom-note-mark img{
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:38px;
+  max-height:30px;
   object-fit:contain;
-  object-position:center center;
-  padding:2px 7px;
-  background:transparent;
-  transform:none;
-}
-.ride-page .summary-car-art:hover img{transform:scale(1.015)}
-.ride-page .summary-car-art:after{
-  background:linear-gradient(180deg,#15121430 0%,transparent 22%,transparent 76%,#15121465 100%);
-}
-.ride-page .ride-step-title p:empty{display:none}
-@media(max-width:760px){
-  .ride-page .summary-car-art{height:180px;margin:8px -6px 14px}
-  .ride-page .summary-car-art img{padding:3px 8px}
+  object-position:center;
 }
