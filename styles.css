@@ -1038,3 +1038,16 @@
   .concierge-page .concierge-chat{background:rgba(255,255,255,.94);}
 }
 @media(prefers-reduced-motion:reduce){.concierge-page .concierge-topic{transition:none;}}
+
+/* AI Partner: keep visitor messages readable on the translucent light bubble. */
+.concierge-page .user-message .message-bubble {
+  color: #292323 !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-color: rgba(220, 207, 198, 0.95) !important;
+  text-shadow: none !important;
+}
+.concierge-page .user-message .message-bubble p,
+.concierge-page .user-message .message-bubble span,
+.concierge-page .user-message .message-bubble strong {
+  color: #292323 !important;
+}
