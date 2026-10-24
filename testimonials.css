@@ -189,41 +189,54 @@
 }
 
 
-/* Restore the prominent red review CTA and its directional arrow. */
-.testimonials-cta .button,
-.testimonials-cta a.button,
-.testimonials-cta .button-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  min-height: 42px;
-  padding: 0 20px;
-  border: 1px solid #be1e2d;
-  border-radius: 999px;
-  background: #be1e2d;
-  color: #fff;
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1;
-  box-shadow: 0 5px 12px rgba(190, 30, 45, 0.14);
-  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+/* Premium testimonial motion — reveal on scroll, without changing the layout. */
+.testimonials-section .section-heading,
+.testimonials-section .testimonials-cta {
+  transition: opacity .65s ease, transform .65s cubic-bezier(.2,.7,.2,1);
 }
-.testimonials-cta .button:hover,
-.testimonials-cta a.button:hover,
-.testimonials-cta .button-primary:hover {
-  background: #a81725;
-  border-color: #a81725;
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 7px 16px rgba(190, 30, 45, 0.2);
+.testimonials-section.motion-ready:not(.motion-visible) .section-heading,
+.testimonials-section.motion-ready:not(.motion-visible) .testimonials-cta {
+  opacity: 0;
+  transform: translateY(12px);
 }
-.testimonials-cta .button span,
-.testimonials-cta a.button span {
-  display: inline-block;
-  margin-left: 0;
-  color: currentColor;
-  font-size: 15px;
-  line-height: 1;
+.testimonials-section .testimonial-card {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .65s ease, transform .65s cubic-bezier(.2,.7,.2,1),
+              box-shadow .24s ease, border-color .24s ease;
+  will-change: opacity, transform;
+}
+.testimonials-section.motion-ready:not(.motion-visible) .testimonial-card {
+  opacity: 0;
+  transform: translateY(18px);
+}
+.testimonials-section.motion-visible .testimonial-card:nth-child(3n + 2) { transition-delay: 90ms; }
+.testimonials-section.motion-visible .testimonial-card:nth-child(3n) { transition-delay: 170ms; }
+.testimonials-section .testimonial-quote-mark {
+  transition: background-color .25s ease, color .25s ease, transform .25s ease;
+}
+.testimonials-section .testimonial-card:hover .testimonial-quote-mark {
+  background-color: #c51d35;
+  color: #fff;
+  transform: scale(1.05);
+}
+.testimonials-cta .button {
+  transition: background-color .22s ease, color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+.testimonials-cta .button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(197,29,53,.16);
+}
+@media (prefers-reduced-motion: reduce) {
+  .testimonials-section .section-heading,
+  .testimonials-section .testimonials-cta,
+  .testimonials-section .testimonial-card,
+  .testimonials-section .testimonial-quote-mark,
+  .testimonials-cta .button {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    will-change: auto !important;
+  }
 }

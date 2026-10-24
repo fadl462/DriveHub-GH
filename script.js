@@ -155,10 +155,10 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   const mentioned=fleetModels.filter(([name])=>String(text).toLowerCase().includes(name.toLowerCase()));
   if(mentioned.length){
    const actions=document.createElement('div');actions.className='concierge-car-actions';
-   mentioned.forEach(([name,slug])=>{const a=document.createElement('a');a.href='/find-your-ride?vehicle='+encodeURIComponent(name);a.textContent='Choose '+name+' & enquire ';a.setAttribute('aria-label','Choose '+name+' and open a preselected rental enquiry');actions.appendChild(a);});
+   mentioned.forEach(([name,slug])=>{const a=document.createElement('a');a.href='/find-your-ride?vehicle='+encodeURIComponent(name);a.textContent='Choose '+name+' & enquire ↗';a.setAttribute('aria-label','Choose '+name+' and open a preselected rental enquiry');actions.appendChild(a);});
    bubble.appendChild(actions);
   }
-  if(withWhatsApp){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='https://wa.me/'+phone+'?text='+encodeURIComponent('Hello DriveHub GH, I need help with a self-drive rental enquiry.');a.target='_blank';a.rel='noopener';a.textContent='Continue with the DriveHub team on WhatsApp ';p.appendChild(a);bubble.appendChild(p);}
+  if(withWhatsApp){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='https://wa.me/'+phone+'?text='+encodeURIComponent('Hello DriveHub GH, I need help with a self-drive rental enquiry.');a.target='_blank';a.rel='noopener';a.textContent='Continue with the DriveHub team on WhatsApp ↗';p.appendChild(a);bubble.appendChild(p);}
   messages.scrollTop=messages.scrollHeight;
  }
  function setBusy(on){busy=on;input.disabled=on;form.querySelector('button[type="submit"]').disabled=on;form.querySelector('button[type="submit"] span').textContent=on?'Thinking…':'Send';form.setAttribute('aria-busy',String(on));}
@@ -187,4 +187,22 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
  reset?.addEventListener('click',()=>{if(busy)return;messages.innerHTML='';history=[];const opening=setOpening();addAssistant(opening.message+'\n\n'+opening.question);addSuggestions(['Help me choose a car','Compare two SUVs','What do I need to rent?']);input.focus();});
  const pickup=document.getElementById('tripPickup'),ret=document.getElementById('tripReturn');const localDate=d=>{const x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10);};if(pickup&&ret){pickup.min=localDate(new Date());ret.min=localDate(new Date());pickup.addEventListener('change',()=>{ret.min=pickup.value||localDate(new Date());if(ret.value&&ret.value<ret.min)ret.value=ret.min;});}
  document.getElementById('conciergeTripForm')?.addEventListener('submit',e=>{e.preventDefault();if(!pickup.value||!ret.value)return;if(ret.value<pickup.value){ret.setCustomValidity('Return date must be on or after pickup date.');ret.reportValidity();return;}ret.setCustomValidity('');const days=Math.round((new Date(ret.value+'T12:00:00')-new Date(pickup.value+'T12:00:00'))/86400000)+1;const vehicle=document.getElementById('tripVehicle').value;const purpose=document.getElementById('tripPurpose').value;const region=document.getElementById('tripRegion')?.value||'Not specified';const exactLocation=document.getElementById('tripLocation')?.value||'Not specified';const msg=`Hello DriveHub GH, please help me plan a self-drive rental.\n\nPreferred vehicle: ${vehicle}\nDestination region: ${region}\nTown / exact destination: ${exactLocation}\nPickup date: ${pickup.value}\nReturn date: ${ret.value}\nRental duration: ${days} calendar days (pickup and return dates both counted)\nMain use: ${purpose}\n\nPlease confirm availability, total price, documents and pickup arrangements before I commit.`;window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener');});
+})();
+
+
+/* Reveal DriveHub testimonial sections as they enter the viewport. */
+(() => {
+  const sections = document.querySelectorAll('.testimonials-section');
+  if (!sections.length) return;
+  if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  sections.forEach(section => section.classList.add('motion-ready'));
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('motion-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -35px 0px' });
+  sections.forEach(section => observer.observe(section));
 })();
