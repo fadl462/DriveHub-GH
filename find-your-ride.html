@@ -18,7 +18,7 @@
         <section class="ride-step-block">
           <div class="ride-step-title"><span>01</span><div><h3>What are you driving?</h3><p>Choose a style to start.</p></div></div>
           <div class="ride-category-grid ride-fleet-grid" role="group" aria-label="Choose one of the DriveHub GH fleet vehicles">
-            <button type="button" class="ride-category is-selected" data-ride-vehicle="Toyota Prado" aria-pressed="true">
+            <button type="button" class="ride-category" data-ride-vehicle="Toyota Prado" aria-pressed="false">
               <span class="category-image" style="background-image:url('assets/fleet/toyota-prado.webp')" role="img" aria-label="Toyota Prado fleet vehicle"></span>
               <span class="category-copy"><strong>Toyota Prado</strong><small>Room to go further</small></span><span class="category-check">✓</span>
             </button>
@@ -43,7 +43,7 @@
               <span class="category-copy"><strong>Toyota Land Cruiser V8</strong><small>Space with presence</small></span><span class="category-check">✓</span>
             </button>
           </div>
-          <input type="hidden" id="vehicle" value="Toyota Prado">
+          <input type="hidden" id="vehicle" value="">
         </section>
         <section class="ride-step-block ride-dates-block">
           <div class="ride-step-title"><span>02</span><div><h3>When are we going?</h3><p>Your dates can be changed any time.</p></div></div>
@@ -72,8 +72,8 @@
       </div>
       <aside class="ride-summary" aria-label="Your journey summary">
         <div class="summary-topline"><span>YOUR JOURNEY</span><span class="summary-live"><i></i> YOUR PLAN</span></div>
-        <div class="summary-car-art" aria-label="Preview of your selected drive"><img id="summaryVehicleImage" src="assets/fleet/toyota-prado.webp" alt="Toyota Prado from the DriveHub GH fleet"><span class="summary-visual-kicker">YOUR DRIVE, IN FOCUS</span><span class="summary-art-label" id="summaryPurposeLabel">MADE FOR CITY DAYS</span></div>
-        <div class="summary-selected"><span class="summary-caption">YOUR RIDE</span><strong id="summaryVehicle">Surprise me</strong><span id="summaryVehicleNote">We’ll help find your fit.</span></div>
+        <div class="summary-car-art is-empty" id="summaryCarArt" aria-label="Preview of your selected drive"><img id="summaryVehicleImage" src="assets/fleet/toyota-prado.webp" alt="" hidden><span class="summary-empty-state" id="summaryEmptyState"><span class="summary-empty-mark">DH.</span><strong>Your next drive starts here.</strong><small>Select a vehicle to see it in your journey summary.</small></span><span class="summary-visual-kicker" hidden>YOUR DRIVE, IN FOCUS</span><span class="summary-art-label" id="summaryPurposeLabel" hidden>MADE FOR CITY DAYS</span></div>
+        <div class="summary-selected"><span class="summary-caption">YOUR RIDE</span><strong id="summaryVehicle">Choose your ride</strong><span id="summaryVehicleNote">We’ll help find your fit.</span></div>
         <div class="summary-divider"></div>
         <div class="summary-dates"><div><span class="summary-caption">PICKUP</span><strong id="summaryPickup">Choose a date</strong></div><div><span class="summary-caption">RETURN</span><strong id="summaryReturn">Choose a date</strong></div></div>
         <div class="summary-pickup-area"><span class="summary-caption">DESTINATION AREA</span><strong id="summaryPickupArea">Choose a destination region and town</strong></div>
