@@ -176,3 +176,24 @@
 @media(prefers-reduced-motion:reduce){
   .review-field input,.review-field select,.review-field textarea,.review-upload,.review-submit,.review-rating label{transition:none}
 }
+
+
+/* Structural repair: no progress strip on the review page; rating is 1-to-5 left-to-right. */
+.review-page{overflow-x:clip}
+.review-wrap{width:100%;min-width:0}
+.review-layout{width:100%;min-width:0;grid-template-columns:minmax(0,1.45fr) minmax(270px,.75fr);align-items:stretch}
+.review-form-card,.review-aside{min-width:0}
+.review-rating{flex-direction:row-reverse!important;justify-content:flex-end!important;gap:5px}
+.review-rating input:checked~label{color:#c51d35}
+.review-rating label{font-size:32px;line-height:1;cursor:pointer}
+@media(max-width:900px){
+  .review-layout{grid-template-columns:minmax(0,1fr)}
+  .review-aside{order:2}
+}
+@media(max-width:600px){
+  .review-page{padding-left:14px;padding-right:14px}
+  .review-form-card,.review-aside{width:100%;box-sizing:border-box}
+  .review-form{grid-template-columns:minmax(0,1fr)}
+  .review-field-full,.review-divider,.review-submit{grid-column:1}
+  .review-upload input[type=file]{width:100%;max-width:100%;box-sizing:border-box}
+}
