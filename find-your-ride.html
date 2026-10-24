@@ -54,10 +54,10 @@
           <div class="ride-duration" aria-live="polite"><span class="duration-dot"></span><span id="durationText">Choose your dates to see your rental duration.</span></div>
         </section>
         <section class="ride-step-block ride-details-block">
-          <div class="ride-step-title"><span>03</span><div><h3>Make it personal.</h3><p>Where are you heading?</p></div></div>
+          <div class="ride-step-title"><span>03</span><div><h3>Make it personal.</h3><p>Where do you plan to drive?</p></div></div>
           <div class="ride-location-grid">
-            <label class="ride-field"><span>Region</span><span class="ride-input"><span class="field-symbol">⌖</span><select id="pickupRegion" required><option value="" selected disabled>Choose a region</option><option value="Ahafo">Ahafo</option><option value="Ashanti">Ashanti</option><option value="Bono">Bono</option><option value="Bono East">Bono East</option><option value="Central">Central</option><option value="Eastern">Eastern</option><option value="Greater Accra">Greater Accra</option><option value="North East">North East</option><option value="Northern">Northern</option><option value="Oti">Oti</option><option value="Savannah">Savannah</option><option value="Upper East">Upper East</option><option value="Upper West">Upper West</option><option value="Volta">Volta</option><option value="Western">Western</option><option value="Western North">Western North</option></select></span></label>
-            <label class="ride-field ride-location-field"><span>Town / exact pickup location</span><span class="ride-input"><span class="field-symbol">⌖</span><input type="text" id="pickup" value="" placeholder="Town, village, landmark or address" required maxlength="120" autocomplete="street-address"></span></label>
+            <label class="ride-field"><span>Destination region</span><span class="ride-input"><span class="field-symbol">⌖</span><select id="pickupRegion" required><option value="" selected disabled>Choose a region</option><option value="Ahafo">Ahafo</option><option value="Ashanti">Ashanti</option><option value="Bono">Bono</option><option value="Bono East">Bono East</option><option value="Central">Central</option><option value="Eastern">Eastern</option><option value="Greater Accra">Greater Accra</option><option value="North East">North East</option><option value="Northern">Northern</option><option value="Oti">Oti</option><option value="Savannah">Savannah</option><option value="Upper East">Upper East</option><option value="Upper West">Upper West</option><option value="Volta">Volta</option><option value="Western">Western</option><option value="Western North">Western North</option></select></span></label>
+            <label class="ride-field ride-location-field"><span>Town / exact destination</span><span class="ride-input"><span class="field-symbol">⌖</span><input type="text" id="pickup" value="" placeholder="Town, village, landmark or destination address" required maxlength="120" autocomplete="street-address"></span></label>
           </div>
           <div class="ride-purpose-label">What’s the occasion?</div>
           <div class="ride-purpose-grid" role="group" aria-label="Choose your trip purpose">
@@ -76,7 +76,7 @@
         <div class="summary-selected"><span class="summary-caption">YOUR RIDE</span><strong id="summaryVehicle">Surprise me</strong><span id="summaryVehicleNote">We’ll help find your fit.</span></div>
         <div class="summary-divider"></div>
         <div class="summary-dates"><div><span class="summary-caption">PICKUP</span><strong id="summaryPickup">Choose a date</strong></div><div><span class="summary-caption">RETURN</span><strong id="summaryReturn">Choose a date</strong></div></div>
-        <div class="summary-pickup-area"><span class="summary-caption">PICKUP AREA</span><strong id="summaryPickupArea">Choose a region and town</strong></div>
+        <div class="summary-pickup-area"><span class="summary-caption">DESTINATION AREA</span><strong id="summaryPickupArea">Choose a destination region and town</strong></div>
         <div class="summary-duration"><span>Rental duration</span><strong id="summaryDays">— days</strong></div>
         <button class="ride-submit" type="submit"><span>Prepare my enquiry</span><span class="submit-arrow">↗</span></button>
         <p class="summary-note">No payment. No pressure. Just a great start.</p>
