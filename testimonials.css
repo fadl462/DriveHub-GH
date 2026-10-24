@@ -41,3 +41,12 @@
 .testimonial-review-link span{font-size:16px}
 .testimonial-actions>span{color:#827879;font-size:11px;line-height:1.6}
 @media(max-width:580px){.testimonial-actions{align-items:flex-start;flex-direction:column;gap:12px;margin-top:19px}}
+
+
+/* Homepage CTA below the review cards */
+.home-review-cta{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-top:25px;padding:22px 24px;border:1px solid rgba(48,34,34,.09);border-radius:16px;background:rgba(255,255,255,.64)}
+.home-review-cta>div{min-width:0}
+.home-review-kicker{font-size:8px;font-weight:800;letter-spacing:.16em;color:#b51c32}
+.home-review-cta p{margin:7px 0 0;color:#514849;font-size:13px;line-height:1.6}
+.home-review-cta .testimonial-review-link{flex:0 0 auto}
+@media(max-width:580px){.home-review-cta{align-items:flex-start;flex-direction:column;padding:19px}.home-review-cta .testimonial-review-link{max-width:100%}}
