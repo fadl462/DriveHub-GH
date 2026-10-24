@@ -971,3 +971,70 @@
       url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=82') center / cover no-repeat;
   }
 }
+
+/* AI Partner visual refinement v2 — richer cinematic backdrop, like the approved concept. */
+.concierge-page .concierge-workspace{
+  position:relative;
+  isolation:isolate;
+  background-color:#e9d9cd;
+  background-image:
+    linear-gradient(90deg,rgba(250,247,243,.78) 0%,rgba(250,247,243,.55) 39%,rgba(250,247,243,.14) 72%,rgba(250,247,243,.24) 100%),
+    linear-gradient(180deg,rgba(250,247,243,.12) 0%,rgba(250,247,243,.08) 48%,rgba(245,242,237,.20) 100%),
+    url('assets/ai-partner-bg.webp');
+  background-size:cover;
+  background-position:center 47%;
+  background-repeat:no-repeat;
+  background-attachment:scroll;
+  padding-top:42px;
+  padding-bottom:76px;
+}
+.concierge-page .concierge-workspace:before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse at 14% 10%,rgba(255,255,255,.28),transparent 34%),
+    linear-gradient(180deg,rgba(255,250,246,.04) 0%,rgba(245,242,237,.12) 100%);
+}
+.concierge-page .partner-intro h2{ text-shadow:0 1px 0 rgba(255,255,255,.18); }
+.concierge-page .partner-greeting-note{color:#51494a;}
+.concierge-page .concierge-kicker{color:#574d4f;}
+.concierge-page .concierge-live{background:rgba(255,255,255,.66);border:1px solid rgba(255,255,255,.74);border-radius:999px;padding:10px 13px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(63,42,35,.06);}
+.concierge-page .concierge-sidebar{
+  background:rgba(250,247,243,.76);
+  border-color:rgba(255,255,255,.74);
+  backdrop-filter:blur(18px) saturate(125%);
+  -webkit-backdrop-filter:blur(18px) saturate(125%);
+  box-shadow:0 20px 60px rgba(55,38,31,.10),inset 0 1px 0 rgba(255,255,255,.8);
+}
+.concierge-page .concierge-topic{transition:background .22s ease,transform .22s ease,border-color .22s ease,box-shadow .22s ease;}
+.concierge-page .concierge-topic.is-active{background:rgba(255,255,255,.94);border-color:rgba(255,255,255,.98);box-shadow:0 10px 26px rgba(51,35,31,.09),inset 3px 0 var(--red);}
+.concierge-page .concierge-topic:hover{background:rgba(255,255,255,.94);box-shadow:0 10px 24px rgba(51,35,31,.07);}
+.concierge-page .concierge-chat{
+  background:rgba(255,255,255,.88);
+  border-color:rgba(255,255,255,.88);
+  backdrop-filter:blur(22px) saturate(125%);
+  -webkit-backdrop-filter:blur(22px) saturate(125%);
+  box-shadow:0 26px 76px rgba(48,31,28,.15),0 2px 6px rgba(48,31,28,.04),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.concierge-page .chat-topbar{background:rgba(255,255,255,.75);border-bottom-color:rgba(220,207,198,.72);}
+.concierge-page .chat-messages{background:linear-gradient(180deg,rgba(255,255,255,.58),rgba(255,253,250,.72));}
+.concierge-page .message-bubble{background:rgba(247,243,238,.90);border-color:rgba(232,221,212,.85);}
+.concierge-page .chat-composer{background:rgba(255,255,255,.94);box-shadow:0 10px 30px rgba(48,31,28,.08);}
+@media(max-width:680px){
+  .concierge-page .concierge-workspace{
+    padding-top:32px;padding-bottom:52px;
+    background-image:
+      linear-gradient(180deg,rgba(250,247,243,.70) 0%,rgba(250,247,243,.64) 42%,rgba(245,242,237,.83) 100%),
+      url('assets/ai-partner-bg.webp');
+    background-size:auto,auto 640px;
+    background-position:center top,62% top;
+    background-repeat:no-repeat;
+  }
+  .concierge-page .concierge-live{padding:7px 9px;font-size:7px;}
+  .concierge-page .concierge-sidebar{background:rgba(250,247,243,.88);}
+  .concierge-page .concierge-chat{background:rgba(255,255,255,.94);}
+}
+@media(prefers-reduced-motion:reduce){.concierge-page .concierge-topic{transition:none;}}
