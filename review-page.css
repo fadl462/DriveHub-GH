@@ -178,22 +178,55 @@
 }
 
 
-/* Structural repair: no progress strip on the review page; rating is 1-to-5 left-to-right. */
-.review-page{overflow-x:clip}
-.review-wrap{width:100%;min-width:0}
-.review-layout{width:100%;min-width:0;grid-template-columns:minmax(0,1.45fr) minmax(270px,.75fr);align-items:stretch}
-.review-form-card,.review-aside{min-width:0}
-.review-rating{flex-direction:row-reverse!important;justify-content:flex-end!important;gap:5px}
-.review-rating input:checked~label{color:#c51d35}
-.review-rating label{font-size:32px;line-height:1;cursor:pointer}
+/* Final structural fixes: keep the review page within the viewport. */
+html, body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
+*,*::before,*::after{box-sizing:border-box}
+body{min-width:0}
+.review-page{display:block;width:100%;max-width:100%;min-width:0;overflow-x:clip}
+.review-wrap{width:100%;max-width:1240px;min-width:0;margin-inline:auto}
+.review-layout{width:100%;max-width:100%;min-width:0;grid-template-columns:minmax(0,1.45fr) minmax(0,.75fr)}
+.review-form-card,.review-aside{min-width:0;max-width:100%}
+.review-form{width:100%;min-width:0;grid-template-columns:repeat(2,minmax(0,1fr))}
+.review-field,.review-story-field,.review-upload{min-width:0;max-width:100%}
+.review-field input:not([type=checkbox]),.review-field select,.review-field textarea{min-width:0;max-width:100%}
+
+/* Accessible five-star control: click any star from 1 through 5. */
+.review-rating{
+  position:relative;display:flex!important;flex-direction:row!important;
+  justify-content:flex-start!important;align-items:center;gap:5px;
+  width:max-content;max-width:100%;direction:ltr;
+}
+.review-rating input{
+  position:absolute!important;width:1px!important;height:1px!important;
+  padding:0!important;margin:-1px!important;overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
+  opacity:0!important;
+}
+.review-rating label{
+  display:inline-block;position:relative;cursor:pointer;
+  font-size:34px;line-height:1;color:#ddd2ce;
+  user-select:none;transition:color .15s ease,transform .15s ease;
+}
+.review-rating label:hover{transform:translateY(-2px)}
+.review-rating:has(#star1:checked) label[for="star1"],
+.review-rating:has(#star2:checked) label[for="star1"],
+.review-rating:has(#star2:checked) label[for="star2"],
+.review-rating:has(#star3:checked) label[for="star1"],
+.review-rating:has(#star3:checked) label[for="star2"],
+.review-rating:has(#star3:checked) label[for="star3"],
+.review-rating:has(#star4:checked) label[for="star1"],
+.review-rating:has(#star4:checked) label[for="star2"],
+.review-rating:has(#star4:checked) label[for="star3"],
+.review-rating:has(#star4:checked) label[for="star4"],
+.review-rating:has(#star5:checked) label{color:#c51d35}
+.review-rating input:focus-visible+label{outline:2px solid #c51d35;outline-offset:3px;border-radius:4px}
 @media(max-width:900px){
   .review-layout{grid-template-columns:minmax(0,1fr)}
-  .review-aside{order:2}
+  .review-form-card,.review-aside{width:100%}
 }
 @media(max-width:600px){
   .review-page{padding-left:14px;padding-right:14px}
-  .review-form-card,.review-aside{width:100%;box-sizing:border-box}
   .review-form{grid-template-columns:minmax(0,1fr)}
   .review-field-full,.review-divider,.review-submit{grid-column:1}
-  .review-upload input[type=file]{width:100%;max-width:100%;box-sizing:border-box}
+  .review-rating label{font-size:32px}
 }
