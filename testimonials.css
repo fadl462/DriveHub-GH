@@ -100,3 +100,30 @@
  .testimonials-cta{align-items:flex-start;flex-direction:column;padding:19px}
 }
 @media(prefers-reduced-motion:reduce){.testimonials-section .testimonial-card{transition:none}.testimonials-section .testimonial-card:hover{transform:none}}
+
+
+/* Compact premium card proportions — scoped to testimonials only */
+.testimonials-section{padding-top:54px;padding-bottom:58px}
+.testimonials-section .section-heading{margin-bottom:24px}
+.testimonials-section .section-heading h2{font-size:clamp(34px,3.8vw,52px);line-height:1.02}
+.testimonials-section .testimonials-grid{gap:16px}
+.testimonials-section .testimonial-card{min-height:210px;padding:21px 22px 19px;border-radius:16px}
+.testimonials-section blockquote{font-size:13px;line-height:1.7;margin:15px 0 20px}
+.testimonials-section .testimonial-quote-mark{width:31px;height:31px;flex-basis:31px;font-size:25px;padding-top:6px}
+.testimonials-section .testimonial-stars{margin-top:13px;font-size:10px}
+.testimonials-section .testimonial-author{padding-top:11px}
+.testimonials-section .testimonial-author strong{font-size:11px}
+.testimonials-section .testimonial-author span{font-size:9px}
+.testimonials-cta{margin-top:20px;padding:17px 21px;border-radius:14px}
+.fleet-verified-reviews{padding-top:50px;padding-bottom:54px}
+.fleet-verified-reviews .section-heading h2{font-size:clamp(32px,3.5vw,45px)}
+.fleet-verified-reviews .testimonials-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-width:1280px}
+.fleet-verified-reviews .testimonial-card{min-height:205px}
+@media(max-width:850px){
+ .fleet-verified-reviews .testimonials-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:580px){
+ .testimonials-section{padding:42px 18px 40px}
+ .testimonials-section .testimonial-card,.fleet-verified-reviews .testimonial-card{min-height:0;padding:20px}
+ .fleet-verified-reviews .testimonials-grid{grid-template-columns:1fr}
+}
