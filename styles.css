@@ -1069,22 +1069,40 @@
 .ride-page .summary-car-art [hidden]{display:none!important;}
 
 
-/* Find Your Ride — compact logo in the AI Partner helper bar */
-.ride-bottom-note .bottom-note-mark{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex:0 0 38px;
-  width:38px;
-  height:30px;
-  overflow:hidden;
+/* Verified customer testimonials — responsive premium cards */
+.testimonials-section.verified-reviews{
+  width:min(1180px, calc(100% - 48px));
+  margin:0 auto;
+  padding:76px 0 70px;
 }
-.ride-bottom-note .bottom-note-mark img{
-  display:block;
-  width:100%;
-  height:100%;
-  max-width:38px;
-  max-height:30px;
-  object-fit:contain;
-  object-position:center;
+.verified-reviews .section-heading{display:flex;justify-content:space-between;align-items:end;margin-bottom:28px}
+.verified-reviews .section-heading h2{margin:10px 0 0;font-size:clamp(2.2rem,4vw,3.7rem);line-height:.98;letter-spacing:-.055em}
+.verified-reviews .section-heading h2 em{font-family:Georgia,serif;font-weight:400;color:#c71932}
+.verified-reviews .testimonials-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:stretch}
+.verified-reviews .testimonial-card{
+  position:relative;display:flex;flex-direction:column;min-width:0;padding:30px 30px 26px;
+  background:linear-gradient(145deg,#fff 0%,#fffdfb 100%);border:1px solid #e9e2dd;border-radius:20px;
+  box-shadow:0 14px 36px rgba(38,24,20,.045);overflow:hidden;
+}
+.verified-reviews .testimonial-card-featured{border-color:#f0c7cc;background:linear-gradient(145deg,#fff 0%,#fff9f8 100%)}
+.verified-reviews .testimonial-quote-mark{font-family:Georgia,serif;font-size:42px;line-height:.8;color:#c71932;margin-bottom:16px}
+.verified-reviews .testimonial-stars{font-size:15px;letter-spacing:3px;color:#c71932;margin-bottom:16px}
+.verified-reviews blockquote{margin:0 0 28px;font-size:clamp(1rem,1.35vw,1.13rem);line-height:1.75;color:#242124;flex:1}
+.verified-reviews .testimonial-author{border-top:1px solid #eee6e1;padding-top:18px;display:flex;flex-direction:column;gap:4px}
+.verified-reviews .testimonial-author strong{font-size:.94rem;color:#201d1e}
+.verified-reviews .testimonial-author span{font-size:.82rem;color:#8b7e79}
+.verified-reviews .testimonials-cta{
+  margin-top:26px;padding:24px 28px;border:1px solid #e8dfd9;border-radius:18px;
+  background:linear-gradient(105deg,rgba(255,255,255,.92),rgba(255,250,248,.86));
+  display:flex;justify-content:space-between;align-items:center;gap:22px
+}
+.verified-reviews .testimonials-cta p{margin:0}
+.verified-reviews .testimonials-cta .eyebrow{margin-bottom:8px}
+.verified-reviews .testimonials-cta .button{flex-shrink:0}
+.fleet-verified-reviews{padding-top:68px;padding-bottom:72px}
+@media(max-width:700px){
+ .testimonials-section.verified-reviews{width:calc(100% - 32px);padding:52px 0}
+ .verified-reviews .testimonials-grid{grid-template-columns:1fr;gap:14px}
+ .verified-reviews .testimonial-card{padding:24px 22px;border-radius:16px}
+ .verified-reviews .testimonials-cta{align-items:flex-start;flex-direction:column;padding:22px}
 }
