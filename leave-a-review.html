@@ -1,8 +1,81 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#191719"><meta name="description" content="Share your DriveHub GH rental experience and help future guests choose with confidence."><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="testimonials.css"><title>Leave a Review | DriveHub GH</title></head>
-<body><div class="announcement"><span class="pulse"></span> PREMIUM SELF-DRIVE RENTALS <span class="announcement-right">A better way to move.</span></div><header class="header" id="top"><a class="brand" href="index.html" aria-label="DriveHub GH home"><img src="assets/drivehub-logo.png" alt="DriveHub GH"></a><nav class="nav" aria-label="Main navigation"><a href="fleet.html">Our fleet</a><a href="experience.html">The experience</a><a href="how-it-works.html">How it works</a><a href="faqs.html">AI Partner</a><a class="button button-outline" href="find-your-ride.html">Find your ride <span>↗</span></a></nav></header>
-<main class="review-page"><div class="review-wrap"><div class="review-intro"><div class="eyebrow"><span class="eyebrow-line"></span> YOUR EXPERIENCE MATTERS</div><h1>Tell us how it <em>felt.</em></h1><p>A great journey deserves a word. Share your experience with DriveHub GH and help the next traveller feel confident choosing their drive.</p></div>
-<div class="review-layout"><section class="review-form-card" aria-label="Customer review form"><form class="review-form" id="reviewForm"><div class="review-field"><label for="reviewName">Your name</label><input id="reviewName" name="name" autocomplete="name" maxlength="80" placeholder="How should we credit you?" required></div><div class="review-field"><label for="reviewEmail">Email (optional)</label><input id="reviewEmail" name="email" type="email" autocomplete="email" maxlength="120" placeholder="For follow-up only"></div><div class="review-field"><span class="review-label" id="ratingLabel">Your rating</span><div class="review-rating" role="radiogroup" aria-labelledby="ratingLabel"><input type="radio" id="star5" name="rating" value="5" required><label for="star5" title="5 stars">★</label><input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars">★</label><input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars">★</label><input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars">★</label><input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star">★</label></div></div><div class="review-field"><label for="reviewCar">Which car did you rent?</label><select id="reviewCar" name="car"><option value="Not specified">Choose a vehicle (optional)</option><option>Toyota Prado</option><option>Mitsubishi Outlander</option><option>Toyota RAV4</option><option>Hyundai Santa Fe</option><option>Honda CR-V</option><option>Toyota Land Cruiser V8</option><option>Other / not sure</option></select></div><div class="review-field review-field-full"><label for="reviewText">Your review</label><textarea id="reviewText" name="review" minlength="12" maxlength="1200" placeholder="What went well? What could make the experience even better?" required></textarea></div><div class="review-field review-field-full"><label class="review-consent"><input type="checkbox" id="reviewPermission" required><span>I confirm this is my honest experience and give DriveHub GH permission to review my submission for possible publication. Please contact me before using my name publicly.</span></label></div><button class="review-submit" type="submit"><span>Send my review ↗</span><small>Opens WhatsApp to submit</small></button><p class="review-status" id="reviewStatus" role="status" aria-live="polite">Your review is sent to our team for review before publication.</p></form></section>
-<aside class="review-aside"><div class="eyebrow"><span class="eyebrow-line"></span> A NOTE FROM DRIVEHUB</div><h2>Every detail helps us make the next trip <em>better.</em></h2><p>We welcome honest feedback — the good, and the things we can improve.</p><ul><li>Be specific about your experience.</li><li>Please don't include private or payment details.</li><li>Reviews are checked by our team before appearing on the website.</li></ul><p class="review-privacy">This form does not publish automatically or store reviews on the website. Your message is prepared for WhatsApp so you can review and send it to our team yourself.</p><a class="review-back" href="index.html#home-testimonials-title">Back to DriveHub ↗</a></aside></div></div></main>
-<footer class="footer"><div class="footer-main"><div class="footer-brand"><a href="index.html"><img src="assets/drivehub-logo.png" alt="DriveHub GH"></a><p>Premium self-drive car rentals for the way you want to move.</p></div><div class="footer-column"><h3>Explore</h3><a href="fleet.html">Our fleet</a><a href="find-your-ride.html">Find your ride</a><a href="faqs.html">AI Partner</a></div><div class="footer-column"><h3>Connect</h3><a href="leave-a-review.html">Leave a review</a><a href="https://wa.me/233204116245">WhatsApp DriveHub</a></div></div><div class="footer-bottom"><span>© DriveHub GH</span><span>Thoughtful service. Clear details. A better way to move.</span></div></footer>
-<script>document.getElementById('reviewForm').addEventListener('submit',function(e){e.preventDefault();const f=e.currentTarget;const rating=f.querySelector('input[name="rating"]:checked');if(!rating){document.getElementById('reviewStatus').textContent='Please select a star rating before continuing.';return;}const name=f.elements.name.value.trim();const email=f.elements.email.value.trim();const car=f.elements.car.value;const review=f.elements.review.value.trim();const msg=['DriveHub GH — Customer Review','Name: '+name,'Rating: '+rating.value+'/5 stars','Vehicle: '+car,email?'Email: '+email:'','Review: '+review,'Consent: Customer confirms this is their honest experience and allows moderation for possible publication.'].filter(Boolean).join('\n');document.getElementById('reviewStatus').textContent='WhatsApp is opening with your review. Please press Send in WhatsApp to deliver it to the DriveHub team.';window.open('https://wa.me/233204116245?text='+encodeURIComponent(msg),'_blank','noopener');});</script></body></html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#191719">
+<meta name="description" content="Share your DriveHub GH rental experience and help us make every journey better.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="testimonials.css"><link rel="stylesheet" href="review-page.css">
+<title>Share Your Experience | DriveHub GH</title>
+</head>
+<body>
+<div class="announcement"><span class="pulse"></span> PREMIUM SELF-DRIVE RENTALS <span class="announcement-right">A better way to move.</span></div>
+<header class="header" id="top">
+  <a class="brand" href="index.html" aria-label="DriveHub GH home"><img src="assets/drivehub-logo.png" alt="DriveHub GH"></a>
+  <button class="menu-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+  <nav class="nav" aria-label="Main navigation"><a href="fleet.html">Our fleet</a><a href="experience.html">The experience</a><a href="how-it-works.html">How it works</a><a href="faqs.html">AI Partner</a></nav>
+  <a class="header-cta" href="find-your-ride.html">Find your ride <span>↗</span></a>
+</header>
+
+<main class="review-page">
+  <div class="review-wrap">
+    <section class="review-hero">
+      <div class="review-hero-copy">
+        <div class="eyebrow"><span class="eyebrow-line"></span> YOUR VOICE SHAPES THE JOURNEY</div>
+        <h1>Every journey<br>leaves a <em>feeling.</em></h1>
+        <p>Tell us about the moments you loved — and the things we could do better. Your honest feedback helps us create a more thoughtful DriveHub experience.</p>
+      </div>
+      <div class="review-hero-mark" aria-hidden="true"><span>DH</span><i>YOUR EXPERIENCE MATTERS</i></div>
+    </section>
+
+    <div class="review-progress"><span>01</span><div><b>YOUR DRIVE</b><small>A few details about your experience</small></div><span class="review-progress-line"></span><span>02</span><div><b>YOUR FEEDBACK</b><small>The good and the could-be-better</small></div></div>
+
+    <div class="review-layout">
+      <section class="review-form-card" aria-label="Customer review form">
+        <div class="review-form-heading"><span class="review-step">LET’S START WITH YOU</span><h2>Your experience, <em>in your words.</em></h2><p>No need to overthink it. Tell us what felt great and where we can improve.</p></div>
+        <form class="review-form" id="reviewForm">
+          <div class="review-field"><label for="reviewName">Your name <span>Required</span></label><input id="reviewName" name="name" autocomplete="name" maxlength="80" placeholder="How should we credit you?" required></div>
+          <div class="review-field"><label for="reviewEmail">Email address <span>Optional</span></label><input id="reviewEmail" name="email" type="email" autocomplete="email" maxlength="120" placeholder="For follow-up only"></div>
+          <div class="review-field"><label for="reviewCar">Vehicle you rented <span>Optional</span></label><select id="reviewCar" name="car"><option value="Not specified">Choose your vehicle</option><option>Toyota Prado</option><option>Mitsubishi Outlander</option><option>Toyota RAV4</option><option>Hyundai Santa Fe</option><option>Honda CR-V</option><option>Toyota Land Cruiser V8</option><option>Other / not sure</option></select></div>
+          <div class="review-field"><span class="review-label" id="ratingLabel">Overall rating <span>Required</span></span><div class="review-rating" role="radiogroup" aria-labelledby="ratingLabel"><input type="radio" id="star5" name="rating" value="5" required><label for="star5" title="5 stars" aria-label="5 stars">★</label><input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars" aria-label="4 stars">★</label><input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars" aria-label="3 stars">★</label><input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars" aria-label="2 stars">★</label><input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star" aria-label="1 star">★</label></div><small class="review-hint">Choose the rating that best reflects your experience.</small></div>
+
+          <div class="review-divider"><span>THE GOOD & THE GROWING</span></div>
+          <div class="review-field review-field-full review-story-field"><label for="reviewWentWell"><span class="field-icon field-icon-good">✦</span> What went well? <span>Optional</span></label><p class="field-description">The lovely moments, thoughtful service, comfort, convenience or anything that made your trip special.</p><textarea id="reviewWentWell" name="wentWell" maxlength="1200" placeholder="Tell us what you loved about your DriveHub experience…"></textarea></div>
+          <div class="review-field review-field-full review-story-field"><label for="reviewImprove"><span class="field-icon field-icon-improve">↗</span> What could we improve? <span>Optional</span></label><p class="field-description">Let us know what would have made the experience smoother, easier or even better next time.</p><textarea id="reviewImprove" name="improve" maxlength="1200" placeholder="What could we do better for you or our next guest?"></textarea></div>
+          <div class="review-field review-field-full"><label for="reviewHighlights">Anything else you’d like us to know? <span>Optional</span></label><textarea id="reviewHighlights" name="other" class="review-other-text" maxlength="800" placeholder="A detail, suggestion or final thought…"></textarea></div>
+          <div class="review-field review-field-full"><label class="review-consent"><input type="checkbox" id="reviewPermission" required><span>I confirm this feedback reflects my honest experience. I give DriveHub GH permission to review this submission for possible publication, and understand that my name will not be used publicly without further confirmation.</span></label></div>
+          <button class="review-submit" type="submit"><span>Send feedback to DriveHub <b>↗</b></span><small>Review and send via WhatsApp</small></button>
+          <p class="review-status" id="reviewStatus" role="status" aria-live="polite">Your feedback is sent to our team for review before any possible publication.</p>
+        </form>
+      </section>
+
+      <aside class="review-aside">
+        <div class="review-aside-top"><span class="aside-kicker">A BETTER DRIVE, TOGETHER</span><span class="aside-symbol">✳</span></div>
+        <h2>The best journeys are built on <em>listening.</em></h2>
+        <p>We appreciate the good words — and the honest ones that help us grow.</p>
+        <div class="review-aside-points"><div><span>01</span><p><b>Celebrate the good.</b><small>Tell us what made you smile or feel looked after.</small></p></div><div><span>02</span><p><b>Help us improve.</b><small>Clear, constructive feedback helps us do better.</small></p></div><div><span>03</span><p><b>Your privacy matters.</b><small>We review submissions before any possible publication.</small></p></div></div>
+        <div class="review-aside-foot"><span>THANK YOU FOR MOVING WITH DRIVEHUB</span><p>Every detail matters. Especially yours.</p></div>
+      </aside>
+    </div>
+    <div class="review-bottom-note"><span>✦</span><p><b>A quick note:</b> Please don’t include passwords, private identification numbers or payment-card details in your feedback.</p><a href="fleet.html">Explore the fleet ↗</a></div>
+  </div>
+</main>
+
+<footer class="footer"><div class="footer-main"><div class="footer-brand"><a href="index.html"><img src="assets/drivehub-logo.png" alt="DriveHub GH"></a><p>Premium self-drive car rentals for the way you want to move.</p></div><div class="footer-column"><h4>EXPLORE</h4><a href="fleet.html">Our fleet</a><a href="experience.html">The experience</a><a href="how-it-works.html">How it works</a><a href="faqs.html">AI Partner</a></div><div class="footer-column"><h4>GET IN TOUCH</h4><a href="tel:0204116245">020 411 6245</a><a href="mailto:drivehubgh1@gmail.com">drivehubgh1@gmail.com</a></div><div class="footer-contact"><span>LET’S GET YOU THERE</span><a href="https://wa.me/233204116245" target="_blank" rel="noopener">WhatsApp our team ↗</a></div></div><div class="footer-bottom"><span>© <span id="year"></span> DriveHub GH. All rights reserved.</span><span>MADE FOR THE ROAD AHEAD.</span><a href="#top">Back to top ↑</a></div></footer>
+<script src="script.js"></script>
+<script>
+document.getElementById('reviewForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  const f=e.currentTarget, rating=f.querySelector('input[name="rating"]:checked');
+  const status=document.getElementById('reviewStatus');
+  if(!rating){status.textContent='Please select an overall rating before continuing.';return;}
+  const name=f.elements.name.value.trim(), email=f.elements.email.value.trim(), car=f.elements.car.value;
+  const wentWell=f.elements.wentWell.value.trim(), improve=f.elements.improve.value.trim(), other=f.elements.other.value.trim();
+  if(!wentWell && !improve && !other){status.textContent='Please share at least one detail in either “What went well?” or “What could we improve?”';(document.getElementById('reviewWentWell')).focus();return;}
+  const msg=['DriveHub GH — Customer Feedback','Name: '+name,'Rating: '+rating.value+'/5 stars','Vehicle: '+car,email?'Email: '+email:'','WHAT WENT WELL\\n'+(wentWell||'Not provided'),'WHAT COULD BE IMPROVED\\n'+(improve||'Not provided'),other?'ADDITIONAL THOUGHTS\\n'+other:'','Consent: Customer confirms honest feedback and permits moderation for possible publication; public name use requires further confirmation.'].filter(Boolean).join('\\n\\n');
+  status.textContent='WhatsApp is opening with your feedback. Please check the message and press Send to deliver it to the DriveHub team.';
+  window.open('https://wa.me/233204116245?text='+encodeURIComponent(msg),'_blank','noopener');
+});
+</script>
+</body></html>
