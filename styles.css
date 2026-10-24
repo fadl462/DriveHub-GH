@@ -925,3 +925,49 @@
  .concierge-page .partner-greeting-note{font-size:11px;margin-top:11px}
  .concierge-page .concierge-live{font-size:7px;white-space:nowrap;margin-top:7px;padding-top:0}
 }
+
+/* AI Partner — soft, translucent road-trip backdrop */
+.concierge-page .concierge-workspace{
+  position:relative;
+  isolation:isolate;
+  background:
+    radial-gradient(ellipse at 82% 12%, rgba(190,30,45,.075) 0%, transparent 30%),
+    linear-gradient(112deg, rgba(245,242,237,.94) 0%, rgba(245,242,237,.82) 48%, rgba(245,242,237,.91) 100%),
+    url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=2200&q=88') center 48% / cover no-repeat;
+  background-attachment:scroll;
+}
+.concierge-page .concierge-workspace:before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  pointer-events:none;
+  inset:0;
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(255,255,255,.62), transparent 36%),
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.22));
+}
+.concierge-page .concierge-sidebar{
+  background:rgba(248,245,241,.78);
+  border-color:rgba(225,217,209,.9);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 18px 48px rgba(36,26,25,.07);
+}
+.concierge-page .concierge-chat{
+  background:rgba(255,255,255,.91);
+  border-color:rgba(230,222,216,.92);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  box-shadow:0 24px 70px rgba(33,25,25,.10),0 2px 5px rgba(33,25,25,.025);
+}
+.concierge-page .chat-topbar{
+  background:rgba(255,255,255,.78);
+}
+@media(max-width:680px){
+  .concierge-page .concierge-workspace{
+    background:
+      radial-gradient(ellipse at 82% 0%, rgba(190,30,45,.055) 0%, transparent 34%),
+      linear-gradient(135deg, rgba(245,242,237,.95), rgba(245,242,237,.88)),
+      url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=82') center / cover no-repeat;
+  }
+}
