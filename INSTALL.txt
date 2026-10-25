@@ -1,24 +1,17 @@
-DRIVEHUB GH — FIX THE MISSING LEAVE-A-REVIEW BACKGROUND
+DRIVEHUB GH — REVIEW BACKGROUND FIX (FINAL)
 
-This package fixes the earlier instructions by using an absolute image path and a separate stylesheet.
-Do these exact steps:
+Files in this ZIP:
+- leave-a-review.html (updated to load review-background-fix.css)
+- review-background-fix.css
+- assets/review-sunset-background.webp
 
-1. Upload assets/review-sunset-background.webp into the repository's existing assets/ folder.
-   The final repository path must be: assets/review-sunset-background.webp
+Upload these files into the matching paths in your DriveHub-GH repository:
+1. leave-a-review.html -> repository root (replace the existing file)
+2. review-background-fix.css -> repository root
+3. assets/review-sunset-background.webp -> existing assets/ folder
 
-2. Open leave-a-review.html. Find this line in the <head>:
-   <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="testimonials.css"><link rel="stylesheet" href="review-page.css">
+Then commit the changes and wait for Cloudflare Pages to deploy. Open
+https://drivehub-gh.pages.dev/leave-a-review and press Ctrl+F5.
 
-3. Immediately AFTER that line, add:
-   <link rel="stylesheet" href="review-background-fix.css">
-
-4. Upload review-background-fix.css to the repository root (the same folder as leave-a-review.html).
-
-5. Commit the changes and wait for Cloudflare Pages to finish deploying.
-
-6. Open https://drivehub-gh.pages.dev/leave-a-review and press Ctrl + F5 to force-refresh the page.
-
-WHY THE PREVIOUS ATTEMPT DID NOT SHOW:
-The previous package depended on appending CSS to review-page.css and also placing the image in the correct assets folder. If either step was missed, the live page would keep its old gradient background. This package avoids editing the existing stylesheet: it adds one separate stylesheet loaded last and uses the absolute /assets/... image path.
-
-This patch does not replace the review form, its star-rating code, or any other page.
+Only the review page HTML has been changed to add the stylesheet link. The form
+markup and star-rating behavior are preserved from the supplied review-form layout.
