@@ -1,0 +1,10 @@
+# Example only. Copy settings into the Cloudflare Pages project or adapt for Wrangler.
+# Keep separate D1 databases for development and production.
+name = "drivehub-command"
+compatibility_date = "2026-10-25"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "drivehub-command-dev"
+database_id = "REPLACE_WITH_YOUR_DEVELOPMENT_DATABASE_ID"
+migrations_dir = "migrations"

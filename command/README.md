@@ -165,3 +165,12 @@ The Command Centre UI is still using browser-local demo state. Do not enter real
 - Adds payments and maintenance schedule report options.
 - Generates a preview table and CSV export for rentals, invoices, fleet, reviews, payments, and maintenance.
 - Report totals are derived from browser-local demo records. Fleet report is not date-filtered because fleet records are current snapshots; maintenance filters by start or end date. This is not a replacement for an accounting system or shared database.
+
+
+## Stage 12 — backend and security foundation scaffold
+- Adds a D1 migration copy of the existing schema plus query indexes.
+- Adds `/api/health` to report whether a D1 binding is configured.
+- Adds fail-closed API middleware: all protected API routes return 503 until verified identity and role authorization are implemented.
+- Adds an API contract and deployment configuration example.
+- Does **not** connect the frontend to D1, create a login system, or deploy/configure a live database.
+- Before launch, configure Cloudflare Access, create D1, apply migrations in development, implement JWT validation and role checks, then wire the UI only after API tests pass.
