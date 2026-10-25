@@ -1,0 +1,43 @@
+/* DriveHub GH — Leave a Review page cinematic background.
+   Append these rules to the END of review-page.css.
+   Image path: assets/review-sunset-background.webp
+*/
+.review-page {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(
+      110deg,
+      rgba(24, 18, 18, 0.22) 0%,
+      rgba(24, 18, 18, 0.12) 48%,
+      rgba(24, 18, 18, 0.28) 100%
+    ),
+    url("assets/review-sunset-background.webp") center 48% / cover no-repeat !important;
+  background-color: #302326 !important;
+}
+
+/* Keep the existing form and content readable over the photograph. */
+.review-page .review-form-card {
+  background: rgba(255, 253, 251, 0.96) !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.review-page .review-aside {
+  background:
+    linear-gradient(155deg, rgba(43, 27, 30, 0.96), rgba(24, 20, 21, 0.97)) !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* Let the background remain attractive on smaller screens without fixed scrolling. */
+@media (max-width: 760px) {
+  .review-page {
+    background-position: 58% center !important;
+    background-attachment: scroll !important;
+  }
+  .review-page .review-form-card,
+  .review-page .review-aside {
+    background-color: rgba(255, 253, 251, 0.97);
+  }
+}

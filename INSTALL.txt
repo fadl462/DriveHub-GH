@@ -1,0 +1,16 @@
+DriveHub GH — Leave a Review background update
+
+Included files:
+1. assets/review-sunset-background.webp — optimised sunset-and-car photograph.
+2. review-page-background.css — the scoped CSS patch.
+
+SAFE INSTALL (preserves your current form and star-rating code):
+1. Upload assets/review-sunset-background.webp to the repository's existing assets/ folder.
+2. Open review-page.css in GitHub.
+3. Copy the complete contents of review-page-background.css and append them to the VERY END of review-page.css.
+4. Commit the changes and allow Cloudflare Pages to redeploy.
+
+Important:
+- Do not replace leave-a-review.html, styles.css, script.js, or testimonials.css.
+- The patch only changes the review page's background and the translucency of its two cards.
+- Existing form fields, submission handling, star rating, and responsive layout are left intact.
