@@ -255,3 +255,51 @@ body{min-width:0}
   transition:color .15s ease,transform .15s ease;
 }
 .review-rating label:hover{transform:translateY(-2px)}
+
+
+/* Functional star-rating state: keep the chosen rating visibly filled in red. */
+.review-rating label.is-active {
+  color: #c51d35 !important;
+}
+.review-rating label:focus-visible {
+  outline: 2px solid #c51d35;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Optional customer portrait, kept visually consistent with existing upload fields. */
+.review-portrait-field {
+  padding: 15px 17px;
+  border: 1px solid #eee6e1;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fffdfa, #faf6f2);
+  gap: 8px;
+}
+.review-portrait-field > label:first-child {
+  font-size: 12px;
+}
+.review-portrait-field > label:first-child span {
+  display: inline-block;
+  margin-left: 5px;
+  color: #9b8989;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.review-portrait-field .field-description {
+  margin: 0;
+}
+.review-portrait-upload {
+  margin-top: 3px;
+}
+.review-portrait-consent {
+  margin-top: 5px;
+}
+.review-portrait-field #portraitConsentNote {
+  display: block;
+  margin-top: 1px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .review-rating label { transition: none !important; }
+}

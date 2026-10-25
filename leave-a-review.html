@@ -32,6 +32,20 @@
           <div class="review-field"><label for="reviewName">Your name <span>Required</span></label><input id="reviewName" name="name" autocomplete="name" maxlength="80" placeholder="How should we credit you?" required></div>
           <div class="review-field"><label for="reviewEmail">Email address</label><input id="reviewEmail" name="email" type="email" autocomplete="email" maxlength="120" placeholder="For follow-up only"></div>
           <div class="review-field"><label for="reviewCar">Vehicle you rented</label><select id="reviewCar" name="car"><option value="Not specified">Choose your vehicle</option><option>Toyota Prado</option><option>Mitsubishi Outlander</option><option>Toyota RAV4</option><option>Hyundai Santa Fe</option><option>Honda CR-V</option><option>Toyota Land Cruiser V8</option><option>Other / not sure</option></select></div>
+          <div class="review-field review-field-full review-portrait-field">
+            <label for="reviewPortrait">Your portrait <span>Optional</span></label>
+            <p class="field-description">Add a clear profile photo if you would like us to consider displaying it alongside your review. Your photo will not be published without your permission below.</p>
+            <label class="review-upload review-portrait-upload" for="reviewPortrait">
+              <span class="upload-icon">＋</span>
+              <span><b>Add a portrait photo</b><small>Optional · JPG, PNG or WEBP</small></span>
+              <input id="reviewPortrait" type="file" name="_attachment" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" aria-describedby="portraitConsentNote">
+            </label>
+            <label class="review-consent review-portrait-consent" for="portraitConsent">
+              <input id="portraitConsent" type="checkbox" name="portrait_publication_consent" value="Yes — permission granted to display my portrait with my review">
+              <span>I give DriveHub GH permission to display this photo alongside my review if my review is selected for publication. I understand this is optional and I can submit a review without a photo.</span>
+            </label>
+            <small id="portraitConsentNote" class="review-hint">Uploading a photo does not guarantee publication. Reviews and photos are checked before anything is displayed publicly.</small>
+          </div>
           <div class="review-field"><span class="review-label" id="ratingLabel">Overall rating <span>Required</span></span><div class="review-rating" role="radiogroup" aria-labelledby="ratingLabel">
               <input type="radio" id="star1" name="rating" value="1" required><label for="star1" title="1 star" aria-label="1 star">★</label>
               <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars" aria-label="2 stars">★</label>
@@ -94,10 +108,38 @@
       paint(initial ? Number(initial.value) : 0);
     });
   }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupDriveHubRating);
-  } else {
+  function setupPortraitConsent() {
+    var form = document.getElementById('reviewForm');
+    var portrait = document.getElementById('reviewPortrait');
+    var consent = document.getElementById('portraitConsent');
+    if (!form || !portrait || !consent) return;
+
+    function syncConsentRequirement() {
+      var photoSelected = portrait.files && portrait.files.length > 0;
+      consent.required = Boolean(photoSelected);
+      consent.setCustomValidity(photoSelected && !consent.checked
+        ? 'Please confirm whether you give permission for your portrait to be displayed, or remove the photo to submit without one.'
+        : '');
+    }
+    portrait.addEventListener('change', syncConsentRequirement);
+    consent.addEventListener('change', syncConsentRequirement);
+    form.addEventListener('submit', function (event) {
+      syncConsentRequirement();
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        form.reportValidity();
+      }
+    });
+  }
+
+  function initialiseReviewForm() {
     setupDriveHubRating();
+    setupPortraitConsent();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialiseReviewForm);
+  } else {
+    initialiseReviewForm();
   }
 })();
 </script>
