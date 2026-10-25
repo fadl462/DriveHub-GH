@@ -88,11 +88,8 @@ The existing public review form should POST to a server-side endpoint that valid
 - Kept the Command / Operations Centre label beneath the logo rather than shrinking the logo beside it.
 
 
-## Stage 3 — Fleet management
-- Added fleet summary cards for total, available, rented, upcoming-booked and maintenance vehicles.
-- Added an Add vehicle workflow with registration uniqueness and daily-rate validation.
-- Added Edit vehicle workflow for name/model, registration, rate and service note.
-- Added a maintenance toggle to mark a vehicle unavailable or available.
-- Vehicle status is derived from current/future rentals, except when explicitly marked for maintenance.
-- Vehicle edits update references in demo rental and maintenance records.
-- These operations remain browser-local demo functionality; persistent shared data and server-side permissions are still required for production.
+## Final logo lockup correction
+- Repositioned the official DriveHub GH logo horizontally at the top-left of the Command Centre sidebar.
+- Moved COMMAND / OPERATIONS CENTRE text to the right of the logo.
+- Increased the logo's rendered width and height while keeping its aspect ratio and the existing official SVG asset.
+- Added high-specificity responsive CSS overrides to prevent earlier stacked-logo rules from taking precedence.

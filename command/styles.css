@@ -20,15 +20,60 @@
  .brand{padding-bottom:24px}
 }
 
-/* Fleet management refinement */
-.fleet-toolbar{margin-bottom:16px}
-.fleet-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:0 0 18px}
-.fleet-summary-card{background:#fff;border:1px solid var(--line,#eadfdb);border-radius:13px;padding:15px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.fleet-summary-card span{font-size:11px;color:var(--muted,#82777a)}
-.fleet-summary-card strong{font-size:24px;letter-spacing:-.6px;color:var(--ink,#211b1c)}
-.vehicle-service{margin-top:12px;font-size:12px;color:var(--muted,#82777a);min-height:18px}
-.vehicle-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:13px;border-top:1px solid var(--line,#eadfdb)}
-.vehicle-actions .table-action{font-size:11px;padding:7px 9px}
-.empty-state{padding:18px;color:var(--muted,#82777a);font-size:13px}
-@media(max-width:1100px){.fleet-summary{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:650px){.fleet-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.fleet-toolbar{align-items:flex-start;gap:12px}}
+/* FINAL BRAND LOCKUP FIX — prominent DriveHub logo left, Command label right */
+.sidebar .brand,
+.brand{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:12px !important;
+  width:100%;
+  box-sizing:border-box;
+  padding:0 13px 30px !important;
+  text-decoration:none;
+  overflow:visible;
+}
+.sidebar .brand-logo,
+.brand-logo{
+  display:block !important;
+  width:142px !important;
+  height:64px !important;
+  max-width:62% !important;
+  flex:0 0 62% !important;
+  object-fit:contain !important;
+  object-position:left center !important;
+  margin:0 !important;
+}
+.sidebar .brand-label,
+.brand-label{
+  display:flex !important;
+  flex:1 1 auto !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  gap:4px !important;
+  min-width:0 !important;
+  padding:0 !important;
+}
+.sidebar .brand-label strong,
+.brand-label strong{
+  font-size:10px !important;
+  line-height:1.2 !important;
+  letter-spacing:1.45px !important;
+  white-space:nowrap !important;
+}
+.sidebar .brand-label small,
+.brand-label small{
+  font-size:7px !important;
+  line-height:1.35 !important;
+  letter-spacing:1.05px !important;
+  white-space:normal !important;
+  max-width:100%;
+}
+@media(max-width:700px){
+  .sidebar .brand,.brand{gap:8px !important;padding-bottom:24px !important}
+  .sidebar .brand-logo,.brand-logo{width:116px !important;height:56px !important;max-width:58% !important;flex-basis:58% !important}
+  .sidebar .brand-label strong,.brand-label strong{font-size:9px !important;letter-spacing:1px !important}
+  .sidebar .brand-label small,.brand-label small{font-size:6px !important;letter-spacing:.7px !important}
+}
