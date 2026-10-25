@@ -112,3 +112,17 @@ The existing public review form should POST to a server-side endpoint that valid
 - Invoice/payment creation refreshes relevant views and customer summaries.
 - These are browser-preview printouts, not tax-certified invoices or legally validated receipts; confirm business details before issuing.
 - All records remain local demo state until connected to secure shared persistence and server-side validation.
+
+
+## Stage 6 — Shared data and security foundation (pre-deployment package)
+
+This stage prepares the production data layer; it does **not** activate a live database or authentication by itself.
+
+### Included foundation
+- D1-compatible relational schema for staff, customers, vehicles, rentals, invoices, payments, reviews, maintenance and audit events.
+- Foreign-key relationships and value/status checks.
+- Indexes for common operational queries.
+- Deployment and security checklist in `functions/api/README.md`.
+
+### Critical boundary
+The Command Centre UI is still using browser-local demo state. Do not enter real customer or financial information until Cloudflare D1 is created and bound, API handlers are implemented and tested, authentication is enforced server-side, and the UI is switched from local storage to the API. A database binding alone is not authentication.

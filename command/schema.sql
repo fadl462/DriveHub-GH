@@ -1,3 +1,4 @@
+-- STAGE 6 DATA FOUNDATION — schema only; not applied to a live database.
 -- Proposed Cloudflare D1 schema for the production DriveHub Command system.
 -- Review and test this schema before applying it to a live database.
 PRAGMA foreign_keys = ON;
