@@ -33,3 +33,108 @@ main.review-page .review-aside {
     background-position: center, 58% center !important;
   }
 }
+
+
+/* Definitive review-page layout and portrait upload alignment.
+   This file is already loaded after review-page.css in leave-a-review.html. */
+@media (min-width: 901px) {
+  main.review-page .review-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 65fr) minmax(0, 35fr) !important;
+    gap: clamp(18px, 2.2vw, 30px) !important;
+    align-items: stretch !important;
+  }
+
+  main.review-page .review-form-card,
+  main.review-page .review-aside {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Make the portrait uploader predictable: icon + label on top, file input full-width below. */
+main.review-page .review-form .review-portrait-upload {
+  display: grid !important;
+  grid-template-columns: 34px minmax(0, 1fr) !important;
+  grid-template-rows: auto auto !important;
+  align-items: center !important;
+  justify-items: stretch !important;
+  gap: 10px 12px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  padding: 15px !important;
+  text-align: left !important;
+}
+
+main.review-page .review-form .review-portrait-upload .upload-icon {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 30px !important;
+  height: 30px !important;
+  margin: 0 !important;
+  flex: none !important;
+}
+
+main.review-page .review-form .review-portrait-upload > span:not(.upload-icon) {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  overflow-wrap: anywhere !important;
+}
+
+main.review-page .review-form .review-portrait-upload > span b {
+  display: block !important;
+  line-height: 1.4 !important;
+}
+
+main.review-page .review-form .review-portrait-upload > span small {
+  display: block !important;
+  line-height: 1.5 !important;
+}
+
+main.review-page .review-form .review-portrait-upload input[type="file"] {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 10px !important;
+  box-sizing: border-box !important;
+  justify-self: stretch !important;
+}
+
+@media (max-width: 900px) {
+  main.review-page .review-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  main.review-page .review-form-card,
+  main.review-page .review-aside {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  main.review-page .review-form .review-portrait-upload {
+    grid-template-columns: 30px minmax(0, 1fr) !important;
+    gap: 9px !important;
+    padding: 12px !important;
+  }
+}
+
