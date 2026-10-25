@@ -1,34 +1,34 @@
-# DriveHub Command API contract (Stage 12 scaffold)
+# DriveHub Command API contract — Stage 13
 
-This document defines the first API boundary. The app is **not yet wired to these routes** and the protected routes intentionally return HTTP 503 until authentication and authorization are implemented.
+## Implemented in this stage
 
-## Initial route plan
-
-| Method | Route | Purpose | Minimum authorization |
+| Method | Route (likely nested under `/command`) | Purpose | Authorization |
 |---|---|---|---|
-| GET | `/api/health` | Report whether a D1 binding exists | Public, no business data |
-| GET/POST | `/api/customers` | List/create customers | `operations` or `admin` |
-| GET/POST | `/api/vehicles` | List/create vehicles | Read access / `operations` / `admin` |
-| GET/POST | `/api/rentals` | List/create rentals with transactional availability checks | `operations` or `admin` |
-| GET/POST | `/api/invoices` | List/create invoices | `finance` or `admin` |
-| GET/POST | `/api/payments` | List/create payments | `finance` or `admin` |
-| GET/PATCH | `/api/reviews` | Review moderation | `review_moderator` or `admin` |
-| GET/POST | `/api/maintenance` | Schedule/complete maintenance | `operations` or `admin` |
-| GET | `/api/reports/*` | Authorized aggregate reports | Role-limited by data sensitivity |
+| GET | `/command/api/health` | Check whether D1 binding exists | Public readiness probe; no business data |
+| GET | `/command/api/customers` | Search/list up to 100 customers | Active staff; role allowlist |
+| POST | `/command/api/customers` | Create customer | `admin`, `operations` |
+| GET | `/command/api/vehicles` | List/filter up to 200 vehicles | Active staff; role allowlist |
+| POST | `/command/api/vehicles` | Create vehicle | `admin`, `operations` |
 
-## Required handler behavior before launch
+## Authentication model
+- Cloudflare Access protects the Command route and sends `Cf-Access-Jwt-Assertion`.
+- Middleware verifies the JWT RS256 signature using the Access team's published JWKs, plus issuer, audience and time claims.
+- The verified `sub` and `email` must match an active `staff_users` record.
+- Role authorization is enforced in each endpoint. A request header containing an email is not accepted as authentication.
 
-1. Verify the Cloudflare Access JWT signature, issuer, audience and expiry using the configured team domain and application AUD. Never trust a raw email header as proof of identity.
-2. Map verified identity to an active `staff_users` row and enforce its role server-side on every request.
-3. Validate request body types, allowed status transitions, dates, integer currency values, and maximum payload sizes.
-4. Use prepared/bound SQL parameters, foreign keys, and database transactions where multiple writes must succeed together.
-5. For rentals, enforce no overlapping active booking and no active maintenance overlap in server-side SQL/transaction logic.
-6. Write audit events for every sensitive create/update/status change. Do not expose audit-log mutation endpoints to ordinary staff.
-7. Return only necessary customer data; add pagination and consistent error responses.
-8. Add tests for unauthenticated, unauthorized, duplicate, invalid, overlapping, and successful requests.
+## Required Pages project environment
+- D1 binding named `DB`.
+- `ACCESS_TEAM_DOMAIN`: Access team hostname, e.g. `example.cloudflareaccess.com` (hostname only).
+- `ACCESS_AUD`: the Access application's audience tag.
 
-## Current status
+Use Cloudflare Pages environment variables/bindings, not frontend JavaScript or committed secrets. Protect `/command/*` with Cloudflare Access. Test in a development environment first.
 
-- `/api/health` is implemented.
-- Protected API routes fail closed with HTTP 503.
-- No login, D1 data handlers, frontend API integration, or production authentication has been implemented.
+## API behavior and limitations
+- JSON content type and request size are checked for writes.
+- SQL uses bound parameters.
+- Currency is stored as integer minor units (`daily_rate_minor`).
+- Create operations write an `audit_log` event.
+- Protected routes return 503 until DB and identity configuration are present; invalid/missing identity returns 401; unregistered/inactive staff returns 403.
+- Customer email is not unique in the current schema, so the endpoint does not enforce uniqueness by email.
+- These endpoints do not yet connect the frontend UI, and they do not implement rentals, invoices, payments, reviews, maintenance, or reports.
+- Multi-step write and audit operations are not yet transactional. Production hardening should make business mutation + audit atomic and add rate limits, pagination cursors, monitoring, and tests.

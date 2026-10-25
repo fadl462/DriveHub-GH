@@ -174,3 +174,12 @@ The Command Centre UI is still using browser-local demo state. Do not enter real
 - Adds an API contract and deployment configuration example.
 - Does **not** connect the frontend to D1, create a login system, or deploy/configure a live database.
 - Before launch, configure Cloudflare Access, create D1, apply migrations in development, implement JWT validation and role checks, then wire the UI only after API tests pass.
+
+
+## Stage 13 — first D1 API and staff identity integration
+- Implements cryptographic Cloudflare Access JWT verification in Pages Functions middleware.
+- Resolves verified identities against active staff records in D1 and enforces endpoint roles.
+- Adds protected customer list/search/create and vehicle list/filter/create endpoints.
+- Adds input validation, bound SQL parameters, integer minor currency units, and audit events for creates.
+- Does not yet wire the frontend to the API or implement rental, invoice, payment, review, maintenance, and reporting endpoints.
+- Configure `DB`, `ACCESS_TEAM_DOMAIN`, and `ACCESS_AUD` in Cloudflare Pages and protect `/command/*` with Cloudflare Access before testing. Never use real customer data until development tests and security review pass.
