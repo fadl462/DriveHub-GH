@@ -110,3 +110,10 @@
 #view-audit td:first-child{white-space:nowrap;color:var(--muted,#81777a);font-size:12px}
 #view-audit td:nth-child(3){font-weight:600}
 @media(max-width:760px){#view-audit .section-heading{align-items:flex-start;gap:12px;flex-direction:column}#view-audit .heading-actions{display:flex;flex-wrap:wrap;gap:8px}.search-input{min-width:0;width:100%}}
+
+/* Stage 8 — rental operations */
+.rental-summary{margin:18px 0 22px}
+.rental-cancel-action{color:#a20f27!important}
+#view-rentals .row-actions{display:flex;flex-wrap:wrap;gap:6px}
+#view-rentals .table-action{white-space:nowrap}
+@media(max-width:760px){.rental-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}

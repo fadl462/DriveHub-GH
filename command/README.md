@@ -133,3 +133,12 @@ The Command Centre UI is still using browser-local demo state. Do not enter real
 - Captures meaningful button actions without logging form field values.
 - Preview events are stored in browser-local demo state and capped at 500 entries.
 - The audit log is not tamper-proof and must not be treated as a production security record. Production audit events must be written server-side to the database after authentication and authorization checks.
+
+
+## Stage 8 — Rental operations
+- Added live counts for upcoming, active, completed and cancelled rentals.
+- Added a cancellation action that releases the date range for future bookings in the local preview.
+- Rental edits and completion/cancellation actions are recorded in the preview audit log.
+- New rental validation rejects date overlaps with non-completed/non-cancelled rentals for the same vehicle.
+- New rental validation also checks existing maintenance notes whose date falls inside the requested rental window.
+- This remains browser-local demo functionality. Maintenance records are currently single dates, not date-range service blocks; production should use server-side transactions and shared data.
