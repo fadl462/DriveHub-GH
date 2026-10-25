@@ -97,10 +97,19 @@
           if (radio.checked) paint(Number(radio.value));
         });
         radio.addEventListener('click', function () {
-          window.setTimeout(function () {
-            var selected = radios.find(function (r) { return r.checked; });
-            paint(selected ? Number(selected.value) : 0);
-          }, 0);
+          paint(Number(radio.value));
+        });
+        radio.addEventListener('keydown', function (event) {
+          if (event.key >= '1' && event.key <= '5') {
+            var target = radios.find(function (r) { return Number(r.value) === Number(event.key); });
+            if (target) { target.checked = true; paint(Number(target.value)); }
+          }
+        });
+      });
+      labels.forEach(function (label) {
+        label.addEventListener('click', function () {
+          var target = radios.find(function (radio) { return radio.id === label.htmlFor; });
+          if (target) window.setTimeout(function () { paint(Number(target.value)); }, 0);
         });
       });
 
