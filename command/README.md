@@ -66,3 +66,9 @@ The existing public review form should POST to a server-side endpoint that valid
 - Payment entry now requires a valid invoice and date and prevents overpayment.
 - Demo notice now clearly explains that records remain local to the current browser.
 - This remains a browser-only preview: these improvements do not provide shared storage, authentication, server-side validation or production accounting controls.
+
+
+## Official brand update
+- Replaced the placeholder red “D” tile and text lockup with the official DriveHub GH logo supplied in the brand asset package.
+- Added `drivehub-logo.svg` to the Command folder and sized it responsively in the sidebar.
+- Kept the logo asset local to `/command/` so the dashboard does not depend on a third-party host.
