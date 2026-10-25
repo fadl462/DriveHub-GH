@@ -492,20 +492,7 @@ body{min-width:0}
 
 
 /* Feedback fields: textarea and separate upload panel sit side-by-side as requested. */
-.review-page .review-form .review-story-layout {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1.8fr) minmax(230px, 1fr) !important;
-  align-items: stretch !important;
-  gap: 16px !important;
-  padding: 17px !important;
-}
-.review-page .review-form .review-story-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-width: 0;
-}
-.review-page .review-form .review-story-copy > label {
+.review-page .review-form .review-page .review-form .review-page .review-form .review-story-copy > label {
   margin: 0;
 }
 .review-page .review-form .review-story-copy textarea {
@@ -514,18 +501,7 @@ body{min-width:0}
   min-height: 190px !important;
   resize: vertical;
 }
-.review-page .review-form .review-story-files {
-  min-width: 0;
-  padding: 13px;
-  border: 1px solid #eee1dc;
-  border-radius: 12px;
-  background: rgba(255,255,255,.76);
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 10px;
-}
-.review-page .review-form .review-story-files h3 {
+.review-page .review-form .review-page .review-form .review-story-files h3 {
   margin: 0;
   color: #302a2b;
   font-size: 10px;
@@ -612,10 +588,7 @@ body{min-width:0}
   background: #fff5f5;
 }
 @media (max-width: 680px) {
-  .review-page .review-form .review-story-layout {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-  .review-page .review-form .review-story-copy textarea {
+  .review-page .review-form .review-page .review-form .review-story-copy textarea {
     min-height: 150px !important;
   }
 }
