@@ -1,0 +1,18 @@
+DRIVEHUB GH — PUBLIC WEBSITE RESTORATION + COMMAND SEPARATION
+
+What this package does:
+- Restores the public homepage index.html and public shared styles.css from the previous public-site ZIP (DriveHub-GH-main (18).zip).
+- Keeps the latest public multi-page files/assets from the uploaded DriveHub-GH-main (19)(1).zip.
+- Moves the dashboard entry point and dashboard stylesheet into command/index.html and command/styles.css; app.js is placed in command/app.js.
+- Adds a DriveHub Command navigation button linking to /command/ on public pages.
+- Uses command-button.css only for the button, avoiding the dashboard stylesheet at the public root.
+
+IMPORTANT:
+1. Back up the current GitHub repository before uploading.
+2. Extract this ZIP into the repository root and replace matching files.
+3. Check the changed-file list before committing. Do not upload the dashboard's index.html or styles.css to the repository root; they are already placed under command/.
+4. This ZIP does not change GitHub or Cloudflare automatically. Upload/commit the files, then wait for Cloudflare Pages to deploy.
+5. Verify the public homepage at / and the dashboard at /command/. The dashboard may still need its data/authentication integration; its preview notice indicates demo records are being used.
+
+Recovery source note:
+The uploaded ZIP's root index.html and styles.css were the Command dashboard, not the public site. The public index.html and styles.css were recovered from the previous available public-site ZIP. No claim of live deployment is made.

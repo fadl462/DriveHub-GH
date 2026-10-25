@@ -1,0 +1,23 @@
+/* DriveHub Command navigation button — isolated from the public site's styling */
+.header-command-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  margin-left: .65rem;
+  padding: .72rem 1rem;
+  border: 1px solid #bd1730;
+  border-radius: 999px;
+  background: #bd1730;
+  color: #fff !important;
+  font-size: .82rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-decoration: none !important;
+  white-space: nowrap;
+  transition: background .2s ease, transform .2s ease;
+}
+.header-command-cta:hover { background: #a91128; transform: translateY(-1px); }
+@media (max-width: 760px) {
+  .header-command-cta { margin: .55rem 0 0; padding: .65rem .9rem; }
+}
