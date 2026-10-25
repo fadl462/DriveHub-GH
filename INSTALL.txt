@@ -1,16 +1,24 @@
-DriveHub GH — Leave a Review background update
+DRIVEHUB GH — FIX THE MISSING LEAVE-A-REVIEW BACKGROUND
 
-Included files:
-1. assets/review-sunset-background.webp — optimised sunset-and-car photograph.
-2. review-page-background.css — the scoped CSS patch.
+This package fixes the earlier instructions by using an absolute image path and a separate stylesheet.
+Do these exact steps:
 
-SAFE INSTALL (preserves your current form and star-rating code):
-1. Upload assets/review-sunset-background.webp to the repository's existing assets/ folder.
-2. Open review-page.css in GitHub.
-3. Copy the complete contents of review-page-background.css and append them to the VERY END of review-page.css.
-4. Commit the changes and allow Cloudflare Pages to redeploy.
+1. Upload assets/review-sunset-background.webp into the repository's existing assets/ folder.
+   The final repository path must be: assets/review-sunset-background.webp
 
-Important:
-- Do not replace leave-a-review.html, styles.css, script.js, or testimonials.css.
-- The patch only changes the review page's background and the translucency of its two cards.
-- Existing form fields, submission handling, star rating, and responsive layout are left intact.
+2. Open leave-a-review.html. Find this line in the <head>:
+   <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="testimonials.css"><link rel="stylesheet" href="review-page.css">
+
+3. Immediately AFTER that line, add:
+   <link rel="stylesheet" href="review-background-fix.css">
+
+4. Upload review-background-fix.css to the repository root (the same folder as leave-a-review.html).
+
+5. Commit the changes and wait for Cloudflare Pages to finish deploying.
+
+6. Open https://drivehub-gh.pages.dev/leave-a-review and press Ctrl + F5 to force-refresh the page.
+
+WHY THE PREVIOUS ATTEMPT DID NOT SHOW:
+The previous package depended on appending CSS to review-page.css and also placing the image in the correct assets folder. If either step was missed, the live page would keep its old gradient background. This package avoids editing the existing stylesheet: it adds one separate stylesheet loaded last and uses the absolute /assets/... image path.
+
+This patch does not replace the review form, its star-rating code, or any other page.
