@@ -1,14 +1,14 @@
-DRIVEHUB GH — REVIEW PAGE DEFINITIVE LAYOUT FIX
+DRIVEHUB GH — DEFINITIVE REVIEW PORTRAIT UPLOAD FIX
 
-Upload the included review-background-fix.css to the root of your existing DriveHub-GH repository, replacing the current file.
+Upload the included review-background-fix.css to the root of the existing DriveHub-GH repository, replacing the current file of the same name.
 
-No HTML change is required: leave-a-review.html already loads this stylesheet after review-page.css.
+No HTML changes are required. The page already loads this stylesheet after review-page.css.
 
-This narrowly scoped fix:
-- Sets the desktop review form / information panel grid to 65fr / 35fr.
-- Keeps the portrait upload icon and instructions together on the first row.
-- Places the file chooser on its own full-width row beneath them.
-- Prevents the file chooser from overflowing its card.
-- Stacks the columns on screens 900px wide or narrower.
+This update specifically fixes the layout shown in your screenshot:
+- Upload icon and portrait instructions remain grouped together.
+- The native Choose File control moves onto its own row below the instructions.
+- The file control expands to the full available width of the portrait card.
+- The card cannot force the control outside its boundaries.
+- Desktop form/information columns remain set to 65% / 35%.
 
-After Cloudflare Pages finishes deploying, open /leave-a-review and press Ctrl+F5.
+After Cloudflare Pages deploys, open /leave-a-review and press Ctrl+F5 to bypass cached CSS.
