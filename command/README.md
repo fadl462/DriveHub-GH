@@ -102,3 +102,13 @@ The existing public review form should POST to a server-side endpoint that valid
 - Customer profile calculates billed outstanding balances from invoice records and payment totals from the local demo state.
 - Updated customer directory actions and responsive profile dialog styling.
 - Data remains browser-local demonstration data; production use requires shared database persistence, authentication and server-side validation.
+
+
+## Stage 5 — Invoices and payments
+- Invoice summary cards now calculate total invoiced, allocated paid value and outstanding balances from current records.
+- Added a printable invoice layout from each invoice row.
+- Payment summary cards now calculate recorded receipts and distinct payment methods from current records.
+- Added printable receipt layouts from payment rows, including reference and linked invoice balance where available.
+- Invoice/payment creation refreshes relevant views and customer summaries.
+- These are browser-preview printouts, not tax-certified invoices or legally validated receipts; confirm business details before issuing.
+- All records remain local demo state until connected to secure shared persistence and server-side validation.
