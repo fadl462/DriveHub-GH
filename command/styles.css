@@ -77,3 +77,24 @@
   .sidebar .brand-label strong,.brand-label strong{font-size:9px !important;letter-spacing:1px !important}
   .sidebar .brand-label small,.brand-label small{font-size:6px !important;letter-spacing:.7px !important}
 }
+
+/* Customer management */
+.customer-toolbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.customer-toolbar-actions .search-input{min-width:190px}
+.profile-dialog{width:min(680px,calc(100vw - 28px));max-height:85vh;overflow:auto;border:1px solid var(--line,#eadfdb);border-radius:18px;padding:24px;background:#fff;color:var(--ink,#211b1c);box-shadow:0 24px 80px #211b1c33}
+.profile-dialog::backdrop{background:#211b1c66;backdrop-filter:blur(3px)}
+.profile-dialog-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--line,#eadfdb);margin-bottom:18px}
+.profile-dialog-head h2{margin:5px 0 0;font-size:24px;letter-spacing:-.7px}
+.dialog-close{width:34px;height:34px;border:1px solid var(--line,#eadfdb);border-radius:50%;background:#fff;font-size:22px;cursor:pointer}
+.profile-head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.profile-head .mini-avatar{width:44px;height:44px;font-size:13px}
+.profile-head h3{margin:0 0 5px;font-size:17px}
+.profile-head p{margin:0;color:var(--muted,#82777a);font-size:12px}
+.profile-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0 22px}
+.profile-metrics>div{border:1px solid var(--line,#eadfdb);border-radius:12px;padding:13px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.profile-metrics span{font-size:11px;color:var(--muted,#82777a)}
+.profile-metrics strong{font-size:18px;overflow-wrap:anywhere}
+.profile-dialog h4{margin:18px 0 9px;font-size:13px}
+.profile-list{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.profile-list li{padding:11px 12px;background:#faf7f5;border-radius:9px;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
+@media(max-width:650px){.profile-metrics{grid-template-columns:1fr}.customer-toolbar-actions{width:100%}.customer-toolbar-actions .search-input{width:100%}}

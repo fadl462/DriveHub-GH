@@ -93,3 +93,12 @@ The existing public review form should POST to a server-side endpoint that valid
 - Moved COMMAND / OPERATIONS CENTRE text to the right of the logo.
 - Increased the logo's rendered width and height while keeping its aspect ratio and the existing official SVG asset.
 - Added high-specificity responsive CSS overrides to prevent earlier stacked-logo rules from taking precedence.
+
+
+## Stage 4 — Customer management
+- Added an Add customer workflow for name, email, phone and optional notes.
+- Validates customer name plus at least one contact method and checks likely duplicates by name, email or phone.
+- Added View profile with linked rental history and invoice balances.
+- Customer profile calculates billed outstanding balances from invoice records and payment totals from the local demo state.
+- Updated customer directory actions and responsive profile dialog styling.
+- Data remains browser-local demonstration data; production use requires shared database persistence, authentication and server-side validation.

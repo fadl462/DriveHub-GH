@@ -89,8 +89,8 @@
         </section>
 
         <section class="view" id="view-customers">
-          <div class="section-toolbar"><div><h2 class="section-title">Customer directory</h2><p class="section-desc">Rental history, contact details and follow-up context in one place.</p></div><input class="search-input" id="customerSearch" placeholder="Search customers…" aria-label="Search customers"></div>
-          <article class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Email</th><th>Phone</th><th>Rentals</th><th>Total spend</th><th>Last rental</th></tr></thead><tbody id="customerRows"></tbody></table></div></article>
+          <div class="section-toolbar"><div><h2 class="section-title">Customer directory</h2><p class="section-desc">Manage customer profiles, rental history and follow-up context.</p></div><div class="customer-toolbar-actions"><input class="search-input" id="customerSearch" placeholder="Search customers…" aria-label="Search customers"><button class="btn btn-primary" id="addCustomerBtn" type="button">＋ Add customer</button></div></div>
+          <article class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Email</th><th>Phone</th><th>Rentals</th><th>Total spend</th><th>Last rental</th><th>Actions</th></tr></thead><tbody id="customerRows"></tbody></table></div></article>
         </section>
 
         <section class="view" id="view-reports">
@@ -104,7 +104,12 @@
     </main>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <dialog id="actionDialog" class="action-dialog"><form method="dialog" id="actionForm"><div class="dialog-head"><div><p class="eyebrow">DRIVEHUB COMMAND</p><h2 id="dialogTitle">Quick action</h2></div><button class="close-dialog" value="cancel" aria-label="Close">×</button></div><div id="dialogFields" class="dialog-fields"></div><div class="dialog-actions"><button class="btn btn-light" value="cancel">Cancel</button><button class="btn btn-primary" id="dialogSubmit" value="default">Save record</button></div></form></dialog>
+  
+<dialog id="profileDialog" class="profile-dialog">
+  <div class="profile-dialog-head"><div><span class="eyebrow">CUSTOMER RECORD</span><h2>Customer profile</h2></div><button type="button" class="dialog-close" id="closeProfileDialog" aria-label="Close customer profile">×</button></div>
+  <div id="profileContent"></div>
+</dialog>
+<dialog id="actionDialog" class="action-dialog"><form method="dialog" id="actionForm"><div class="dialog-head"><div><p class="eyebrow">DRIVEHUB COMMAND</p><h2 id="dialogTitle">Quick action</h2></div><button class="close-dialog" value="cancel" aria-label="Close">×</button></div><div id="dialogFields" class="dialog-fields"></div><div class="dialog-actions"><button class="btn btn-light" value="cancel">Cancel</button><button class="btn btn-primary" id="dialogSubmit" value="default">Save record</button></div></form></dialog>
   <script src="app.js"></script>
 </body>
 </html>
