@@ -78,16 +78,18 @@
 
 <script>
 (function () {
-  function setupDriveHubRating() {
-    document.querySelectorAll('.review-rating').forEach(function (group) {
-      var radios = Array.from(group.querySelectorAll('input[type="radio"][name="rating"]'));
+  function initReviewForm() {
+    var group = document.querySelector('.review-rating');
+    if (group) {
+      var radios = Array.from(group.querySelectorAll('input[name="rating"]'));
       var labels = Array.from(group.querySelectorAll('label[for^="star"]'));
-      if (!radios.length || !labels.length) return;
 
       function paint(value) {
         labels.forEach(function (label) {
-          var n = Number(label.getAttribute('for').replace('star', ''));
-          label.classList.toggle('is-active', n <= value && value > 0);
+          var number = Number(label.htmlFor.replace('star', ''));
+          var active = number <= value && value > 0;
+          label.classList.toggle('is-active', active);
+          label.style.setProperty('color', active ? '#c51d35' : '#ddd2ce', 'important');
         });
         group.setAttribute('aria-label', value ? value + ' out of 5 stars selected' : 'Choose a rating from 1 to 5 stars');
       }
@@ -99,56 +101,47 @@
         radio.addEventListener('click', function () {
           paint(Number(radio.value));
         });
-        radio.addEventListener('keydown', function (event) {
-          if (event.key >= '1' && event.key <= '5') {
-            var target = radios.find(function (r) { return Number(r.value) === Number(event.key); });
-            if (target) { target.checked = true; paint(Number(target.value)); }
-          }
-        });
       });
       labels.forEach(function (label) {
         label.addEventListener('click', function () {
-          var target = radios.find(function (radio) { return radio.id === label.htmlFor; });
-          if (target) window.setTimeout(function () { paint(Number(target.value)); }, 0);
+          var radio = radios.find(function (item) { return item.id === label.htmlFor; });
+          if (radio) {
+            radio.checked = true;
+            paint(Number(radio.value));
+          }
         });
       });
+      var selected = radios.find(function (radio) { return radio.checked; });
+      paint(selected ? Number(selected.value) : 0);
+    }
 
-      var initial = radios.find(function (radio) { return radio.checked; });
-      paint(initial ? Number(initial.value) : 0);
-    });
-  }
-  function setupPortraitConsent() {
     var form = document.getElementById('reviewForm');
     var portrait = document.getElementById('reviewPortrait');
     var consent = document.getElementById('portraitConsent');
-    if (!form || !portrait || !consent) return;
-
-    function syncConsentRequirement() {
-      var photoSelected = portrait.files && portrait.files.length > 0;
-      consent.required = Boolean(photoSelected);
-      consent.setCustomValidity(photoSelected && !consent.checked
-        ? 'Please confirm whether you give permission for your portrait to be displayed, or remove the photo to submit without one.'
-        : '');
-    }
-    portrait.addEventListener('change', syncConsentRequirement);
-    consent.addEventListener('change', syncConsentRequirement);
-    form.addEventListener('submit', function (event) {
-      syncConsentRequirement();
-      if (!form.checkValidity()) {
-        event.preventDefault();
-        form.reportValidity();
+    if (form && portrait && consent) {
+      function validatePortraitConsent() {
+        var photoSelected = Boolean(portrait.files && portrait.files.length);
+        consent.required = photoSelected;
+        consent.setCustomValidity(photoSelected && !consent.checked
+          ? 'Please confirm permission to display your portrait, or remove the photo to submit without one.'
+          : '');
       }
-    });
+      portrait.addEventListener('change', validatePortraitConsent);
+      consent.addEventListener('change', validatePortraitConsent);
+      form.addEventListener('submit', function (event) {
+        validatePortraitConsent();
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          form.reportValidity();
+        }
+      });
+    }
   }
 
-  function initialiseReviewForm() {
-    setupDriveHubRating();
-    setupPortraitConsent();
-  }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initialiseReviewForm);
+    document.addEventListener('DOMContentLoaded', initReviewForm);
   } else {
-    initialiseReviewForm();
+    initReviewForm();
   }
 })();
 </script>

@@ -367,3 +367,90 @@ body{min-width:0}
   .review-portrait-upload { align-items: flex-start; flex-wrap: wrap; }
   .review-portrait-upload input[type="file"] { width: 100%; }
 }
+
+
+/* Final targeted fix: visible star selection and a more compact portrait area. */
+.review-page .review-form .review-rating {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  direction: ltr !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 5px !important;
+  width: max-content !important;
+}
+.review-page .review-form .review-rating label {
+  display: inline-block !important;
+  color: #ddd2ce !important;
+  cursor: pointer !important;
+  font-size: 34px !important;
+  line-height: 1 !important;
+  transition: color .15s ease, transform .15s ease !important;
+}
+.review-page .review-form .review-rating label.is-active,
+.review-page .review-form .review-rating label.is-active:hover {
+  color: #c51d35 !important;
+}
+.review-page .review-form .review-rating label:hover {
+  transform: translateY(-2px) !important;
+}
+.review-page .review-form .review-rating input:focus-visible + label {
+  outline: 2px solid #c51d35 !important;
+  outline-offset: 3px !important;
+  border-radius: 4px !important;
+}
+.review-page .review-form .review-portrait-field {
+  padding: 10px 12px !important;
+  gap: 5px !important;
+}
+.review-page .review-form .review-portrait-field .field-description {
+  margin: 0 !important;
+  line-height: 1.45 !important;
+}
+.review-page .review-form .review-portrait-upload {
+  min-height: 44px !important;
+  padding: 7px 9px !important;
+  margin-top: 0 !important;
+  gap: 8px !important;
+}
+.review-page .review-form .review-portrait-upload .upload-icon {
+  width: 27px !important;
+  height: 27px !important;
+  flex: 0 0 27px !important;
+}
+.review-page .review-form .review-portrait-upload input[type="file"] {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  padding: 3px 0 !important;
+  font-size: 10px !important;
+}
+.review-page .review-form .review-portrait-consent {
+  margin-top: 0 !important;
+  gap: 7px !important;
+  font-size: 9px !important;
+  line-height: 1.45 !important;
+}
+.review-page .review-form .review-portrait-consent input {
+  flex: 0 0 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  margin-top: 2px !important;
+}
+.review-page .review-form .review-portrait-field #portraitConsentNote {
+  margin-top: 0 !important;
+  font-size: 9px !important;
+  line-height: 1.4 !important;
+}
+@media (max-width: 600px) {
+  .review-page .review-form .review-portrait-upload {
+    align-items: flex-start !important;
+    flex-wrap: wrap !important;
+  }
+  .review-page .review-form .review-portrait-upload input[type="file"] {
+    width: 100% !important;
+    margin-left: 35px !important;
+  }
+  .review-page .review-form .review-rating label {
+    font-size: 32px !important;
+  }
+}
