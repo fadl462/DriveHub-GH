@@ -142,3 +142,12 @@ The Command Centre UI is still using browser-local demo state. Do not enter real
 - New rental validation rejects date overlaps with non-completed/non-cancelled rentals for the same vehicle.
 - New rental validation also checks existing maintenance notes whose date falls inside the requested rental window.
 - This remains browser-local demo functionality. Maintenance records are currently single dates, not date-range service blocks; production should use server-side transactions and shared data.
+
+
+## Stage 9 — Vehicle maintenance scheduling
+- Schedule service by vehicle, service type, start/end date, status, and notes.
+- Reject invalid service date ranges, overlapping active service windows, and maintenance windows that conflict with non-completed/non-cancelled rentals.
+- Rental creation now checks full maintenance date ranges; legacy one-day maintenance records remain supported.
+- Fleet cards reflect current maintenance/rental availability; service list shows the full window and status.
+- Maintenance create events are added to the browser-local audit preview.
+- Data still lives in this browser's `localStorage`; this is not shared multi-user scheduling or a production backend. Apply server-side transaction/availability checks before real bookings.

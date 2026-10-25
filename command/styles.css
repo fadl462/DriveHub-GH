@@ -117,3 +117,13 @@
 #view-rentals .row-actions{display:flex;flex-wrap:wrap;gap:6px}
 #view-rentals .table-action{white-space:nowrap}
 @media(max-width:760px){.rental-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Stage 9 — service scheduling polish */
+.maintenance-item{gap:10px;align-items:flex-start}
+.maintenance-item>div{min-width:0;flex:1}
+.maintenance-item strong{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.maintenance-item time{white-space:nowrap;padding-top:2px}
+.status.in-maintenance,.status.in-progress{color:#a45a18;background:#fff0dc}
+.status.scheduled{color:#9b6c1c;background:#fff2db}
+.status.cancelled{color:#766a6b;background:#f0ebea}
+@media(max-width:480px){.maintenance-item{flex-wrap:wrap}.maintenance-item time{margin-left:40px;width:100%}}
