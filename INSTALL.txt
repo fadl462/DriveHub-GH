@@ -1,17 +1,14 @@
-DRIVEHUB GH — REVIEW BACKGROUND FIX (FINAL)
+DRIVEHUB GH — REVIEW PAGE COLUMN + PORTRAIT UPLOAD POLISH
 
-Files in this ZIP:
-- leave-a-review.html (updated to load review-background-fix.css)
-- review-background-fix.css
-- assets/review-sunset-background.webp
+Upload review-page.css to the root of your existing DriveHub-GH repository and
+replace the current review-page.css.
 
-Upload these files into the matching paths in your DriveHub-GH repository:
-1. leave-a-review.html -> repository root (replace the existing file)
-2. review-background-fix.css -> repository root
-3. assets/review-sunset-background.webp -> existing assets/ folder
+Changes:
+- Sets the desktop form/information-panel columns explicitly to 65% / 35%.
+- Reworks the portrait upload control into a clean, contained layout.
+- Keeps the file chooser inside the portrait card without overflowing.
+- Keeps the review page stacked on smaller screens.
+- All styles are scoped to .review-page, so other pages are not changed.
 
-Then commit the changes and wait for Cloudflare Pages to deploy. Open
-https://drivehub-gh.pages.dev/leave-a-review and press Ctrl+F5.
-
-Only the review page HTML has been changed to add the stylesheet link. The form
-markup and star-rating behavior are preserved from the supplied review-form layout.
+Do not replace leave-a-review.html or any other files for this update.
+After deployment, hard-refresh the review page with Ctrl+F5.

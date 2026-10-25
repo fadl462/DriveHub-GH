@@ -855,3 +855,107 @@ body{min-width:0}
     box-sizing: border-box !important;
   }
 }
+
+
+/* DriveHub GH — final review-page column and portrait upload polish.
+   Keep this scoped to the review page to avoid changing other site pages. */
+@media (min-width: 901px) {
+  .review-page .review-layout {
+    grid-template-columns: minmax(0, 65fr) minmax(0, 35fr) !important;
+    gap: clamp(18px, 2.2vw, 28px) !important;
+    align-items: stretch;
+  }
+}
+
+.review-page .review-portrait-field {
+  min-width: 0 !important;
+  box-sizing: border-box;
+}
+
+.review-page .review-portrait-upload {
+  display: grid !important;
+  grid-template-columns: 32px minmax(0, 1fr) !important;
+  grid-template-rows: auto auto !important;
+  align-items: center !important;
+  justify-content: stretch !important;
+  gap: 10px 11px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  box-sizing: border-box !important;
+  padding: 13px !important;
+  text-align: left !important;
+  overflow: hidden !important;
+}
+
+.review-page .review-portrait-upload > .upload-icon {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  width: 32px !important;
+  height: 32px !important;
+  flex: none !important;
+  justify-self: center !important;
+}
+
+.review-page .review-portrait-upload > span:nth-child(2) {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+  overflow-wrap: anywhere;
+  text-align: left !important;
+}
+
+.review-page .review-portrait-upload input[type="file"] {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 44px !important;
+  margin: 0 !important;
+  padding: 9px 10px !important;
+  box-sizing: border-box !important;
+  border: 1px solid #e5dcd7 !important;
+  border-radius: 10px !important;
+  background: #fffdfb !important;
+  color: #786d6d !important;
+  font-size: 10px !important;
+  overflow: hidden !important;
+}
+
+.review-page .review-portrait-upload input[type="file"]::file-selector-button {
+  margin-right: 8px;
+  padding: 5px 9px;
+  border: 1px solid #e2d4d0;
+  border-radius: 7px;
+  background: #f8e6e8;
+  color: #7d1a2a;
+  font: inherit;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .review-page .review-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .review-page .review-portrait-upload {
+    grid-template-columns: 32px minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .review-page .review-form-card {
+    min-width: 0;
+  }
+  .review-page .review-portrait-upload {
+    padding: 11px !important;
+    gap: 9px !important;
+  }
+  .review-page .review-portrait-upload input[type="file"] {
+    font-size: 9px !important;
+    padding: 8px !important;
+  }
+}
