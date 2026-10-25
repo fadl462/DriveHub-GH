@@ -72,3 +72,11 @@ The existing public review form should POST to a server-side endpoint that valid
 - Replaced the placeholder red “D” tile and text lockup with the official DriveHub GH logo supplied in the brand asset package.
 - Added `drivehub-logo.svg` to the Command folder and sized it responsively in the sidebar.
 - Kept the logo asset local to `/command/` so the dashboard does not depend on a third-party host.
+
+
+## Stage 2 — Rental operations
+- Added per-rental Edit and Complete actions.
+- Editing validates dates and prevents overlapping bookings for the same vehicle.
+- Completing a rental updates its status and refreshes overview/fleet/rental views.
+- Added an Actions column to the rentals table.
+- These actions remain demo/browser-local until the shared database and server-side authorization stage is implemented.
