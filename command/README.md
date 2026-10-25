@@ -80,3 +80,9 @@ The existing public review form should POST to a server-side endpoint that valid
 - Completing a rental updates its status and refreshes overview/fleet/rental views.
 - Added an Actions column to the rentals table.
 - These actions remain demo/browser-local until the shared database and server-side authorization stage is implemented.
+
+
+## Logo prominence and placement fix
+- Cropped the official vector logo's square artboard to the actual wide logo artwork, so the wordmark renders at a readable size.
+- Positioned the logo at the top-left of the Command sidebar, matching the public website's prominent brand treatment.
+- Kept the Command / Operations Centre label beneath the logo rather than shrinking the logo beside it.
