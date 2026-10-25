@@ -208,6 +208,43 @@ $('#rentalRows').addEventListener('click',e=>{
  const edit=e.target.closest('[data-rental-edit]');
  if(edit){const r=state.rentals.find(x=>x.id===edit.dataset.rentalEdit);if(!r)return;const customer=prompt('Customer name:',r.customer);if(customer===null)return;const vehicle=prompt('Vehicle:',r.vehicle);if(vehicle===null)return;const pickup=prompt('Pickup date (YYYY-MM-DD):',r.pickup);if(pickup===null)return;const returned=prompt('Return date (YYYY-MM-DD):',r.returned);if(returned===null)return;if(!pickup||!returned||returned<pickup){toast('Invalid rental dates.');return}const conflict=state.rentals.find(x=>x.id!==r.id&&x.vehicle===vehicle&&!['Completed','Cancelled'].includes(x.status)&&pickup<=x.returned&&returned>=x.pickup);if(conflict){toast(`Vehicle conflict: overlaps rental ${conflict.id}.`);return}r.customer=customer;r.vehicle=vehicle;r.pickup=pickup;r.returned=returned;recordAudit('Rental edited','rentals',`${r.id} · ${vehicle} · ${pickup} to ${returned}`);save();renderRentals();renderFleet();renderOverview();toast('Rental updated in this browser preview.')}
 });
+
+function daysBetweenISO(from,to){
+ const a=new Date((from||'')+'T00:00:00Z'),b=new Date((to||'')+'T00:00:00Z');
+ if(Number.isNaN(a.getTime())||Number.isNaN(b.getTime()))return null;
+ return Math.round((b-a)/86400000);
+}
+function buildOperationalAlerts(){
+ const today=localISODate(), alerts=[];
+ state.maintenance.forEach(m=>{
+  const status=m.status||'Scheduled', start=maintenanceStart(m), end=maintenanceEnd(m);
+  if(['Completed','Cancelled'].includes(status)||!start)return;
+  const until=daysBetweenISO(today,start), ongoing= start<=today&&end>=today;
+  if(ongoing) alerts.push({level:'critical',title:'Vehicle in maintenance',detail:`${m.vehicle} · ${m.serviceType||'Service'} · until ${fmtDate(end)}`,action:'Review fleet'});
+  else if(until!==null&&until>=0&&until<=7) alerts.push({level:until<=2?'warning':'info',title:until===0?'Maintenance starts today':`Maintenance in ${until} day${until===1?'':'s'}`,detail:`${m.vehicle} · ${m.serviceType||'Service'} · ${fmtDate(start)}${end!==start?' – '+fmtDate(end):''}`,action:'Review fleet'});
+ });
+ state.rentals.forEach(r=>{
+  if(['Completed','Cancelled'].includes(r.status))return;
+  const days=daysBetweenISO(today,r.pickup);
+  if(days!==null&&days>=0&&days<=2) alerts.push({level:days===0?'warning':'info',title:days===0?'Rental pickup today':`Rental pickup in ${days} day${days===1?'':'s'}`,detail:`${r.vehicle} · ${r.customer} · ${fmtDate(r.pickup)}`,action:'Review rentals'});
+  const endDays=daysBetweenISO(today,r.returned);
+  if(endDays!==null&&endDays>=0&&endDays<=1) alerts.push({level:'warning',title:endDays===0?'Rental return due today':'Rental return due tomorrow',detail:`${r.vehicle} · ${r.customer} · ${fmtDate(r.returned)}`,action:'Review rentals'});
+ });
+ // Highlight any existing active rental/service overlap in demo data so staff can spot legacy conflicts.
+ state.rentals.filter(r=>!['Completed','Cancelled'].includes(r.status)).forEach(r=>{
+  const m=state.maintenance.find(m=>m.vehicle===r.vehicle&&!['Completed','Cancelled'].includes(m.status||'Scheduled')&&maintenanceOverlaps(m,r.pickup,r.returned));
+  if(m)alerts.push({level:'critical',title:'Rental conflicts with maintenance',detail:`${r.vehicle} · rental ${fmtDate(r.pickup)} – ${fmtDate(r.returned)} overlaps service ${fmtDate(maintenanceStart(m))} – ${fmtDate(maintenanceEnd(m))}`,action:'Review fleet'});
+ });
+ return alerts.sort((a,b)=>(({critical:0,warning:1,info:2}[a.level])-({critical:0,warning:1,info:2}[b.level])));
+}
+function renderOperationalAlerts(){
+ const alerts=buildOperationalAlerts();
+ const content=alerts.length?alerts.map((a,i)=>`<article class="ops-alert ${a.level}"><span class="ops-alert-mark">${a.level==='critical'?'!':a.level==='warning'?'▲':'i'}</span><div class="ops-alert-copy"><strong>${escapeHTML(a.title)}</strong><small>${escapeHTML(a.detail)}</small></div><button type="button" class="text-button" data-alert-action="${a.action==='Review rentals'?'rentals':'fleet'}">${a.action}</button></article>`).join(''):'<div class="ops-alert-empty"><strong>All clear</strong><span>No upcoming rental or maintenance alerts in the current preview data.</span></div>';
+ const ops=document.querySelector('#opsAlerts');
+ if(ops)ops.innerHTML=`<div class="ops-alerts-heading"><div><h3>Operational alerts</h3><p>Upcoming deadlines and availability risks</p></div><span class="ops-alert-count">${alerts.length}</span></div><div class="ops-alerts-list">${content}</div>`;
+ const fleet=document.querySelector('#fleetAlerts');
+ if(fleet)fleet.innerHTML=`<div class="ops-alerts-heading"><div><h3>Fleet alerts</h3><p>Service windows and rental conflicts</p></div><span class="ops-alert-count">${alerts.filter(a=>a.level==='critical'||a.level==='warning').length}</span></div><div class="ops-alerts-list">${content}</div>`;
+}
 function renderFleet(){
  const today=localISODate();
  $('#fleetGrid').innerHTML=state.fleet.map(v=>{
@@ -221,6 +258,7 @@ function renderFleet(){
   const start=maintenanceStart(m), end=maintenanceEnd(m), status=m.status||'Scheduled';
   return `<div class="maintenance-item"><span class="metric-icon cream">⚙</span><div><strong>${escapeHTML(m.vehicle)} ${statusBadge(status)}</strong><small>${escapeHTML(m.serviceType||'Routine service')} · ${escapeHTML(m.note)}</small></div><time>${fmtDate(start)}${end!==start?' – '+fmtDate(end):''}</time></div>`
  }).join('')||'<div class="empty-state"><strong>No maintenance scheduled</strong><span>Add a service window to keep fleet availability accurate.</span></div>';
+ renderOperationalAlerts();
 }
 function customerStats(c){
  const rentals=state.rentals.filter(r=>r.customer===c.name);
@@ -285,4 +323,7 @@ $('#actionForm').addEventListener('submit',e=>{if(e.submitter?.value==='cancel')
 }else if(type==='review'){state.reviews.unshift({id:`RV-${105+state.reviews.length}`,name:data.name,email:data.email,vehicle:data.vehicle,rating:Number(data.rating),date:new Date().toISOString().slice(0,10),status:'Pending',good:data.good,improve:data.improve});toast('Review record added to pending moderation.');nav('reviews')}save();$('#actionDialog').close();renderOverview();renderReviews();renderInvoices();renderPayments();renderRentals();renderFleet();renderCustomers()});
 $$('[data-report]').forEach(b=>b.onclick=()=>{const type=b.dataset.report;let rows;if(type==='invoices')rows=[['Invoice','Customer','Total','Paid','Balance','Status'],...state.invoices.map(i=>[i.id,i.customer,i.total,i.paid,Math.max(0,i.total-i.paid),i.status])];else if(type==='fleet')rows=[['Vehicle','Plate','Status','Daily rate','Utilisation'],...state.fleet.map(v=>[v.name,v.plate,v.status,v.rate,v.util+'%'])];else if(type==='reviews')rows=[['Review','Customer','Vehicle','Rating','Status','Date'],...state.reviews.map(r=>[r.id,r.name,r.vehicle,r.rating,r.status,r.date])];else rows=[['Rental','Customer','Vehicle','Pickup','Return','Days','Rate','Total'],...state.rentals.map(r=>[r.id,r.customer,r.vehicle,r.pickup,r.returned,daysInclusive(r.pickup,r.returned),r.rate,r.rate*daysInclusive(r.pickup,r.returned)])];downloadCSV(`drivehub-${type}-report-demo.csv`,rows);$('#reportOutput').innerHTML=`<h2>${type[0].toUpperCase()+type.slice(1)} report generated</h2><p class="section-desc">CSV download prepared from the current demo records. Connect live storage before using as an official business report.</p>`;toast('Demo report exported as CSV.')});
 $('#saveSettings').onclick=()=>{localStorage.setItem('dh-command-settings',JSON.stringify({name:$('#businessName').value,email:$('#businessEmail').value,phone:$('#businessPhone').value}));toast('Preferences saved in this browser preview.')};
+
+document.addEventListener('click',e=>{const button=e.target.closest('[data-alert-action]');if(!button)return;nav(button.dataset.alertAction);});
+
 renderOverview();renderReviews();renderInvoices();renderPayments();renderRentals();renderFleet();renderCustomers();

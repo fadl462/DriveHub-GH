@@ -127,3 +127,25 @@
 .status.scheduled{color:#9b6c1c;background:#fff2db}
 .status.cancelled{color:#766a6b;background:#f0ebea}
 @media(max-width:480px){.maintenance-item{flex-wrap:wrap}.maintenance-item time{margin-left:40px;width:100%}}
+
+/* Stage 10 — operational alerts */
+.ops-alerts-panel,.fleet-alerts-panel{margin:0 0 22px}
+.ops-alerts-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.ops-alerts-heading h3{margin:0;font-size:16px}
+.ops-alerts-heading p{margin:4px 0 0;color:var(--muted,#8c8580);font-size:12px}
+.ops-alert-count{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 8px;border-radius:999px;background:#f1e7e1;color:#382c29;font-weight:700}
+.ops-alerts-list{display:grid;gap:9px}
+.ops-alert{display:flex;align-items:center;gap:12px;padding:13px 15px;border:1px solid #e8dfd9;border-radius:13px;background:#fff}
+.ops-alert.critical{border-left:4px solid #b8292f}
+.ops-alert.warning{border-left:4px solid #c8872a}
+.ops-alert.info{border-left:4px solid #8e9b9d}
+.ops-alert-mark{flex:0 0 27px;width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:#f5ece7;color:#4b2928;font-size:12px;font-weight:800}
+.ops-alert.critical .ops-alert-mark{background:#fae7e7;color:#a11e25}
+.ops-alert.warning .ops-alert-mark{background:#fff0d9;color:#88530e}
+.ops-alert-copy{display:grid;gap:4px;min-width:0;flex:1}
+.ops-alert-copy strong{font-size:13px}
+.ops-alert-copy small{font-size:12px;color:var(--muted,#8c8580);line-height:1.45}
+.ops-alert .text-button{border:0;background:transparent;color:#9e252c;font-weight:700;cursor:pointer;white-space:nowrap}
+.ops-alert-empty{padding:16px;border:1px dashed #ded2cb;border-radius:13px;display:grid;gap:4px;background:#fffdfb}
+.ops-alert-empty span{font-size:12px;color:var(--muted,#8c8580)}
+@media(max-width:620px){.ops-alert{align-items:flex-start;flex-wrap:wrap}.ops-alert .text-button{margin-left:39px}.ops-alert-copy{flex-basis:calc(100% - 45px)}}

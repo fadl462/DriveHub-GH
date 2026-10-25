@@ -151,3 +151,10 @@ The Command Centre UI is still using browser-local demo state. Do not enter real
 - Fleet cards reflect current maintenance/rental availability; service list shows the full window and status.
 - Maintenance create events are added to the browser-local audit preview.
 - Data still lives in this browser's `localStorage`; this is not shared multi-user scheduling or a production backend. Apply server-side transaction/availability checks before real bookings.
+
+
+## Stage 10 — Fleet availability & operational alerts
+- Adds operational alerts for rentals due to start or return soon, upcoming maintenance, active maintenance, and existing rental/service overlaps.
+- Adds alert links to jump to Fleet or Rentals.
+- Fleet view includes a focused alert panel; overview includes an operational summary when the existing markup supports it.
+- Alerts are derived from local preview data and the browser's current date. They do not send notifications or replace backend enforcement.
