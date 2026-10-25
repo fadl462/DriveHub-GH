@@ -321,7 +321,50 @@ $('#actionForm').addEventListener('submit',e=>{if(e.submitter?.value==='cancel')
  toast('Maintenance schedule saved in this browser preview.');
  nav('fleet')
 }else if(type==='review'){state.reviews.unshift({id:`RV-${105+state.reviews.length}`,name:data.name,email:data.email,vehicle:data.vehicle,rating:Number(data.rating),date:new Date().toISOString().slice(0,10),status:'Pending',good:data.good,improve:data.improve});toast('Review record added to pending moderation.');nav('reviews')}save();$('#actionDialog').close();renderOverview();renderReviews();renderInvoices();renderPayments();renderRentals();renderFleet();renderCustomers()});
-$$('[data-report]').forEach(b=>b.onclick=()=>{const type=b.dataset.report;let rows;if(type==='invoices')rows=[['Invoice','Customer','Total','Paid','Balance','Status'],...state.invoices.map(i=>[i.id,i.customer,i.total,i.paid,Math.max(0,i.total-i.paid),i.status])];else if(type==='fleet')rows=[['Vehicle','Plate','Status','Daily rate','Utilisation'],...state.fleet.map(v=>[v.name,v.plate,v.status,v.rate,v.util+'%'])];else if(type==='reviews')rows=[['Review','Customer','Vehicle','Rating','Status','Date'],...state.reviews.map(r=>[r.id,r.name,r.vehicle,r.rating,r.status,r.date])];else rows=[['Rental','Customer','Vehicle','Pickup','Return','Days','Rate','Total'],...state.rentals.map(r=>[r.id,r.customer,r.vehicle,r.pickup,r.returned,daysInclusive(r.pickup,r.returned),r.rate,r.rate*daysInclusive(r.pickup,r.returned)])];downloadCSV(`drivehub-${type}-report-demo.csv`,rows);$('#reportOutput').innerHTML=`<h2>${type[0].toUpperCase()+type.slice(1)} report generated</h2><p class="section-desc">CSV download prepared from the current demo records. Connect live storage before using as an official business report.</p>`;toast('Demo report exported as CSV.')});
+
+function reportDateAllowed(date){
+ const from=$('#reportStartDate')?.value||'',to=$('#reportEndDate')?.value||'';
+ if(from&&to&&to<from){toast('Report end date must be on or after the start date.');return false}
+ return (!from||date>=from)&&(!to||date<=to)
+}
+function generateReport(type){
+ let headers=[],records=[],dateOf=()=>'',summary='';
+ if(type==='invoices'){
+  headers=['Invoice','Customer','Issue date','Total','Paid','Balance','Status'];
+  records=state.invoices.filter(i=>reportDateAllowed(i.date||i.issueDate||'')).map(i=>[i.id,i.customer,i.date||i.issueDate||'',Number(i.total||0),Number(i.paid||0),Math.max(0,Number(i.total||0)-Number(i.paid||0)),effectiveInvoiceStatus(i)]);
+  summary=`${records.length} invoices · balance ${money(records.reduce((s,r)=>s+Number(r[5]||0),0))}`;
+ }else if(type==='fleet'){
+  headers=['Vehicle','Plate','Recorded status','Daily rate','Utilisation'];
+  records=state.fleet.map(v=>[v.name,v.plate,v.status,v.rate,(v.util||0)+'%']);
+  summary=`${records.length} vehicles in fleet records`;
+ }else if(type==='reviews'){
+  headers=['Review','Customer','Vehicle','Rating','Status','Date'];
+  records=state.reviews.filter(r=>reportDateAllowed(r.date||'')).map(r=>[r.id,r.name,r.vehicle,r.rating,r.status,r.date]);
+  summary=`${records.length} reviews · average rating ${records.length?(records.reduce((s,r)=>s+Number(r[3]||0),0)/records.length).toFixed(1):'—'}`;
+ }else if(type==='payments'){
+  headers=['Payment','Customer','Invoice','Date','Method','Amount'];
+  records=state.payments.filter(p=>reportDateAllowed(p.date||'')).map(p=>[p.id,p.customer,p.invoice,p.date,p.method,Number(p.amount||0)]);
+  summary=`${records.length} payments · total received ${money(records.reduce((s,r)=>s+Number(r[5]||0),0))}`;
+ }else if(type==='maintenance'){
+  headers=['Vehicle','Service type','Start date','End date','Status','Notes'];
+  records=state.maintenance.filter(m=>reportDateAllowed(maintenanceStart(m))||reportDateAllowed(maintenanceEnd(m))).map(m=>[m.vehicle,m.serviceType||'Routine service',maintenanceStart(m),maintenanceEnd(m),m.status||'Scheduled',m.note||'']);
+  summary=`${records.length} maintenance records`;
+ }else{
+  headers=['Rental','Customer','Vehicle','Pickup','Return','Days','Daily rate','Rental total','Status'];
+  records=state.rentals.filter(r=>reportDateAllowed(r.pickup||'')).map(r=>{const days=daysInclusive(r.pickup,r.returned);return [r.id,r.customer,r.vehicle,r.pickup,r.returned,days,Number(r.rate||0),Number(r.rate||0)*days,r.status]});
+  summary=`${records.length} rentals · recorded rental value ${money(records.reduce((s,r)=>s+Number(r[7]||0),0))}`;
+ }
+ const rows=[headers,...records];
+ downloadCSV(`drivehub-${type}-report-demo.csv`,rows);
+ const tableRows=records.slice(0,12).map(row=>`<tr>${row.map(cell=>`<td>${escapeHTML(String(cell??''))}</td>`).join('')}</tr>`).join('');
+ $('#reportOutput').innerHTML=`<div class="report-output-head"><div><p class="eyebrow">REPORT PREVIEW</p><h2>${type[0].toUpperCase()+type.slice(1)} report</h2><p class="section-desc">${escapeHTML(summary)}</p></div><button type="button" class="btn btn-primary" id="exportCurrentReport">Export CSV</button></div><div class="table-wrap"><table class="data-table"><thead><tr>${headers.map(h=>`<th>${escapeHTML(h)}</th>`).join('')}</tr></thead><tbody>${tableRows||`<tr><td colspan="${headers.length}">No records match the selected dates.</td></tr>`}</tbody></table></div>${records.length>12?`<p class="section-desc">Showing first 12 of ${records.length} records. The CSV contains all matching records.</p>`:''}<p class="report-caveat">Preview based on records stored in this browser. Verify figures before using for official accounting.</p>`;
+ const exportBtn=$('#exportCurrentReport');
+ if(exportBtn)exportBtn.onclick=()=>{downloadCSV(`drivehub-${type}-report-demo.csv`,rows);toast('CSV report exported.')};
+ toast('Report generated and CSV downloaded.');
+}
+$$('[data-report]').forEach(b=>b.onclick=()=>generateReport(b.dataset.report));
+$('#clearReportDates')?.addEventListener('click',()=>{$('#reportStartDate').value='';$('#reportEndDate').value='';toast('Report date filters cleared.')});
+
 $('#saveSettings').onclick=()=>{localStorage.setItem('dh-command-settings',JSON.stringify({name:$('#businessName').value,email:$('#businessEmail').value,phone:$('#businessPhone').value}));toast('Preferences saved in this browser preview.')};
 
 document.addEventListener('click',e=>{const button=e.target.closest('[data-alert-action]');if(!button)return;nav(button.dataset.alertAction);});

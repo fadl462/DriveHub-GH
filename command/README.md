@@ -158,3 +158,10 @@ The Command Centre UI is still using browser-local demo state. Do not enter real
 - Adds alert links to jump to Fleet or Rentals.
 - Fleet view includes a focused alert panel; overview includes an operational summary when the existing markup supports it.
 - Alerts are derived from local preview data and the browser's current date. They do not send notifications or replace backend enforcement.
+
+
+## Stage 11 — Management reports
+- Adds from/to date filters to reports (applied using each report's relevant date).
+- Adds payments and maintenance schedule report options.
+- Generates a preview table and CSV export for rentals, invoices, fleet, reviews, payments, and maintenance.
+- Report totals are derived from browser-local demo records. Fleet report is not date-filtered because fleet records are current snapshots; maintenance filters by start or end date. This is not a replacement for an accounting system or shared database.
