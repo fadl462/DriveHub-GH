@@ -53,8 +53,33 @@ const initial = {
 };
 let state;
 try { state = JSON.parse(localStorage.getItem('dh-command-demo') || 'null') || structuredClone(initial); } catch { state = JSON.parse(JSON.stringify(initial)); }
+if (!Array.isArray(state.auditLog)) state.auditLog = [];
 let reviewFilter='Pending', invoiceFilter='All', rentalFilter='All', currentView='overview';
 function save(){try{localStorage.setItem('dh-command-demo',JSON.stringify(state));return true}catch(e){toast('Could not save in this browser. Storage may be full or disabled.');return false}}
+function recordAudit(action, area=currentView, details=''){
+  if(!Array.isArray(state.auditLog)) state.auditLog=[];
+  state.auditLog.unshift({id:'AUD-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),at:new Date().toISOString(),area:String(area||'workspace'),action:String(action||'Activity'),record:'',actor:'DriveHub Admin (demo)',details:String(details||'')});
+  state.auditLog=state.auditLog.slice(0,500);
+  save();
+  if(currentView==='audit') renderAudit();
+}
+function renderAudit(){
+  const logs=Array.isArray(state.auditLog)?state.auditLog:[];
+  const q=($('#auditSearch')?.value||'').trim().toLowerCase();
+  const visible=logs.filter(x=>[x.area,x.action,x.record,x.actor,x.details].join(' ').toLowerCase().includes(q));
+  const today=new Date().toISOString().slice(0,10);
+  if($('#auditCount'))$('#auditCount').textContent=logs.length;
+  if($('#auditToday'))$('#auditToday').textContent=logs.filter(x=>String(x.at).slice(0,10)===today).length;
+  if($('#auditLast'))$('#auditLast').textContent=logs.length?new Date(logs[0].at).toLocaleTimeString('en-GH',{hour:'2-digit',minute:'2-digit'}):'—';
+  if($('#auditRows'))$('#auditRows').innerHTML=visible.map(x=>`<tr><td>${escapeHTML(new Date(x.at).toLocaleString('en-GH'))}</td><td>${escapeHTML(x.area)}</td><td><strong>${escapeHTML(x.action)}</strong></td><td>${escapeHTML(x.record||'—')}</td><td>${escapeHTML(x.actor)}</td><td>${escapeHTML(x.details||'—')}</td></tr>`).join('')||'<tr><td colspan="6">No activity found. Actions you perform in this browser will appear here.</td></tr>';
+}
+function exportAuditCSV(){
+  const rows=[['Timestamp','Area','Action','Record','Actor','Details'],...(state.auditLog||[]).map(x=>[x.at,x.area,x.action,x.record,x.actor,x.details])];
+  const csv=rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='drivehub-audit-preview.csv';a.click();URL.revokeObjectURL(url);
+}
+
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),3000)}
 function initials(name){return name.split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase()}
 function statusClass(s){return s.toLowerCase().replace(/\s+/g,'-')}
@@ -93,11 +118,25 @@ function renderKpis(){
  const bars=$$('#revenueMetric').length;
 }
 
-function nav(view){currentView=view;$$('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$$('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${view}`));const titles={overview:'Overview',reviews:'Reviews & reputation',invoices:'Invoices',payments:'Payments & receipts',rentals:'Rental operations',fleet:'Fleet management',customers:'Customers',reports:'Reports & insights',settings:'Settings'};$('#crumbCurrent').textContent=titles[view]||view;$('#pageTitle').innerHTML=view==='overview'?'Good evening. <em>Let\'s move.</em>':titles[view];$('#eyebrow').textContent=view==='overview'?'YOUR BUSINESS, AT A GLANCE':'DRIVEHUB GH · '+titles[view].toUpperCase();$('#pageSubtitle').textContent=({overview:"A clear view of today's activity across DriveHub GH.",reviews:'Listen, respond and decide what gets published.',invoices:'Keep every rental charge and balance accounted for.',payments:'Track recorded payments and issue receipts.',rentals:'Know what is booked, active and due back.',fleet:'Make every vehicle work harder and stay road-ready.',customers:'Understand your customers and their rental history.',reports:'Turn day-to-day activity into clear business decisions.',settings:'Manage company preferences and production readiness.'})[view];$('#sidebar').classList.remove('open');if(view==='reviews')renderReviews();if(view==='invoices')renderInvoices();if(view==='payments')renderPayments();if(view==='rentals')renderRentals();if(view==='fleet')renderFleet();if(view==='customers')renderCustomers()}
+function nav(view){currentView=view;$$('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$$('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${view}`));const titles={overview:'Overview',reviews:'Reviews & reputation',invoices:'Invoices',payments:'Payments & receipts',rentals:'Rental operations',fleet:'Fleet management',customers:'Customers',reports:'Reports & insights',audit:'Audit trail',settings:'Settings'};$('#crumbCurrent').textContent=titles[view]||view; if(view==='audit') renderAudit();$('#pageTitle').innerHTML=view==='overview'?'Good evening. <em>Let\'s move.</em>':titles[view];$('#eyebrow').textContent=view==='overview'?'YOUR BUSINESS, AT A GLANCE':'DRIVEHUB GH · '+titles[view].toUpperCase();$('#pageSubtitle').textContent=({overview:"A clear view of today's activity across DriveHub GH.",reviews:'Listen, respond and decide what gets published.',invoices:'Keep every rental charge and balance accounted for.',payments:'Track recorded payments and issue receipts.',rentals:'Know what is booked, active and due back.',fleet:'Make every vehicle work harder and stay road-ready.',customers:'Understand your customers and their rental history.',reports:'Turn day-to-day activity into clear business decisions.',settings:'Manage company preferences and production readiness.'})[view];$('#sidebar').classList.remove('open');if(view==='reviews')renderReviews();if(view==='invoices')renderInvoices();if(view==='payments')renderPayments();if(view==='rentals')renderRentals();if(view==='fleet')renderFleet();if(view==='customers')renderCustomers()}
 $$('.nav-item[data-view]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.view)));
 $$('[data-goto]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.goto)));
 $('#mobileMenu').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
 $('#dismissNotice').addEventListener('click',()=>$('.demo-notice').remove());
+
+$('#auditSearch')?.addEventListener('input',renderAudit);
+$('#exportAudit')?.addEventListener('click',()=>{exportAuditCSV();recordAudit('Exported audit preview CSV','audit','Export requested by user')});
+$('#clearAudit')?.addEventListener('click',()=>{if(!confirm('Clear the local preview audit log? This cannot be undone in this browser.'))return;state.auditLog=[];save();renderAudit();toast('Preview audit log cleared.')});
+// Capture meaningful action buttons without recording form field contents or customer/payment values.
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');
+  if(!b||b.dataset.auditSkip==='true'||b.closest('#view-audit'))return;
+  const label=(b.innerText||b.getAttribute('aria-label')||b.title||'').replace(/\s+/g,' ').trim();
+  if(!label||/^(overview|reviews|invoices|payments & receipts|rentals|fleet|customers|reports|settings|audit trail)$/i.test(label))return;
+  if(b.id==='mobileMenu'||b.id==='dismissNotice'||b.id==='revenueRange')return;
+  if(b.type==='submit')return; // action handlers can add more specific events later
+  recordAudit('Clicked action',currentView,label.slice(0,120));
+},true);
 function renderChart(){
  const count=Number($('#revenueRange').value||7), now=new Date();
  const months=[];

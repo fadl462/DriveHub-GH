@@ -126,3 +126,10 @@ This stage prepares the production data layer; it does **not** activate a live d
 
 ### Critical boundary
 The Command Centre UI is still using browser-local demo state. Do not enter real customer or financial information until Cloudflare D1 is created and bound, API handlers are implemented and tested, authentication is enforced server-side, and the UI is switched from local storage to the API. A database binding alone is not authentication.
+
+
+## Stage 7 — Audit trail preview
+- Adds an Audit trail workspace view with local event count, today's event count, latest activity, search and CSV export.
+- Captures meaningful button actions without logging form field values.
+- Preview events are stored in browser-local demo state and capped at 500 entries.
+- The audit log is not tamper-proof and must not be treated as a production security record. Production audit events must be written server-side to the database after authentication and authorization checks.

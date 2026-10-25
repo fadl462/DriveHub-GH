@@ -22,7 +22,8 @@
         <button class="nav-item" data-view="rentals"><span>▣</span> Rentals</button>
         <button class="nav-item" data-view="fleet"><span>◇</span> Fleet</button>
         <button class="nav-item" data-view="customers"><span>♙</span> Customers</button>
-        <button class="nav-item" data-view="reports"><span>▥</span> Reports</button>
+        <button class="nav-item" data-view="audit"><span>◷</span> Audit trail</button>
+      <button class="nav-item" data-view="reports"><span>▥</span> Reports</button>
       </nav>
       <div class="sidebar-bottom">
         <div class="support-card"><span class="support-icon">✦</span><strong>Keep every journey moving.</strong><p>One clear view of your rental business.</p></div>
@@ -93,7 +94,25 @@
           <article class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Email</th><th>Phone</th><th>Rentals</th><th>Total spend</th><th>Last rental</th><th>Actions</th></tr></thead><tbody id="customerRows"></tbody></table></div></article>
         </section>
 
-        <section class="view" id="view-reports">
+        <section class="view" id="view-audit">
+  <div class="section-heading">
+    <div><p class="eyebrow">ACCOUNTABILITY & CONTROL</p><h2>Audit trail</h2><p class="muted">A local preview log of important actions performed in this browser.</p></div>
+    <div class="heading-actions"><button class="btn btn-secondary" id="exportAudit">Export CSV</button><button class="btn btn-secondary" id="clearAudit">Clear preview log</button></div>
+  </div>
+  <div class="notice notice-warning" style="margin-bottom:18px"><strong>Preview limitation</strong><br>This log is stored in this browser only. It is not tamper-proof and is not a production security audit trail.</div>
+  <div class="metric-grid audit-metrics">
+    <article class="metric-card"><span>Recorded events</span><strong id="auditCount">0</strong><small>Local browser log</small></article>
+    <article class="metric-card"><span>Today</span><strong id="auditToday">0</strong><small>Events recorded today</small></article>
+    <article class="metric-card"><span>Last activity</span><strong id="auditLast">—</strong><small>Most recent event</small></article>
+  </div>
+  <div class="panel">
+    <div class="panel-heading"><div><h3>Recent activity</h3><p class="muted">Newest events appear first.</p></div>
+      <input id="auditSearch" class="search-input" type="search" placeholder="Search activity…" aria-label="Search audit trail">
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>Time</th><th>Area</th><th>Action</th><th>Record / control</th><th>Actor</th><th>Details</th></tr></thead><tbody id="auditRows"></tbody></table></div>
+  </div>
+</section>
+<section class="view" id="view-reports">
           <div class="report-grid"><article class="report-card"><span class="metric-icon red">↗</span><h3>Revenue report</h3><p>Compare recorded income across periods and vehicles.</p><button class="text-link" data-report="revenue">Generate report →</button></article><article class="report-card"><span class="metric-icon cream">▤</span><h3>Outstanding invoices</h3><p>Review unpaid balances and overdue accounts.</p><button class="text-link" data-report="invoices">Generate report →</button></article><article class="report-card"><span class="metric-icon green">◇</span><h3>Fleet performance</h3><p>Review vehicle utilisation and rental activity.</p><button class="text-link" data-report="fleet">Generate report →</button></article><article class="report-card"><span class="metric-icon rose">✳</span><h3>Review performance</h3><p>Review rating trends and recurring customer feedback.</p><button class="text-link" data-report="reviews">Generate report →</button></article></div><article class="panel" id="reportOutput"><h2>Reports are ready when you are.</h2><p class="section-desc">Choose a report above. Exports are based on the records currently shown in this demo workspace.</p></article>
         </section>
 

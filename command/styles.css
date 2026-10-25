@@ -98,3 +98,15 @@
 .profile-list{margin:0;padding:0;list-style:none;display:grid;gap:8px}
 .profile-list li{padding:11px 12px;background:#faf7f5;border-radius:9px;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
 @media(max-width:650px){.profile-metrics{grid-template-columns:1fr}.customer-toolbar-actions{width:100%}.customer-toolbar-actions .search-input{width:100%}}
+
+/* Stage 7 — Audit trail */
+.audit-metrics{margin:18px 0 22px}
+.search-input{border:1px solid var(--line,#eadfdb);border-radius:10px;padding:11px 13px;background:#fff;color:inherit;min-width:220px;font:inherit}
+#view-audit .notice{border-radius:12px;padding:14px 16px;line-height:1.55}
+#view-audit .notice-warning{background:#fff8e8;border:1px solid #f3d59b;color:#77511c}
+#view-audit .table-wrap{overflow-x:auto}
+#view-audit table{min-width:900px}
+#view-audit td{vertical-align:top}
+#view-audit td:first-child{white-space:nowrap;color:var(--muted,#81777a);font-size:12px}
+#view-audit td:nth-child(3){font-weight:600}
+@media(max-width:760px){#view-audit .section-heading{align-items:flex-start;gap:12px;flex-direction:column}#view-audit .heading-actions{display:flex;flex-wrap:wrap;gap:8px}.search-input{min-width:0;width:100%}}
