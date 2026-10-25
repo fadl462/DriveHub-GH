@@ -489,3 +489,133 @@ body{min-width:0}
     grid-row: auto !important;
   }
 }
+
+
+/* Feedback fields: textarea and separate upload panel sit side-by-side as requested. */
+.review-page .review-form .review-story-layout {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.8fr) minmax(230px, 1fr) !important;
+  align-items: stretch !important;
+  gap: 16px !important;
+  padding: 17px !important;
+}
+.review-page .review-form .review-story-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.review-page .review-form .review-story-copy > label {
+  margin: 0;
+}
+.review-page .review-form .review-story-copy textarea {
+  flex: 1;
+  width: 100%;
+  min-height: 190px !important;
+  resize: vertical;
+}
+.review-page .review-form .review-story-files {
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid #eee1dc;
+  border-radius: 12px;
+  background: rgba(255,255,255,.76);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+.review-page .review-form .review-story-files h3 {
+  margin: 0;
+  color: #302a2b;
+  font-size: 10px;
+  line-height: 1.4;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.review-page .review-form .review-story-files .review-upload-choose {
+  margin: 0 !important;
+  min-width: 0;
+  padding: 10px !important;
+  align-items: center !important;
+}
+.review-page .review-form .review-upload-choose input[type="file"] {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.review-page .review-form .review-file-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+.review-page .review-form .review-file-empty {
+  color: #9b8e8e;
+  font-size: 10px;
+  padding: 4px 2px;
+}
+.review-page .review-form .review-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  padding: 7px 8px;
+  border-radius: 7px;
+  background: #faf5f2;
+  color: #4d4444;
+  font-size: 10px;
+}
+.review-page .review-form .review-file-item > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.review-page .review-form .review-file-remove {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: #f8e6e8;
+  color: #c51d35;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+.review-page .review-form .review-add-file {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 7px 10px;
+  border: 1px solid #e8d6d2;
+  border-radius: 8px;
+  background: #fff;
+  color: #b51c32;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.review-page .review-form .review-add-file:hover {
+  border-color: #c51d35;
+  background: #fff5f5;
+}
+@media (max-width: 680px) {
+  .review-page .review-form .review-story-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .review-page .review-form .review-story-copy textarea {
+    min-height: 150px !important;
+  }
+}
