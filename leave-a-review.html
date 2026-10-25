@@ -31,28 +31,22 @@
           <input type="hidden" name="_next" value="https://drivehub-gh.pages.dev/leave-a-review?submitted=1">
           <div class="review-field"><label for="reviewName">Your name <span>Required</span></label><input id="reviewName" name="name" autocomplete="name" maxlength="80" placeholder="How should we credit you?" required></div>
           <div class="review-field"><label for="reviewEmail">Email address</label><input id="reviewEmail" name="email" type="email" autocomplete="email" maxlength="120" placeholder="For follow-up only"></div>
-          <div class="review-field"><label for="reviewCar">Vehicle you rented</label><select id="reviewCar" name="car"><option value="Not specified">Choose your vehicle</option><option>Toyota Prado</option><option>Mitsubishi Outlander</option><option>Toyota RAV4</option><option>Hyundai Santa Fe</option><option>Honda CR-V</option><option>Toyota Land Cruiser V8</option><option>Other / not sure</option></select></div>
-          <div class="review-field review-field-full review-portrait-field">
-            <label for="reviewPortrait">Your portrait <span>Optional</span></label>
-            <p class="field-description">Add a clear profile photo if you would like us to consider displaying it alongside your review. Your photo will not be published without your permission below.</p>
-            <label class="review-upload review-portrait-upload" for="reviewPortrait">
-              <span class="upload-icon">＋</span>
-              <span><b>Add a portrait photo</b><small>Optional · JPG, PNG or WEBP</small></span>
-              <input id="reviewPortrait" type="file" name="_attachment" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" aria-describedby="portraitConsentNote">
-            </label>
-            <label class="review-consent review-portrait-consent" for="portraitConsent">
-              <input id="portraitConsent" type="checkbox" name="portrait_publication_consent" value="Yes — permission granted to display my portrait with my review">
-              <span>I give DriveHub GH permission to display this photo alongside my review if my review is selected for publication. I understand this is optional and I can submit a review without a photo.</span>
-            </label>
-            <small id="portraitConsentNote" class="review-hint">Uploading a photo does not guarantee publication. Reviews and photos are checked before anything is displayed publicly.</small>
-          </div>
-          <div class="review-field"><span class="review-label" id="ratingLabel">Overall rating <span>Required</span></span><div class="review-rating" role="radiogroup" aria-labelledby="ratingLabel">
+          <div class="review-field review-rating-field"><span class="review-label" id="ratingLabel">Overall rating <span>Required</span></span><div class="review-rating" role="radiogroup" aria-labelledby="ratingLabel">
               <input type="radio" id="star1" name="rating" value="1" required><label for="star1" title="1 star" aria-label="1 star">★</label>
               <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars" aria-label="2 stars">★</label>
               <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars" aria-label="3 stars">★</label>
               <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars" aria-label="4 stars">★</label>
               <input type="radio" id="star5" name="rating" value="5"><label for="star5" title="5 stars" aria-label="5 stars">★</label>
             </div><small class="review-hint">Choose the rating that best reflects your experience.</small></div>
+          <div class="review-field review-car-field"><label for="reviewCar">Vehicle you rented</label><select id="reviewCar" name="car"><option value="Not specified">Choose your vehicle</option><option>Toyota Prado</option><option>Mitsubishi Outlander</option><option>Toyota RAV4</option><option>Hyundai Santa Fe</option><option>Honda CR-V</option><option>Toyota Land Cruiser V8</option><option>Other / not sure</option></select></div>
+          <div class="review-field review-field-full review-portrait-field">
+            <label for="reviewPortrait">Your portrait <span>Optional</span></label>
+            <label class="review-upload review-portrait-upload" for="reviewPortrait">
+              <span class="upload-icon">＋</span>
+              <span><b>Add a portrait photo</b><small>Optional · JPG, PNG or WEBP</small></span>
+              <input id="reviewPortrait" type="file" name="_attachment" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
+            </label>
+          </div>
 
           <div class="review-divider"><span>THE GOOD & THE GROWING</span></div>
           <div class="review-field review-field-full review-story-field"><label for="reviewWentWell"><span class="field-icon field-icon-good">✦</span> What went well?</label><p class="field-description">The lovely moments, thoughtful service, comfort, convenience or anything that made your trip special.</p><textarea id="reviewWentWell" name="wentWell" maxlength="1200" placeholder="Tell us what you loved about your DriveHub experience…"></textarea><label class="review-upload" for="reviewWentWellFiles"><span class="upload-icon">＋</span><span><b>Add photos or documents</b><small>Optional · JPG, PNG, PDF or DOCX</small></span><input id="reviewWentWellFiles" type="file" name="_attachment" accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx" multiple></label></div>
@@ -115,27 +109,6 @@
       paint(selected ? Number(selected.value) : 0);
     }
 
-    var form = document.getElementById('reviewForm');
-    var portrait = document.getElementById('reviewPortrait');
-    var consent = document.getElementById('portraitConsent');
-    if (form && portrait && consent) {
-      function validatePortraitConsent() {
-        var photoSelected = Boolean(portrait.files && portrait.files.length);
-        consent.required = photoSelected;
-        consent.setCustomValidity(photoSelected && !consent.checked
-          ? 'Please confirm permission to display your portrait, or remove the photo to submit without one.'
-          : '');
-      }
-      portrait.addEventListener('change', validatePortraitConsent);
-      consent.addEventListener('change', validatePortraitConsent);
-      form.addEventListener('submit', function (event) {
-        validatePortraitConsent();
-        if (!form.checkValidity()) {
-          event.preventDefault();
-          form.reportValidity();
-        }
-      });
-    }
   }
 
   if (document.readyState === 'loading') {
