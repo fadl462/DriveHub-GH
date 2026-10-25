@@ -648,3 +648,86 @@ body{min-width:0}
     text-align: left !important;
   }
 }
+
+
+/* Targeted correction: stable review form grid and 65/35 page columns. */
+@media (min-width: 901px) {
+  .review-page .review-layout {
+    grid-template-columns: minmax(0, 65fr) minmax(0, 35fr) !important;
+    gap: clamp(18px, 2.3vw, 30px) !important;
+  }
+}
+@media (min-width: 601px) {
+  .review-page .review-form {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    align-items: start;
+  }
+
+  /* Explicit placement avoids labels/inputs being assigned to the same grid cell. */
+  .review-page .review-form > .review-field:nth-child(4) {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+  .review-page .review-form > .review-field:nth-child(5) {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+  }
+  .review-page .review-form > .review-rating-field {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+  .review-page .review-form > .review-car-field {
+    grid-column: 1 !important;
+    grid-row: 3 !important;
+  }
+  .review-page .review-form > .review-portrait-field {
+    grid-column: 2 !important;
+    grid-row: 2 / span 2 !important;
+    align-self: stretch !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .review-page .review-form > .review-divider,
+  .review-page .review-form > .review-story-field,
+  .review-page .review-form > .review-submit,
+  .review-page .review-form > .review-status {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+  }
+}
+.review-page .review-form .review-portrait-upload {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: hidden;
+}
+.review-page .review-form .review-portrait-upload input[type="file"] {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  flex: none !important;
+}
+@media (max-width: 600px) {
+  .review-page .review-form {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .review-page .review-form > .review-field:nth-child(4),
+  .review-page .review-form > .review-field:nth-child(5),
+  .review-page .review-form > .review-rating-field,
+  .review-page .review-form > .review-car-field,
+  .review-page .review-form > .review-portrait-field,
+  .review-page .review-form > .review-divider,
+  .review-page .review-form > .review-story-field,
+  .review-page .review-form > .review-submit,
+  .review-page .review-form > .review-status {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+}
