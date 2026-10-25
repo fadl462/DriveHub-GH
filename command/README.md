@@ -86,3 +86,13 @@ The existing public review form should POST to a server-side endpoint that valid
 - Cropped the official vector logo's square artboard to the actual wide logo artwork, so the wordmark renders at a readable size.
 - Positioned the logo at the top-left of the Command sidebar, matching the public website's prominent brand treatment.
 - Kept the Command / Operations Centre label beneath the logo rather than shrinking the logo beside it.
+
+
+## Stage 3 — Fleet management
+- Added fleet summary cards for total, available, rented, upcoming-booked and maintenance vehicles.
+- Added an Add vehicle workflow with registration uniqueness and daily-rate validation.
+- Added Edit vehicle workflow for name/model, registration, rate and service note.
+- Added a maintenance toggle to mark a vehicle unavailable or available.
+- Vehicle status is derived from current/future rentals, except when explicitly marked for maintenance.
+- Vehicle edits update references in demo rental and maintenance records.
+- These operations remain browser-local demo functionality; persistent shared data and server-side permissions are still required for production.
