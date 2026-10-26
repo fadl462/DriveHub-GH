@@ -231,6 +231,8 @@ function printInvoice(i){
 }
 
 $('#invoiceFilters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;invoiceFilter=b.dataset.filter;$$('#invoiceFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderInvoices()});
+$('#rentalFilters').addEventListener('click',e=>{const b=e.target.closest('button[data-filter]');if(!b)return;rentalFilter=b.dataset.filter;$$('#rentalFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderRentals()});
+$('#rentalSearch').addEventListener('input',renderRentals);
 function renderPayments(){
  const total=state.payments.reduce((s,p)=>s+Number(p.amount||0),0);
  if($('#paymentsReceivedMetric'))$('#paymentsReceivedMetric').textContent=money(total);
