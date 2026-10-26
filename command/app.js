@@ -156,7 +156,11 @@ function renderKpis(){
  const bars=$$('#revenueMetric').length;
 }
 
-function nav(view){currentView=view;$$('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$$('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${view}`));const titles={overview:'Overview',reviews:'Reviews & reputation',invoices:'Invoices',payments:'Payments & receipts',rentals:'Rental operations',fleet:'Fleet management',customers:'Customers',reports:'Reports & insights',audit:'Audit trail',settings:'Settings'};$('#crumbCurrent').textContent=titles[view]||view; if(view==='audit') renderAudit();$('#pageTitle').innerHTML=view==='overview'?'Good evening. <em>Let\'s move.</em>':titles[view];$('#eyebrow').textContent=view==='overview'?'YOUR BUSINESS, AT A GLANCE':'DRIVEHUB GH · '+titles[view].toUpperCase();$('#pageSubtitle').textContent=({overview:"A clear view of today's activity across DriveHub GH.",reviews:'Listen, respond and decide what gets published.',invoices:'Keep every rental charge and balance accounted for.',payments:'Track recorded payments and issue receipts.',rentals:'Know what is booked, active and due back.',fleet:'Make every vehicle work harder and stay road-ready.',customers:'Understand your customers and their rental history.',reports:'Turn day-to-day activity into clear business decisions.',settings:'Manage company preferences and production readiness.'})[view];$('#sidebar').classList.remove('open');if(view==='reviews')renderReviews();if(view==='invoices')renderInvoices();if(view==='payments')renderPayments();if(view==='rentals')renderRentals();if(view==='fleet'){renderFleet();loadLiveVehicles({quiet:true})}if(view==='customers')renderCustomers()}
+function nav(view){
+if(!view||!document.getElementById(`view-${view}`))view='overview';
+currentView=view;
+if(location.hash!==`#${view}`)history.replaceState(null,'',`${location.pathname}${location.search}#${view}`);
+$$('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$$('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${view}`));const titles={overview:'Overview',reviews:'Reviews & reputation',invoices:'Invoices',payments:'Payments & receipts',rentals:'Rental operations',fleet:'Fleet management',customers:'Customers',reports:'Reports & insights',audit:'Audit trail',settings:'Settings'};$('#crumbCurrent').textContent=titles[view]||view; if(view==='audit') renderAudit();$('#pageTitle').innerHTML=view==='overview'?'Good evening. <em>Let\'s move.</em>':titles[view];$('#eyebrow').textContent=view==='overview'?'YOUR BUSINESS, AT A GLANCE':'DRIVEHUB GH · '+titles[view].toUpperCase();$('#pageSubtitle').textContent=({overview:"A clear view of today's activity across DriveHub GH.",reviews:'Listen, respond and decide what gets published.',invoices:'Keep every rental charge and balance accounted for.',payments:'Track recorded payments and issue receipts.',rentals:'Know what is booked, active and due back.',fleet:'Make every vehicle work harder and stay road-ready.',customers:'Understand your customers and their rental history.',reports:'Turn day-to-day activity into clear business decisions.',settings:'Manage company preferences and production readiness.'})[view];$('#sidebar').classList.remove('open');if(view==='reviews')renderReviews();if(view==='invoices')renderInvoices();if(view==='payments')renderPayments();if(view==='rentals')renderRentals();if(view==='fleet'){renderFleet();loadLiveVehicles({quiet:true})}if(view==='customers')renderCustomers()}
 $$('.nav-item[data-view]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.view)));
 $$('[data-goto]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.goto)));
 $('#mobileMenu').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
@@ -425,6 +429,17 @@ $('#saveSettings').onclick=()=>{localStorage.setItem('dh-command-settings',JSON.
 document.addEventListener('click',e=>{const button=e.target.closest('[data-alert-action]');if(!button)return;nav(button.dataset.alertAction);});
 
 renderOverview();renderReviews();renderInvoices();renderPayments();renderRentals();renderFleet();renderCustomers();
+
+// Restore the last section from the URL hash so refresh does not send staff back to Overview.
+const validViews = ['overview','reviews','invoices','payments','rentals','fleet','customers','reports','audit','settings'];
+const savedView = (location.hash || '').slice(1).toLowerCase();
+nav(validViews.includes(savedView) ? savedView : 'overview');
+
+// Keep navigation state in sync with browser Back/Forward hash navigation.
+window.addEventListener('hashchange', () => {
+  const requestedView = (location.hash || '').slice(1).toLowerCase();
+  nav(validViews.includes(requestedView) ? requestedView : 'overview');
+});
 
 // Load protected D1-backed fleet records on startup. Other modules remain in preview mode.
 window.addEventListener('DOMContentLoaded', () => { loadLiveVehicles({quiet:true}); });
