@@ -1,22 +1,20 @@
-DriveHub GH — Stage 17A PDF Export Reliability Fix
+DriveHub GH — Stage 17A PDF Export Update
 
 Files:
-- command/app.js — updated invoice and receipt PDF export/share handling.
+- command/app.js — updated invoice and receipt PDF actions.
 
 Changes:
-1. Loads jsPDF from multiple CDN sources in sequence (jsDelivr, cdnjs, unpkg) instead of relying on one host.
-2. Makes PDF download more reliable by attaching the download link to the document and allowing more time before revoking the temporary file URL.
-3. On desktop browsers without native PDF file sharing, Share PDF downloads the PDF so staff can attach it to WhatsApp or email.
-4. If PDF generation still fails, the invoice or receipt action falls back to the branded print view, where staff can choose “Save as PDF” in the browser print dialog.
-5. Keeps the existing DriveHub GH branding and current invoice/receipt layouts.
+1. Removed the Share PDF action from invoice and receipt lists.
+2. Kept Download PDF and Print for both invoices and payment receipts.
+3. Keeps jsPDF CDN fallback and the branded print-view fallback if direct PDF generation fails.
+4. Preserves existing DriveHub GH branding and document layouts.
 
 Upload instructions:
-Replace the existing repository file at command/app.js with this file. Do not upload it to the repository root. Commit to main and wait for Cloudflare Pages to deploy.
+Replace the repository file at command/app.js with this file. Keep the README in the command folder if desired. Commit to main and wait for Cloudflare Pages to deploy.
 
 Testing checklist:
-- Invoices: Download PDF, Share PDF, Print.
-- Receipts: Download PDF, Share PDF, Print.
-- Test with network access enabled (the direct PDF generator loads jsPDF from a CDN).
-- If direct export fails, verify that the branded print fallback opens and that Chrome offers “Save as PDF”.
+- Invoices: confirm only Download PDF and Print appear; test both.
+- Receipts: confirm only Download PDF and Print appear; test both.
+- If direct PDF generation fails, verify the branded print fallback opens and Chrome offers Save as PDF.
 
-Note: On desktop Chrome, “Share PDF” may not open a native share sheet because file sharing support varies by platform. In that case, it downloads the PDF for manual attachment to WhatsApp/email. Automatic emailing or WhatsApp sending requires a separate integration.
+Note: Direct PDF generation loads jsPDF from a CDN and requires network access.
