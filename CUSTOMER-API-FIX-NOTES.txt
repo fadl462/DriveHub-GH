@@ -1,0 +1,11 @@
+DriveHub Command — Customer API Fix
+
+Upload command/app.js from this ZIP to the existing command/ folder in the DriveHub-GH repository, replacing only command/app.js. Do not upload this ZIP's folder structure over the repository root.
+
+Changes:
+- Customer list now loads from GET /command/api/customers instead of displaying local demo customer records.
+- Customer creation sends full_name, email, phone and notes to POST /command/api/customers.
+- Adds client-side full-name and email validation, saving feedback and API error messages.
+- Refreshes the list from D1 after a successful save.
+
+This patch only connects the Customers view/create flow to the Stage 13 API. Other dashboard areas still use demo/localStorage data. After deployment, test by opening Command Centre, selecting Customers, and adding a clearly identifiable test customer. Verify it appears in /command/api/customers and in the D1 customers table.
