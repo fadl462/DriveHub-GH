@@ -79,6 +79,34 @@ async function loadD1Customers(){
  }
 }
 
+// Live D1 fleet integration. Keep the existing local fleet as a fallback if the API is unavailable.
+let d1VehiclesReady = false;
+async function loadD1Vehicles({quiet=false}={}) {
+ try {
+  const response = await fetch('/command/api/vehicles?limit=200', {headers:{Accept:'application/json'}, credentials:'same-origin'});
+  const payload = await response.json().catch(()=>({}));
+  if (!response.ok) throw new Error(payload.error || `Vehicle API returned ${response.status}`);
+  if (!Array.isArray(payload.data)) throw new Error('Vehicle API returned an unexpected response.');
+  const vehicles = payload.data.map(v => ({
+   id:v.id, name:v.name || '', plate:v.registration_number || 'Registration not entered',
+   status:({available:'Available',reserved:'Reserved',rented:'Rented',maintenance:'In maintenance',inactive:'Inactive'})[String(v.status||'available').toLowerCase()] || v.status || 'Available',
+   rate:Number(v.daily_rate_minor || 0)/100, util:0,
+   service:v.service_due_on ? `Service due ${fmtDate(v.service_due_on)}` : (v.notes || 'Service date not recorded'),
+   serviceDueOn:v.service_due_on || null, notes:v.notes || '', source:'d1'
+  })).filter(v=>v.name);
+  // Only replace the demo fleet when the API call succeeded. Empty D1 is a real empty fleet.
+  state.fleet = vehicles;
+  d1VehiclesReady = true;
+  renderFleet();
+  renderOverview();
+  return true;
+ } catch(error) {
+  if (!quiet) toast(`Could not load live fleet data: ${error.message}. Existing fleet preview retained.`);
+  console.warn('D1 fleet sync unavailable; keeping existing browser fleet.', error);
+  return false;
+ }
+}
+
 function recordAudit(action, area=currentView, details=''){
   if(!Array.isArray(state.auditLog)) state.auditLog=[];
   state.auditLog.unshift({id:'AUD-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),at:new Date().toISOString(),area:String(area||'workspace'),action:String(action||'Activity'),record:'',actor:'DriveHub Admin (demo)',details:String(details||'')});
@@ -312,7 +340,7 @@ function fmtDate(s){if(!s)return '—';return new Date(s+'T12:00:00').toLocaleDa
 function downloadCSV(name,rows){const csv=rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
 $('#exportBtn').onclick=()=>downloadCSV('drivehub-command-overview-demo.csv',[['Metric','Value'],['Revenue recorded','24850'],['Active rentals',state.rentals.filter(r=>r.status==='Active').length],['Outstanding invoices',state.invoices.reduce((s,i)=>s+Math.max(0,i.total-i.paid),0)],['Pending reviews',state.reviews.filter(r=>r.status==='Pending').length]]);
 $('#exportPayments').onclick=()=>downloadCSV('drivehub-demo-payments.csv',[['Receipt','Customer','Invoice','Date','Method','Amount'],...state.payments.map(p=>[p.id,p.customer,p.invoice,p.date,p.method,p.amount])]);
-async function openAction(type){if(type==='rental'||type==='invoice'||type==='payment')await loadD1Customers();const dialog=$('#actionDialog'),fields=$('#dialogFields');$('#actionForm').dataset.type=type;const field=(label,name,kind='text',opts='',full=false,required=true)=>`<div class="field ${full?'full':''}"><label for="f-${name}">${label}${required?' *':''}</label>${kind==='select'?`<select id="f-${name}" name="${name}" ${required?'required':''}>${opts}</select>`:kind==='textarea'?`<textarea id="f-${name}" name="${name}" ${required?'required':''}></textarea>`:`<input id="f-${name}" name="${name}" type="${kind}" ${required?'required':''}>`}</div>`;let title='',html='';
+async function openAction(type){if(type==='rental'||type==='invoice'||type==='payment'){await Promise.all([loadD1Customers(),loadD1Vehicles({quiet:true})]);}const dialog=$('#actionDialog'),fields=$('#dialogFields');$('#actionForm').dataset.type=type;const field=(label,name,kind='text',opts='',full=false,required=true)=>`<div class="field ${full?'full':''}"><label for="f-${name}">${label}${required?' *':''}</label>${kind==='select'?`<select id="f-${name}" name="${name}" ${required?'required':''}>${opts}</select>`:kind==='textarea'?`<textarea id="f-${name}" name="${name}" ${required?'required':''}></textarea>`:`<input id="f-${name}" name="${name}" type="${kind}" ${required?'required':''}>`}</div>`;let title='',html='';
 const vehicleOptions=state.fleet.map(v=>`<option>${escapeHTML(v.name)}</option>`).join('');const customerOptions=state.customers.map(c=>`<option>${escapeHTML(c.name)}</option>`).join('');const invoiceOptions=state.invoices.map(i=>`<option>${i.id}</option>`).join('');
 if(type==='customer'){title='Add customer';html=field('Full name','name')+field('Email address','email','email')+field('Phone number','phone','tel')+field('Customer notes','notes','textarea','',true,false)}
 if(type==='invoice'){title='Create invoice';html=field('Customer','customer','select',customerOptions)+field('Vehicle','vehicle','select',vehicleOptions)+field('Pickup date','pickup','date')+field('Return date','returned','date')+field('Daily rate (GH₵)','rate','number')+field('Due date','due','date')+field('Notes','notes','textarea','',true,false)}
@@ -406,4 +434,5 @@ document.addEventListener('click',e=>{const button=e.target.closest('[data-alert
 renderOverview();renderReviews();renderInvoices();renderPayments();renderRentals();renderFleet();renderCustomers();
 const requestedView=(location.hash||'').slice(1);const validViews=['overview','reviews','invoices','payments','rentals','fleet','customers','reports','audit','settings'];nav(validViews.includes(requestedView)?requestedView:'overview');
 loadD1Customers();
+loadD1Vehicles({quiet:true});
 window.addEventListener('hashchange',()=>{const view=(location.hash||'').slice(1);if(validViews.includes(view)&&view!==currentView)nav(view)});
