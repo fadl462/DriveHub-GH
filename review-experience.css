@@ -49,3 +49,34 @@
 @media(max-width:900px){.experience-reviews-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.experience-review-card:nth-child(n){min-height:240px}}
 @media(max-width:600px){.experience-reviews{padding:32px 18px 56px}.experience-review-toolbar{align-items:flex-start;flex-direction:column}.experience-review-toolbar .button{width:100%;text-align:center}.experience-reviews-grid{grid-template-columns:1fr}.experience-review-card:nth-child(n){min-height:0}.experience-review-card{transform:none!important}.experience-review-card:hover{transform:translateY(-4px)!important}}
 @media(prefers-reduced-motion:reduce){.experience-review-card,.experience-review-card:hover{animation:none;transition:none;transform:none}}
+
+/* Experience-page refinements: clear CTA, natural masonry, and animated perimeter. */
+.experience-reviews{padding:54px max(6.5vw,24px) 82px}
+.experience-review-toolbar{max-width:1320px;margin:0 auto 26px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding-bottom:22px;border-bottom:1px solid #e8dcda}
+.experience-review-toolbar p{margin:10px 0 0;color:#756c70;line-height:1.6}
+.experience-share-button,.experience-footer-review-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 21px;background:#c51d36;color:#fff!important;border:1px solid #c51d36;border-radius:999px;text-decoration:none!important;font-size:13px;font-weight:800;box-shadow:0 7px 18px rgba(197,29,54,.16);transition:transform .22s ease,background .22s ease,box-shadow .22s ease;white-space:nowrap}
+.experience-share-button:hover,.experience-footer-review-button:hover{background:#a9152b;transform:translateY(-2px);box-shadow:0 11px 25px rgba(197,29,54,.24)}
+.experience-review-summary{max-width:1320px;margin:0 auto 20px}
+.experience-reviews-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start;max-width:1320px;margin:0 auto}
+.experience-review-column{display:flex;flex-direction:column;gap:18px;min-width:0;align-items:stretch}
+.experience-review-card{display:block;min-height:0;height:auto;padding:25px 24px 22px;background:#fff!important;color:#211c1e!important;border:1px solid #eee2df;border-radius:16px;box-shadow:0 8px 30px rgba(40,25,28,.035);position:relative;overflow:hidden;isolation:isolate;transition:transform .24s ease,box-shadow .24s ease,border-color .24s ease}
+.experience-review-card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--border-angle,0deg),transparent 0deg,transparent 250deg,#c51d36 300deg,#f1a1ad 325deg,transparent 360deg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;pointer-events:none;z-index:2}
+.experience-review-card:hover::before{opacity:1;animation:reviewBorderOrbit 1.5s linear infinite}
+.experience-review-card:hover{transform:translateY(-3px);box-shadow:0 16px 38px rgba(40,25,28,.10);border-color:#e4a2ac}
+.experience-review-card-top{margin-bottom:22px}
+.experience-review-card blockquote{margin:0 0 24px;font-size:16px;line-height:1.75;letter-spacing:-.01em;flex:none;overflow-wrap:anywhere}
+.experience-review-meta{margin-top:0;padding-top:16px;align-items:center}
+.experience-review-featured{background:#fff!important;color:#211c1e!important;border-color:#eee2df!important}
+.experience-review-featured blockquote,.experience-review-featured .experience-review-meta strong{color:#272124!important}
+.experience-review-featured .experience-review-index{color:#a49a9d!important}
+.experience-review-featured .experience-review-meta{border-color:#f0e8e7!important}
+.experience-review-featured .experience-review-verified{color:#a91b31!important}
+.experience-reviews-footer{max-width:1320px;margin:28px auto 0;padding-top:20px;border-top:1px solid #e8dcda;display:flex;align-items:center;justify-content:space-between;gap:18px;color:#756c70;font-size:13px}
+.experience-footer-review-button{border-radius:10px;padding:12px 18px}
+.review-card-enter{animation:reviewCardRise .55s both;animation-delay:calc(var(--card-order,0)*55ms)}
+@keyframes reviewBorderOrbit{to{--border-angle:360deg}}
+@property --border-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes reviewCardRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1049px){.experience-reviews-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:649px){.experience-reviews{padding:36px 18px 54px}.experience-review-toolbar{align-items:flex-start;flex-direction:column}.experience-review-summary{flex-wrap:wrap;padding:15px}.experience-review-summary span:last-child{margin-left:0;width:100%}.experience-reviews-grid{grid-template-columns:1fr}.experience-reviews-footer{align-items:flex-start;flex-direction:column}.experience-share-button{width:100%}}
+@media(prefers-reduced-motion:reduce){.review-card-enter{animation:none}.experience-review-card,.experience-share-button,.experience-footer-review-button{transition:none}.experience-review-card:hover::before{animation:none}}
