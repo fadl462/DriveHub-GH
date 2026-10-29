@@ -193,3 +193,9 @@
 #view-rentals .table-panel{margin-top:0}
 #view-rentals .helper-note{margin-top:10px;margin-bottom:12px}
 @media(max-width:720px){#view-rentals .section-toolbar.secondary{align-items:stretch;flex-direction:column}#view-rentals .section-toolbar.secondary>div:first-child,#view-rentals .section-toolbar.secondary .search-input{width:100%;min-width:0}}
+
+/* Context-aware Command Centre controls: global actions belong on Overview only. */
+body:not(:has(#view-overview.active)) .heading-actions{display:none!important}
+/* Fleet alerts are relevant on Fleet only; Overview has its own operational alerts. */
+#fleetAlerts{display:none}
+body:has(#view-fleet.active) #fleetAlerts{display:block}
