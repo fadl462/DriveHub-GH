@@ -22,6 +22,7 @@
         <button class="nav-item" data-view="rentals"><span>▣</span> Rentals</button>
         <button class="nav-item" data-view="fleet"><span>◇</span> Fleet</button>
         <button class="nav-item" data-view="customers"><span>♙</span> Customers</button>
+        <button class="nav-item" data-view="partners"><span>⇄</span> Partners & sourcing</button>
         <button class="nav-item" data-view="audit"><span>◷</span> Audit trail</button>
       <button class="nav-item" data-view="reports"><span>▥</span> Reports</button>
       </nav>
@@ -92,6 +93,15 @@
           <div class="section-toolbar fleet-toolbar"><div><h2 class="section-title">Your fleet</h2><p class="section-desc">Manage vehicles, daily rates and service readiness.</p></div><button class="btn btn-primary" id="addVehicleBtn" type="button">＋ Add vehicle</button></div>
           <div class="fleet-grid" id="fleetGrid"></div>
           <article class="panel table-panel"><div class="panel-heading"><div><h2>Fleet maintenance</h2><p>Schedule service windows, track progress and protect rental availability.</p></div><button class="btn btn-light btn-small" id="addMaintenanceBtn">＋ Schedule service</button></div><div class="maintenance-list" id="maintenanceList"></div></article>
+        </section>
+
+        <section class="view" id="view-partners">
+          <div class="section-toolbar"><div><h2 class="section-title">Rental partners & sourcing</h2><p class="section-desc">Manage trusted suppliers, temporary vehicles and supplier payments separately from your owned fleet.</p></div><div class="partner-actions"><button class="btn btn-light" id="addSourcedVehicleBtn">＋ Add sourced vehicle</button><button class="btn btn-primary" id="addPartnerBtn">＋ Add rental partner</button></div></div>
+          <div class="metric-grid compact partner-metrics"><article class="metric-card"><div class="metric-top"><span>Active partners</span><span class="metric-icon red">⇄</span></div><strong id="partnerCountMetric">0</strong><div class="metric-foot">Approved supplier relationships</div></article><article class="metric-card"><div class="metric-top"><span>Sourced vehicles</span><span class="metric-icon cream">◇</span></div><strong id="sourcedVehicleCountMetric">0</strong><div class="metric-foot">Temporary, not owned fleet</div></article><article class="metric-card"><div class="metric-top"><span>Supplier payments recorded</span><span class="metric-icon green">↗</span></div><strong id="supplierPaymentsMetric">GH₵ 0</strong><div class="metric-foot">Recorded outgoing payments</div></article></div>
+          <article class="panel table-panel"><div class="panel-heading"><div><h2>Rental partners</h2><p>Contact details and agreed payment terms.</p></div><span class="round-icon" id="partnersConnectionState">Live database</span></div><div class="table-wrap"><table><thead><tr><th>Company</th><th>Contact</th><th>Phone / email</th><th>Payment terms</th><th>Status</th></tr></thead><tbody id="partnerRows"><tr><td colspan="5">Loading partners…</td></tr></tbody></table></div></article>
+          <article class="panel table-panel"><div class="panel-heading"><div><h2>Sourced vehicles</h2><p>Partner-owned vehicles available for specific bookings. These do not count as DriveHub GH fleet.</p></div></div><div class="table-wrap"><table><thead><tr><th>Vehicle</th><th>Partner</th><th>Registration</th><th>Supplier/day</th><th>Customer/day</th><th>Availability</th><th>Margin/day</th></tr></thead><tbody id="sourcedVehicleRows"><tr><td colspan="7">Loading sourced vehicles…</td></tr></tbody></table></div></article>
+          <article class="panel table-panel"><div class="panel-heading"><div><h2>Supplier payments</h2><p>Outgoing payments are separate from customer receipts.</p></div><button class="btn btn-light btn-small" id="recordSupplierPaymentBtn">＋ Record supplier payment</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Supplier</th><th>Amount</th><th>Method</th><th>Reference</th></tr></thead><tbody id="supplierPaymentRows"><tr><td colspan="5">Loading payments…</td></tr></tbody></table></div></article>
+          <p class="helper-note">Partner supplier rates and margins are internal management information. They must never be shown on customer-facing pages or invoices.</p>
         </section>
 
         <section class="view" id="view-customers">
