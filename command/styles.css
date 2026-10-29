@@ -171,3 +171,7 @@
 /* Partner sourcing workspace */
 .partner-actions{display:flex;gap:9px;flex-wrap:wrap}.partner-metrics{margin-bottom:18px}#view-partners .table-panel{margin-bottom:16px}#view-partners .table-panel:last-of-type{margin-bottom:0}#view-partners .table-wrap small{display:block;color:var(--muted);font-size:10px;margin-top:4px;max-width:240px;overflow-wrap:anywhere}#partnersConnectionState{white-space:nowrap;font-size:10px}.field .helper-note{grid-column:1/-1}
 @media(max-width:760px){.partner-actions{width:100%}.partner-actions .btn{flex:1;white-space:nowrap}.partner-metrics{grid-template-columns:1fr 1fr}.partner-metrics .metric-card:last-child{grid-column:1/-1}}
+
+/* Rental deletion is intentionally visually distinct from routine actions. */
+.rental-delete-action{color:#a3132a!important;border-color:#e6b9c0!important;background:#fff7f8!important}
+.rental-delete-action:hover{background:#fbe7ea!important}
