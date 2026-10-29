@@ -16,7 +16,8 @@ export async function onRequestGet({ env }) {
     const result = await env.DB.prepare(`
       SELECT id, customer_name AS name, rating,
              what_went_well AS whatWentWell,
-             submitted_at AS submittedAt
+             submitted_at AS submittedAt,
+             published_at AS publishedAt
       FROM reviews
       WHERE lower(status) = 'approved'
         AND what_went_well IS NOT NULL
