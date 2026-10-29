@@ -3,7 +3,14 @@ const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const money = n => 'GH₵ ' + Number(n).toLocaleString('en-GH',{maximumFractionDigits:2});
 const escapeHTML = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const initial = {
- reviews:[],
+ reviews:[
+  {id:'RV-104',name:'Ama Mensah',email:'ama@example.com',vehicle:'Toyota RAV4',rating:5,date:'2026-10-23',status:'Pending',good:'The vehicle was comfortable and pickup was straightforward.',improve:'A short reminder about the return time would be helpful.'},
+  {id:'RV-103',name:'Kojo Asare',email:'kojo@example.com',vehicle:'Toyota Prado',rating:4,date:'2026-10-22',status:'Pending',good:'Plenty of space for the family and luggage.',improve:'It would be helpful to have the fuel policy explained at booking.'},
+  {id:'RV-102',name:'Nana Owusu',email:'nana@example.com',vehicle:'Honda CR-V',rating:5,date:'2026-10-21',status:'Pending',good:'The car suited our plans and was comfortable throughout.',improve:''},
+  {id:'RV-101',name:'Esi Boateng',email:'esi@example.com',vehicle:'Mitsubishi Outlander',rating:5,date:'2026-10-18',status:'Approved',good:'Helpful communication and a smooth journey.',improve:''},
+  {id:'RV-100',name:'Yaw Kwarteng',email:'yaw@example.com',vehicle:'Hyundai Santa Fe',rating:4,date:'2026-10-16',status:'Approved',good:'Comfortable car for a busy week.',improve:'More colour options would be nice.'},
+  {id:'RV-099',name:'Kofi Nartey',email:'kofi@example.com',vehicle:'Toyota Land Cruiser V8',rating:3,date:'2026-10-12',status:'Rejected',good:'The trip was okay.',improve:'I had a question about the booking.'}
+ ],
  invoices:[
   {id:'INV-2026-018',customer:'Ama Mensah',vehicle:'Toyota RAV4',issued:'2026-10-23',due:'2026-10-27',total:2400,paid:2400,status:'Paid'},
   {id:'INV-2026-017',customer:'Kojo Asare',vehicle:'Toyota Prado',issued:'2026-10-20',due:'2026-10-24',total:3200,paid:1000,status:'Partially paid'},
@@ -98,38 +105,6 @@ async function loadD1Vehicles({quiet=false}={}) {
   console.warn('D1 fleet sync unavailable; keeping existing browser fleet.', error);
   return false;
  }
-}
-
-// Live review records: D1 is the source of truth; never mix browser demo reviews into this list.
-let d1ReviewsReady = false;
-let d1ReviewsError = '';
-const reviewStatusLabel = s => ({pending:'Pending', approved:'Approved', rejected:'Rejected', flagged:'Flagged'})[String(s||'').toLowerCase()] || 'Pending';
-function normalizeD1Review(r){return {id:r.id,name:r.name||'Customer',email:r.email||'',vehicle:r.vehicle||'Not specified',rating:Number(r.rating||0),date:(r.submittedAt||'').slice(0,10),status:reviewStatusLabel(r.status),good:r.whatWentWell||'',improve:r.whatToImprove||'',source:'d1'};}
-async function loadD1Reviews({quiet=false}={}){
- try{
-  const response=await fetch('/command/api/reviews?limit=500',{headers:{Accept:'application/json'},credentials:'same-origin',cache:'no-store'});
-  const payload=await response.json().catch(()=>({}));
-  if(!response.ok) throw new Error(payload.error||`Reviews API returned ${response.status}`);
-  if(!Array.isArray(payload.data)) throw new Error('Reviews API returned an unexpected response.');
-  state.reviews=payload.data.map(normalizeD1Review);
-  d1ReviewsReady=true; d1ReviewsError='';
-  renderReviews(); renderOverview(); renderAttention();
-  return true;
- }catch(error){
-  d1ReviewsReady=false; d1ReviewsError=error.message||'Could not load live reviews.';
-  state.reviews=[]; renderReviews(); renderOverview(); renderAttention();
-  if(!quiet) toast(`Live reviews could not be loaded: ${d1ReviewsError}`);
-  console.warn('D1 review sync failed; preview reviews suppressed.',error);
-  return false;
- }
-}
-async function setD1ReviewStatus(id, status){
- const dbStatus=({Pending:'pending',Approved:'approved',Rejected:'rejected',Flagged:'flagged'})[status];
- if(!dbStatus) throw new Error('Invalid review status.');
- const response=await fetch('/command/api/reviews',{method:'PATCH',headers:{'content-type':'application/json','accept':'application/json'},credentials:'same-origin',body:JSON.stringify({id,status:dbStatus})});
- const payload=await response.json().catch(()=>({}));
- if(!response.ok) throw new Error(payload.error||`Could not update review (${response.status}).`);
- await loadD1Reviews({quiet:true});
 }
 
 function recordAudit(action, area=currentView, details=''){
@@ -230,7 +205,7 @@ $('#revenueRange').addEventListener('change',renderChart);
 function renderAttention(){const pending=state.reviews.filter(r=>r.status==='Pending').length;const overdue=state.invoices.filter(i=>effectiveInvoiceStatus(i)==='Overdue').length;const available=state.fleet.filter(v=>v.status==='Available').length;const list=[{icon:'✳',red:true,title:`${pending} reviews awaiting approval`,desc:'Read feedback and approve or reject publication.',goto:'reviews'},{icon:'!',title:`${overdue} overdue invoices`,desc:'Follow up on unpaid rental balances.',goto:'invoices'},{icon:'◇',title:`${available} vehicles currently available`,desc:'Check upcoming bookings and fleet utilisation.',goto:'fleet'}];$('#attentionList').innerHTML=list.map(x=>`<div class="attention-item"><span class="attention-symbol ${x.red?'red':''}">${x.icon}</span><div><strong>${x.title}</strong><p>${x.desc}</p><button class="text-link" data-goto="${x.goto}">Open →</button></div></div>`).join('');$$('#attentionList [data-goto]').forEach(b=>b.onclick=()=>nav(b.dataset.goto));$('#pendingBadge').textContent=pending;$('#pendingCount').textContent=pending;$('#reviewPendingSummary').textContent=pending}
 function renderRecent(){const rows=state.rentals.slice(0,4);$('#recentRentals').innerHTML=rows.map(r=>`<tr><td><div class="customer-cell">${avatar(r.customer)}<div><strong>${escapeHTML(r.customer)}</strong><small>${r.id}</small></div></div></td><td>${escapeHTML(r.vehicle)}</td><td>${fmtDate(r.pickup)} – ${fmtDate(r.returned)}<small>${daysInclusive(r.pickup,r.returned)} billable days</small></td><td><strong>${money(r.rate*daysInclusive(r.pickup,r.returned))}</strong></td><td>${statusBadge(r.status)}</td></tr>`).join('')}
 function renderOverview(){renderKpis();renderChart();renderAttention();renderRecent()}
-function renderReviews(){const q=($('#reviewSearch')?.value||'').toLowerCase();let arr=state.reviews.filter(r=>(reviewFilter==='All'||r.status===reviewFilter)&&[r.name,r.vehicle,r.good,r.improve,r.id].join(' ').toLowerCase().includes(q));$('#reviewsList').innerHTML=arr.length?arr.map(r=>`<article class="review-card"><div class="review-card-head"><div class="review-person">${avatar(r.name)}<div><strong>${escapeHTML(r.name)}</strong><small>${escapeHTML(r.id)} · ${fmtDate(r.date)} · ${escapeHTML(r.email)}</small></div></div><div><div class="stars" aria-label="${r.rating} out of 5">${'★'.repeat(r.rating)}<span style="color:#e9ddda">${'★'.repeat(5-r.rating)}</span></div><div style="text-align:right;margin-top:7px">${statusBadge(r.status)}</div></div></div><div class="review-meta"><span>${escapeHTML(r.vehicle)}</span><span>${r.rating}/5 rating</span></div><p class="review-text"><strong>What went well</strong><br>${escapeHTML(r.good||'No comment provided.')}</p>${r.improve?`<p class="review-text"><strong>What could improve</strong><br>${escapeHTML(r.improve)}</p>`:''}<div class="review-actions">${r.status==='Pending'?`<button class="btn-approve" data-review-action="Approved" data-id="${r.id}">✓ Approve & publish</button><button class="btn-reject" data-review-action="Rejected" data-id="${r.id}">× Reject</button>`:`<button class="btn-neutral" data-review-action="Pending" data-id="${r.id}">Return to pending</button>`}<span class="spacer"></span><button class="btn-neutral" data-review-detail="${r.id}">View details</button></div></article>`).join(''):'<div class="empty-state"><strong>No reviews in this view</strong>Try another status filter or search term.</div>';$$('[data-review-action]').forEach(b=>b.onclick=async()=>{const r=state.reviews.find(x=>x.id===b.dataset.id);if(!r)return;const next=b.dataset.reviewAction;if(next==='Approved'&&!confirm('Approve this review for public publication?'))return;try{await setD1ReviewStatus(r.id,next);toast(`Review ${r.id} updated in the database.`)}catch(error){toast(`Review was not updated: ${error.message}`)}});$$('[data-review-detail]').forEach(b=>b.onclick=()=>{const r=state.reviews.find(x=>x.id===b.dataset.reviewDetail);alert(`Review ${r.id}\\nCustomer: ${r.name}\\nEmail: ${r.email}\\nVehicle: ${r.vehicle}\\nRating: ${r.rating}/5\\nDate: ${r.date}\\nStatus: ${r.status}\\n\\nWhat went well: ${r.good||'—'}\\n\\nWhat could improve: ${r.improve||'—'}\\n\\nLive review record loaded from the database.`)});$('#avgRating').innerHTML=(state.reviews.reduce((s,r)=>s+r.rating,0)/Math.max(1,state.reviews.length)).toFixed(1)+' <small>/ 5</small>';$('#approvedMonth').textContent=state.reviews.filter(r=>r.status==='Approved').length+10}
+function renderReviews(){const q=($('#reviewSearch')?.value||'').toLowerCase();let arr=state.reviews.filter(r=>(reviewFilter==='All'||r.status===reviewFilter)&&[r.name,r.vehicle,r.good,r.improve,r.id].join(' ').toLowerCase().includes(q)).sort((a,b)=>{const dateA=Date.parse(a.submittedAt||a.submitted_at||a.date||a.createdAt||0)||0;const dateB=Date.parse(b.submittedAt||b.submitted_at||b.date||b.createdAt||0)||0;return dateB-dateA;});$('#reviewsList').innerHTML=arr.length?arr.map(r=>`<article class="review-card"><div class="review-card-head"><div class="review-person">${avatar(r.name)}<div><strong>${escapeHTML(r.name)}</strong><small>${escapeHTML(r.id)} · ${fmtDate(r.date)} · ${escapeHTML(r.email)}</small></div></div><div><div class="stars" aria-label="${r.rating} out of 5">${'★'.repeat(r.rating)}<span style="color:#e9ddda">${'★'.repeat(5-r.rating)}</span></div><div style="text-align:right;margin-top:7px">${statusBadge(r.status)}</div></div></div><div class="review-meta"><span>${escapeHTML(r.vehicle)}</span><span>${r.rating}/5 rating</span></div><p class="review-text"><strong>What went well</strong><br>${escapeHTML(r.good||'No comment provided.')}</p>${r.improve?`<p class="review-text"><strong>What could improve</strong><br>${escapeHTML(r.improve)}</p>`:''}<div class="review-actions">${r.status==='Pending'?`<button class="btn-approve" data-review-action="Approved" data-id="${r.id}">✓ Approve & publish</button><button class="btn-reject" data-review-action="Rejected" data-id="${r.id}">× Reject</button>`:`<button class="btn-neutral" data-review-action="Pending" data-id="${r.id}">Return to pending</button>`}<span class="spacer"></span><button class="btn-neutral" data-review-detail="${r.id}">View details</button></div></article>`).join(''):'<div class="empty-state"><strong>No reviews in this view</strong>Try another status filter or search term.</div>';$$('[data-review-action]').forEach(b=>b.onclick=()=>{const r=state.reviews.find(x=>x.id===b.dataset.id);if(!r)return;if(b.dataset.reviewAction==='Approved'&&!confirm('Approve this review for public publication?'))return;r.status=b.dataset.reviewAction;save();renderReviews();renderOverview();toast(`Review ${r.id} moved to ${r.status.toLowerCase()}.`)});$$('[data-review-detail]').forEach(b=>b.onclick=()=>{const r=state.reviews.find(x=>x.id===b.dataset.reviewDetail);alert(`Review ${r.id}\\nCustomer: ${r.name}\\nEmail: ${r.email}\\nVehicle: ${r.vehicle}\\nRating: ${r.rating}/5\\nDate: ${r.date}\\nStatus: ${r.status}\\n\\nWhat went well: ${r.good||'—'}\\n\\nWhat could improve: ${r.improve||'—'}\\n\\nDemo note: portrait uploads and real public publishing are not connected in this preview.`)});$('#avgRating').innerHTML=(state.reviews.reduce((s,r)=>s+r.rating,0)/Math.max(1,state.reviews.length)).toFixed(1)+' <small>/ 5</small>';$('#approvedMonth').textContent=state.reviews.filter(r=>r.status==='Approved').length+10}
 $('#reviewFilters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;reviewFilter=b.dataset.filter;$$('#reviewFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderReviews()});$('#reviewSearch').addEventListener('input',renderReviews);
 function renderInvoices(){
  refreshInvoiceStatuses();
@@ -409,7 +384,7 @@ $('#actionForm').addEventListener('submit',e=>{if(e.submitter?.value==='cancel')
  recordAudit('Maintenance scheduled','fleet',`${record.vehicle} · ${record.serviceType} · ${record.startDate} to ${record.endDate} · ${record.status}`);
  toast('Maintenance schedule saved in this browser preview.');
  nav('fleet')
-}else if(type==='review'){toast('Use the public review form to submit a review. Command Centre displays reviews saved in D1.');nav('reviews');return}save();$('#actionDialog').close();renderOverview();renderReviews();renderInvoices();renderPayments();renderRentals();renderFleet();renderCustomers()});
+}else if(type==='review'){state.reviews.unshift({id:`RV-${105+state.reviews.length}`,name:data.name,email:data.email,vehicle:data.vehicle,rating:Number(data.rating),date:new Date().toISOString().slice(0,10),status:'Pending',good:data.good,improve:data.improve});toast('Review record added to pending moderation.');nav('reviews')}save();$('#actionDialog').close();renderOverview();renderReviews();renderInvoices();renderPayments();renderRentals();renderFleet();renderCustomers()});
 
 function reportDateAllowed(date){
  const from=$('#reportStartDate')?.value||'',to=$('#reportEndDate')?.value||'';
@@ -462,5 +437,4 @@ renderOverview();renderReviews();renderInvoices();renderPayments();renderRentals
 const requestedView=(location.hash||'').slice(1);const validViews=['overview','reviews','invoices','payments','rentals','fleet','customers','reports','audit','settings'];nav(validViews.includes(requestedView)?requestedView:'overview');
 loadD1Customers();
 loadD1Vehicles({quiet:true});
-loadD1Reviews({quiet:true});
 window.addEventListener('hashchange',()=>{const view=(location.hash||'').slice(1);if(validViews.includes(view)&&view!==currentView)nav(view)});
