@@ -1094,3 +1094,7 @@
 /* DriveHub GH visual quality fix: preserve original fleet image pixels and show the selected vehicle edge-to-edge in the journey summary. */
 .car-photo,.fleet-vehicle-image,.fleet-model-image img,.summary-car-art img{image-rendering:auto;filter:none;-webkit-filter:none}
 .summary-car-art img{object-fit:cover;object-position:center 54%;backface-visibility:hidden}
+
+/* Find Your Ride: make the selected vehicle photo fill the entire journey-summary image panel. */
+.ride-page .summary-car-art{padding:0!important;overflow:hidden}
+.ride-page .summary-car-art img{display:block!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center 54%!important;padding:0!important;margin:0!important;border:0!important;background:transparent!important}
