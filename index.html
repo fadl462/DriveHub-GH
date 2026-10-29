@@ -29,7 +29,7 @@
       <h2 id="home-reviews-title">Good journeys.<br><em>Thoughtfully considered.</em></h2>
     </div>
   </div>
-  <div class="testimonials-grid">
+  <div class="testimonials-grid" id="publicReviewsGrid">
     <article class="testimonial-card">
       <div class="testimonial-quote-mark" aria-hidden="true">“</div>
       <div class="testimonial-stars" aria-label="5 out of 5 stars">★★★★★</div>
@@ -55,4 +55,15 @@
   </div>
 </section>
 
+<script>
+(function(){
+  const grid=document.getElementById('publicReviewsGrid'); if(!grid) return;
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  fetch('/api/reviews',{headers:{Accept:'application/json'},cache:'no-store'})
+    .then(r=>{if(!r.ok) throw new Error('reviews unavailable');return r.json()})
+    .then(payload=>{if(!Array.isArray(payload.data)||!payload.data.length)return;
+      grid.innerHTML=payload.data.slice().sort((a,b)=>new Date(b.submittedAt||0)-new Date(a.submittedAt||0)).slice(0,3).map((r,i)=>`<article class="testimonial-card ${i===1?'testimonial-card-featured':''}"><div class="testimonial-quote-mark" aria-hidden="true">“</div><div class="testimonial-stars" aria-label="${Math.max(0,Math.min(5,Number(r.rating)||0))} out of 5 stars">${'★'.repeat(Math.max(0,Math.min(5,Number(r.rating)||0)))}</div><blockquote>“${esc(r.whatWentWell)}”</blockquote><div class="testimonial-author"><strong>${esc(r.name||'DriveHub GH customer')}</strong></div></article>`).join('');
+    }).catch(()=>{});
+})();
+</script>
 </main><footer class="footer"><div class="footer-main"><div class="footer-brand"><a href="index.html"><img src="assets/drivehub-logo.png" alt="DriveHub GH"></a><p>Premium self-drive car rentals for the way you want to move.</p></div><div class="footer-column"><h4>EXPLORE</h4><a href="fleet.html">Our fleet</a><a href="experience.html">The experience</a><a href="how-it-works.html">How it works</a><a href="faqs.html">AI Concierge</a></div><div class="footer-column"><h4>GET IN TOUCH</h4><a href="tel:0204116245">020 411 6245</a><a href="mailto:drivehubgh1@gmail.com">drivehubgh1@gmail.com</a><span>22 Baiden Avenue, 2nd Manu Street<br>Westland, Accra, Ghana</span></div><div class="footer-contact"><span>LET’S GET YOU THERE</span><a href="https://wa.me/233204116245" target="_blank" rel="noopener">WhatsApp our team </a></div></div><div class="footer-bottom"><span>© <span id="year"></span> DriveHub GH. All rights reserved.</span><span>MADE FOR THE ROAD AHEAD.</span><a href="#top">Back to top </a></div></footer><div class="toast" id="toast" role="status" aria-live="polite"></div><script src="script.js"></script></body></html>
