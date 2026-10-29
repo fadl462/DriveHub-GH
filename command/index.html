@@ -45,6 +45,10 @@
 
 
         <section class="view active" id="view-overview">
+          <article class="panel" id="customerImprovementPanel" style="margin-bottom:20px;border:1px solid #e8c6c8">
+            <div class="panel-heading"><div><h2>Customer improvement feedback</h2><p>Private feedback from customers — management use only</p></div><span class="round-icon" id="improvementNewCount">0 new</span></div>
+            <div id="improvementFeedbackList"><div class="empty-state">Loading live customer feedback…</div></div>
+          </article>
           <div class="metric-grid">
             <article class="metric-card"><div class="metric-top"><span>Revenue recorded</span><span class="metric-icon red">↗</span></div><strong id="revenueMetric">GH₵ 24,850</strong><div class="metric-foot"><span class="trend">↗ 8.4%</span> <span>vs previous period</span></div><div class="sparkline"><i style="height:28%"></i><i style="height:42%"></i><i style="height:36%"></i><i style="height:56%"></i><i style="height:47%"></i><i style="height:73%"></i><i style="height:64%"></i><i style="height:90%"></i></div></article>
             <article class="metric-card"><div class="metric-top"><span>Active rentals</span><span class="metric-icon cream">▣</span></div><strong id="activeRentalsMetric">4</strong><div class="metric-foot"><span class="neutral">2 due soon</span><span> · next 48 hours</span></div><div class="metric-bottomline"><span style="width:66%"></span></div></article>
@@ -56,10 +60,6 @@
             <article class="panel"><div class="panel-heading"><div><h2>Needs attention</h2><p>Items that may need a follow-up</p></div><span class="round-icon">↗</span></div><div class="attention-list" id="attentionList"></div><button class="text-link" data-goto="reviews">Review all action items <span>→</span></button></article>
           </div>
           <article class="panel table-panel"><div class="panel-heading"><div><h2>Recent rentals</h2><p>Latest activity across your fleet</p></div><button class="btn btn-light btn-small" data-goto="rentals">View rentals →</button></div><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Vehicle</th><th>Rental period</th><th>Amount</th><th>Status</th></tr></thead><tbody id="recentRentals"></tbody></table></div></article>
-          <article class="panel" id="customerImprovementPanel" style="margin-top:24px;margin-bottom:0;border:1px solid #e8c6c8">
-            <div class="panel-heading"><div><h2>Customer improvement feedback</h2><p>Private feedback from customers — management use only</p></div><span class="round-icon" id="improvementNewCount">0 new</span></div>
-            <div id="improvementFeedbackList"><div class="empty-state">Loading live customer feedback…</div></div>
-          </article>
         </section>
 
         <section class="view" id="view-reviews">
@@ -89,6 +89,7 @@
 
         <div class="fleet-alerts-panel" id="fleetAlerts" aria-live="polite"></div>
 <section class="view" id="view-fleet">
+          <div class="section-toolbar fleet-toolbar"><div><h2 class="section-title">Your fleet</h2><p class="section-desc">Manage vehicles, daily rates and service readiness.</p></div><button class="btn btn-primary" id="addVehicleBtn" type="button">＋ Add vehicle</button></div>
           <div class="fleet-grid" id="fleetGrid"></div>
           <article class="panel table-panel"><div class="panel-heading"><div><h2>Fleet maintenance</h2><p>Schedule service windows, track progress and protect rental availability.</p></div><button class="btn btn-light btn-small" id="addMaintenanceBtn">＋ Schedule service</button></div><div class="maintenance-list" id="maintenanceList"></div></article>
         </section>

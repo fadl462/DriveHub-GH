@@ -163,3 +163,8 @@
 #reportOutput .data-table{min-width:680px}
 .report-caveat{font-size:12px;color:var(--muted,#8c8580);margin-top:14px}
 @media(max-width:520px){.report-output-head{align-items:flex-start;flex-direction:column}.report-filters>div{width:100%}}
+
+/* Fleet management layout correction */
+#view-fleet{min-width:0;width:100%;overflow:visible}.fleet-toolbar{margin:0 0 18px;align-items:center}.fleet-toolbar .section-desc{margin-top:5px}.fleet-grid{grid-template-columns:repeat(3,minmax(240px,1fr));align-items:stretch;gap:16px}.vehicle-card{min-width:0;overflow-wrap:anywhere}.vehicle-top>div{min-width:0}.vehicle-card h3{overflow-wrap:anywhere;line-height:1.45}.vehicle-card .vehicle-stats{gap:16px}.vehicle-card .vehicle-stats>div{min-width:0}.maintenance-list{min-width:0}.maintenance-item{min-width:0}.maintenance-item>div{min-width:0}.maintenance-item small{line-height:1.5}.maintenance-item time{white-space:nowrap}
+@media(max-width:1200px){.fleet-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.fleet-grid{grid-template-columns:1fr}.fleet-toolbar{align-items:stretch}.fleet-toolbar .btn{width:100%}.maintenance-item{align-items:flex-start;flex-wrap:wrap}.maintenance-item time{width:100%;margin-left:43px}}
