@@ -1098,3 +1098,31 @@
 /* Find Your Ride: make the selected vehicle photo fill the entire journey-summary image panel. */
 .ride-page .summary-car-art{padding:0!important;overflow:hidden}
 .ride-page .summary-car-art img{display:block!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center 54%!important;padding:0!important;margin:0!important;border:0!important;background:transparent!important}
+
+/* Final Find Your Ride summary framing: show the complete vehicle without clipping. */
+.ride-page .summary-car-art{
+  height:220px!important;
+  min-height:220px!important;
+  padding:0!important;
+  background:#292124!important;
+  overflow:hidden!important;
+}
+.ride-page .summary-car-art img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  padding:8px 10px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  background:#292124!important;
+  transform:none!important;
+}
+.ride-page .summary-car-art:hover img{transform:none!important}
+@media(max-width:760px){
+  .ride-page .summary-car-art{height:200px!important;min-height:200px!important}
+  .ride-page .summary-car-art img{padding:6px 8px!important}
+}
