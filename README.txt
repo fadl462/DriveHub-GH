@@ -1,14 +1,19 @@
-DriveHub GH — The Experience page refinement
+DRIVEHUB GH — THE EXPERIENCE: COMPLETE VISUAL REDESIGN
 
-Updated files only:
-- DriveHub-GH-main/experience.html
-- DriveHub-GH-main/review-experience.css
+Files to replace in the root of the DriveHub-GH repository:
+- experience.html
+- review-experience.css
 
-Changes:
-- Refined the review gallery styling with consistent gutters, card padding, typography and metadata alignment.
-- Removed artificial minimum heights so cards follow their actual review text and avoid unnecessary blank space.
-- Kept the first card in each column aligned to the same top level; the three newest reviews occupy the first row.
-- Preserved the animated red perimeter hover effect, visible red Share your experience and Write a review buttons, and reduced-motion support.
-- Kept the live /api/reviews integration and newest-first sorting.
+What changed:
+- New editorial-style dark burgundy hero with oversized typography and subtle orbital motion.
+- Refined review summary and customer review cards with premium spacing, soft depth, and animated edge treatment on hover.
+- Responsive desktop, tablet, and mobile layouts.
+- Preserves the live /api/reviews source and public review submission links.
+- Keeps review text, customer names, ratings, and timestamps supplied by the existing API; no reviews are hard-coded.
 
-Deployment: replace these files at the same paths in the DriveHub-GH repository and commit. This ZIP contains only the two updated public-page files plus this README. No backend, database, homepage, or fleet files are included.
+Deployment:
+1. Replace the two files at the repository root (do not upload this README over your project README).
+2. Commit and push to the branch deployed by Cloudflare Pages.
+3. After deployment, open /experience and hard-refresh with Ctrl+F5.
+
+This ZIP contains only the two changed website files plus this instruction file. It has not been deployed to your Cloudflare account from this environment.
