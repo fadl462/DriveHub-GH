@@ -19,16 +19,14 @@
     function paintReviews(reviews){
       const count=columnsForWidth();grid.innerHTML='';grid.classList.toggle('experience-reviews-grid-single',count===1);
       const cols=Array.from({length:count},(_,i)=>{const el=document.createElement('div');el.className='experience-review-column';el.setAttribute('aria-label',`Customer review column ${i+1}`);grid.appendChild(el);return el;});
-      const heights=cols.map(()=>0);
+      // Keep reading order obvious: the three newest reviews begin the first row,
+      // then each column continues downward in chronological order.
       reviews.forEach((r,i)=>{
         const rating=Math.max(0,Math.min(5,Number(r.rating)||0));
         const card=document.createElement('article');card.className='experience-review-card review-card-enter';card.style.setProperty('--card-order',i);
         card.innerHTML=`<div class="experience-review-card-top"><span class="experience-review-index">${String(i+1).padStart(2,'0')}</span><span class="experience-review-stars" aria-label="${rating} out of 5 stars">${'★'.repeat(rating)}<span>${'☆'.repeat(5-rating)}</span></span></div><blockquote>“${esc(r.whatWentWell)}”</blockquote><div class="experience-review-meta"><div class="experience-review-avatar" aria-hidden="true">${esc((r.name||'D').trim().split(/\s+/).slice(0,2).map(n=>n[0]||'').join('').toUpperCase())}</div><div><strong>${esc(r.name||'DriveHub GH customer')}</strong><span>${dateLabel(r.submittedAt)||'DriveHub GH customer'}</span></div><span class="experience-review-verified">Published review</span></div>`;
-        const target=heights.indexOf(Math.min(...heights));cols[target].appendChild(card);heights[target]+=Math.max(180,card.getBoundingClientRect().height||220);
+        cols[i%count].appendChild(card);
       });
-      // Rebalance after layout so each card goes into the currently shortest column.
-      const cards=reviews.map((r,i)=>grid.querySelectorAll('.experience-review-card')[i]).filter(Boolean);
-      if(count>1){cols.forEach(c=>c.innerHTML='');heights.fill(0);cards.forEach(card=>{const target=heights.indexOf(Math.min(...heights));cols[target].appendChild(card);heights[target]+=card.offsetHeight+18;});}
     }
     let lastCount=columnsForWidth(),cachedReviews=[];
     window.addEventListener('resize',()=>{const n=columnsForWidth();if(n!==lastCount&&cachedReviews.length){lastCount=n;paintReviews(cachedReviews);}});

@@ -1,17 +1,15 @@
-DriveHub GH — Experience reviews refinements
+DriveHub GH — The Experience page refinement
 
-Replace these files at the matching paths in the repository:
+Updated files only:
 - DriveHub-GH-main/experience.html
 - DriveHub-GH-main/review-experience.css
-- DriveHub-GH-main/index.html
-- DriveHub-GH-main/fleet.html
 
-Changes:
-- Restored prominent red-background Share your experience CTA and footer Write a review CTA.
-- Review cards now all begin at the same top line in their columns, with natural content-driven heights and no forced empty space.
-- Removed the special black styling from the first review.
-- Added a subtle animated perimeter line that travels around a card while hovered.
-- Kept newest reviews first and responsive masonry columns.
-- Standardized navigation labels to “The Experience” and “AI Partner” in the supplied homepage, fleet page, and Experience page.
+What changed:
+- The newest three reviews now occupy the first row in order, with later reviews continuing down each column.
+- Removed forced minimum card heights so short reviews do not leave artificial empty space.
+- Standardized card padding, gutters, border radius, typography, and metadata alignment.
+- Retained the red Share your experience button and the bottom Write a review call-to-action.
+- Kept the live /api/reviews integration and newest-first API sorting.
+- Preserved the subtle animated perimeter border on hover, with reduced-motion support.
 
-No backend or database files are included or changed.
+Deploy by replacing these files at the same paths in the DriveHub-GH repository and committing the changes. No database, backend, homepage, or fleet files are included.

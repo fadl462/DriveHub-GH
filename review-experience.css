@@ -80,3 +80,44 @@
 @media(max-width:1049px){.experience-reviews-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:649px){.experience-reviews{padding:36px 18px 54px}.experience-review-toolbar{align-items:flex-start;flex-direction:column}.experience-review-summary{flex-wrap:wrap;padding:15px}.experience-review-summary span:last-child{margin-left:0;width:100%}.experience-reviews-grid{grid-template-columns:1fr}.experience-reviews-footer{align-items:flex-start;flex-direction:column}.experience-share-button{width:100%}}
 @media(prefers-reduced-motion:reduce){.review-card-enter{animation:none}.experience-review-card,.experience-share-button,.experience-footer-review-button{transition:none}.experience-review-card:hover::before{animation:none}}
+
+/* The Experience — refined, aligned review wall (Oct 2026). */
+.experience-reviews{padding:48px max(6.5vw,24px) 76px;background:#f8f4f1}
+.experience-review-toolbar,.experience-review-summary,.experience-reviews-grid,.experience-reviews-footer{max-width:1320px;width:100%}
+.experience-review-toolbar{margin:0 auto 24px;align-items:center;padding:0 0 22px;gap:28px}
+.experience-review-toolbar>div{min-width:0}
+.experience-review-toolbar .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:10px;letter-spacing:.17em;font-weight:800;color:#bd1e36}
+.experience-review-toolbar .eyebrow-line{display:inline-block;width:27px;height:1px;background:#c51d36}
+.experience-review-toolbar p{font-size:14px;line-height:1.6;margin:10px 0 0;color:#766c70}
+.experience-share-button{flex:0 0 auto;min-height:48px;padding:14px 23px;border-radius:999px;background:#c51d36;color:#fff!important;border:1px solid #c51d36;text-decoration:none!important;font-weight:800;font-size:13px;box-shadow:0 8px 22px rgba(197,29,54,.15)}
+.experience-share-button:hover{background:#a9152b;border-color:#a9152b;transform:translateY(-2px)}
+.experience-review-summary{box-sizing:border-box;min-height:62px;margin:0 auto 20px;padding:16px 22px;border:1px solid #eadedb;border-radius:15px;background:#fff;display:flex;align-items:center;gap:14px}
+.experience-review-summary strong{font-size:14px;font-weight:800;color:#211c1e}
+.experience-review-summary span:last-child{margin-left:auto;text-align:right;color:#766c70;font-size:13px}
+.experience-reviews-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;gap:20px;margin:0 auto}
+.experience-review-column{display:flex;flex-direction:column;gap:20px;min-width:0;align-items:stretch}
+.experience-review-card,.experience-review-featured{box-sizing:border-box;display:flex;flex-direction:column;position:relative;min-height:0!important;height:auto!important;padding:25px 24px 22px;border:1px solid #eadedb!important;border-radius:18px;background:#fff!important;color:#211c1e!important;box-shadow:0 5px 20px rgba(41,24,28,.025);overflow:hidden;isolation:isolate;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.experience-review-card::after{display:none}
+.experience-review-card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--border-angle,0deg),transparent 0deg,transparent 250deg,#c51d36 300deg,#f3a0ad 325deg,transparent 360deg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;pointer-events:none;z-index:2}
+.experience-review-card:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(41,24,28,.09);border-color:#e8b6be!important}
+.experience-review-card:hover::before{opacity:1;animation:reviewBorderOrbit 1.7s linear infinite}
+.experience-review-card-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 22px}
+.experience-review-index{font-size:10px;letter-spacing:.15em;color:#a69a9e;font-weight:800}
+.experience-review-stars{font-size:14px;letter-spacing:2px;color:#c51d36;white-space:nowrap}
+.experience-review-stars span{color:#e8dadd}
+.experience-review-card blockquote,.experience-review-featured blockquote{flex:none;margin:0 0 24px;color:#3c3438!important;font-size:15px;line-height:1.8;letter-spacing:-.012em;overflow-wrap:anywhere;quotes:none}
+.experience-review-meta,.experience-review-featured .experience-review-meta{display:flex;align-items:center;gap:11px;margin-top:auto;padding-top:16px;border-top:1px solid #f0e7e6!important}
+.experience-review-avatar{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:50%;background:#f9e9eb;color:#b51c32;font-size:11px;font-weight:800}
+.experience-review-meta>div:nth-child(2){display:flex;flex-direction:column;gap:4px;min-width:0}
+.experience-review-meta strong,.experience-review-featured .experience-review-meta strong{color:#282125!important;font-size:12px;font-weight:800;overflow-wrap:anywhere}
+.experience-review-meta>div:nth-child(2)>span{font-size:11px;color:#96898e}
+.experience-review-verified,.experience-review-featured .experience-review-verified{margin-left:auto;white-space:nowrap;color:#b51c32!important;font-size:10px!important;font-weight:700}
+.experience-reviews-footer{box-sizing:border-box;margin:28px auto 0;padding-top:22px;border-top:1px solid #e8dcda;display:flex;align-items:center;justify-content:space-between;gap:20px;color:#766c70;font-size:12px}
+.experience-reviews-footer>span{line-height:1.6}
+.experience-footer-review-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:12px 18px;border-radius:999px;background:#c51d36!important;border:1px solid #c51d36;color:#fff!important;text-decoration:none!important;font-size:12px;font-weight:800;box-shadow:0 7px 18px rgba(197,29,54,.14);transition:transform .2s ease,background .2s ease}
+.experience-footer-review-button strong{color:inherit!important;margin:0}
+.experience-footer-review-button:hover{background:#a9152b!important;transform:translateY(-2px)}
+.experience-review-loading,.experience-review-empty{grid-column:1/-1;min-width:0;background:#fff;border:1px dashed #e6d8d7;border-radius:18px;padding:52px 24px;text-align:center;color:#776c70}
+@media(max-width:900px){.experience-reviews{padding:42px 28px 64px}.experience-reviews-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.experience-review-column{gap:16px}.experience-review-card{padding:22px 20px 20px}}
+@media(max-width:640px){.experience-reviews{padding:30px 18px 50px}.experience-review-toolbar{align-items:stretch;flex-direction:column;gap:18px}.experience-share-button{width:100%;box-sizing:border-box}.experience-review-summary{padding:15px;gap:10px;flex-wrap:wrap}.experience-review-summary span:last-child{width:100%;margin-left:0;text-align:left}.experience-reviews-grid{grid-template-columns:1fr;gap:14px}.experience-review-column{gap:14px}.experience-review-card{padding:22px 20px 20px}.experience-reviews-footer{align-items:stretch;flex-direction:column}.experience-footer-review-button{width:100%;box-sizing:border-box}}
+@media(prefers-reduced-motion:reduce){.experience-review-card,.experience-share-button,.experience-footer-review-button{transition:none}.experience-review-card:hover::before{animation:none}.review-card-enter{animation:none}}
