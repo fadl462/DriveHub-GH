@@ -46,6 +46,10 @@
         <div class="demo-notice"><span>ⓘ</span><div><strong>Interactive preview</strong><p>Some workspace sections still use browser preview data. Invoices and payments load from the connected database; when live financial records cannot be verified, do not issue documents or record payments.</p></div><button id="dismissNotice" aria-label="Dismiss notice">×</button></div>
 
         <section class="view active" id="view-overview">
+          <article class="panel" id="customerImprovementPanel" style="margin-bottom:20px;border:1px solid #e8c6c8">
+            <div class="panel-heading"><div><h2>Customer improvement feedback</h2><p>Private feedback from customers — management use only</p></div><span class="round-icon" id="improvementNewCount">0 new</span></div>
+            <div id="improvementFeedbackList"><div class="empty-state">Loading live customer feedback…</div></div>
+          </article>
           <div class="metric-grid">
             <article class="metric-card"><div class="metric-top"><span>Revenue recorded</span><span class="metric-icon red">↗</span></div><strong id="revenueMetric">GH₵ 24,850</strong><div class="metric-foot"><span class="trend">↗ 8.4%</span> <span>vs previous period</span></div><div class="sparkline"><i style="height:28%"></i><i style="height:42%"></i><i style="height:36%"></i><i style="height:56%"></i><i style="height:47%"></i><i style="height:73%"></i><i style="height:64%"></i><i style="height:90%"></i></div></article>
             <article class="metric-card"><div class="metric-top"><span>Active rentals</span><span class="metric-icon cream">▣</span></div><strong id="activeRentalsMetric">4</strong><div class="metric-foot"><span class="neutral">2 due soon</span><span> · next 48 hours</span></div><div class="metric-bottomline"><span style="width:66%"></span></div></article>
