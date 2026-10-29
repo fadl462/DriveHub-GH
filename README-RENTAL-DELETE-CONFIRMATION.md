@@ -13,3 +13,8 @@ Files included: `command/app.js`, `command/index.html`, and `command/styles.css`
 
 ## Important limitation
 This update follows the current `command/app.js` preview architecture for standard rentals. The current standard rental/invoice/payment handlers in that frontend still include browser-local state. This ZIP does **not** implement a production D1 deletion API, does not delete D1 records, and does not make the browser audit log tamper-proof. Do not treat this as a live database deletion workflow until the backend and its schema/dependencies are implemented and tested. No deployment is performed by this ZIP.
+
+
+## Rentals page layout refinement
+- Removed the duplicate “Rental operations” heading and descriptive sentence from inside the page content. The main page heading remains.
+- Hid the global “Export overview” and “Quick action” buttons only while the Rentals view is active; they remain available on other views. The dedicated “Add rental” action remains visible.

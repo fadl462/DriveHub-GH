@@ -175,3 +175,7 @@
 /* Rental deletion is intentionally visually distinct from routine actions. */
 .rental-delete-action{color:#a3132a!important;border-color:#e6b9c0!important;background:#fff7f8!important}
 .rental-delete-action:hover{background:#fbe7ea!important}
+
+/* Rentals view: keep the page focused on rental-specific controls. */
+.page-content:has(#view-rentals.active) > .page-heading .heading-actions{display:none!important}
+#view-rentals .rental-toolbar-spacer{flex:1;min-width:0}
