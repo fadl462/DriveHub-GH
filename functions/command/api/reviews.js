@@ -3,12 +3,24 @@ import { json, readJson, requireRole, audit, errorResponse } from "./_utils.js";
 
 export async function onRequestGet({ env }) {
   try {
-    const result = await env.DB.prepare(`SELECT id, customer_name AS name, customer_email AS email,
-      rating, what_went_well AS whatWentWell, what_to_improve AS whatToImprove,
-      status, submitted_at AS submittedAt, published_at AS publishedAt,
-      COALESCE(improvement_status, 'new') AS improvementStatus, management_notes AS managementNotes
-      FROM reviews ORDER BY submitted_at DESC LIMIT 500`).all();
-    return json({ data: result.results || [] });
+    let result;
+    let managementFieldsAvailable = true;
+    try {
+      result = await env.DB.prepare(`SELECT id, customer_name AS name, customer_email AS email,
+        rating, what_went_well AS whatWentWell, what_to_improve AS whatToImprove,
+        status, submitted_at AS submittedAt, published_at AS publishedAt,
+        COALESCE(improvement_status, 'new') AS improvementStatus, management_notes AS managementNotes
+        FROM reviews ORDER BY submitted_at DESC LIMIT 500`).all();
+    } catch (extendedQueryError) {
+      // Keep all review records visible if migration 0004 has not yet been applied.
+      // The private feedback workflow fields will default in the UI until migration is deployed.
+      managementFieldsAvailable = false;
+      result = await env.DB.prepare(`SELECT id, customer_name AS name, customer_email AS email,
+        rating, what_went_well AS whatWentWell, what_to_improve AS whatToImprove,
+        status, submitted_at AS submittedAt, published_at AS publishedAt
+        FROM reviews ORDER BY submitted_at DESC LIMIT 500`).all();
+    }
+    return json({ data: result.results || [], managementFieldsAvailable });
   } catch (error) { return errorResponse(error); }
 }
 
