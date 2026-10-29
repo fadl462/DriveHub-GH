@@ -1,0 +1,20 @@
+DriveHub GH — Review submission D1 integration
+
+Files in this patch:
+- leave-a-review.html: replaces the FormSubmit external POST with same-origin POST /api/reviews and shows success/error feedback.
+- functions/api/reviews.js: validates and stores public submissions as pending in the existing D1 reviews table.
+- functions/command/api/reviews.js: authenticated API for Command Centre review listing and moderation status changes.
+
+Prerequisites:
+1. Cloudflare Pages production must have the D1 binding named DB pointing to drivehub-command-db (already shown in the project settings screenshot).
+2. The existing D1 database must have the reviews table from command/migrations/0001_initial_schema.sql.
+3. Keep the existing Cloudflare Access middleware in functions/command/api/_middleware.js. Do not expose /command/api/reviews to public users.
+4. Deploy preserving these exact paths.
+
+API checks after deployment:
+- Public submission: POST /api/reviews (JSON fields: name, email, rating, vehicle, whatWentWell, whatToImprove). Success returns HTTP 201 and status pending.
+- Moderation list: GET /command/api/reviews while signed in through Cloudflare Access.
+- Moderation update: PATCH /command/api/reviews with JSON {"id":"RV-...","status":"approved"} or pending/rejected/flagged, for admin/review_moderator roles.
+- Public submissions never auto-publish; only approved reviews should be displayed on the public website.
+
+Note: This patch provides the database endpoint and the authenticated moderation API. The existing Command Centre Reviews screen must call these endpoints to become fully live; do not treat its existing browser preview list as database records. No portrait upload is accepted by this endpoint.

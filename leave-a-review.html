@@ -27,10 +27,7 @@
     <div class="review-layout">
       <section class="review-form-card" aria-label="Customer review form">
         <div class="review-form-heading"><span class="review-step">LET’S START WITH YOU</span><h2>Your experience, <em>in your words.</em></h2><p>No need to overthink it. Tell us what felt great and where we can improve.</p></div>
-        <form class="review-form" id="reviewForm" action="https://formsubmit.co/drivehubgh1@gmail.com" method="POST" enctype="multipart/form-data">
-          <input type="hidden" name="_subject" value="New DriveHub GH customer review">
-          <input type="hidden" name="_template" value="table">
-          <input type="hidden" name="_next" value="https://drivehub-gh.pages.dev/leave-a-review?submitted=1">
+        <form class="review-form" id="reviewForm" method="POST">
           <div class="review-field review-name-field"><label for="reviewName">Your name <span>Required</span></label><input id="reviewName" name="name" autocomplete="name" maxlength="80" placeholder="How should we credit you?" required></div>
           <div class="review-field review-email-field"><label for="reviewEmail">Email address</label><input id="reviewEmail" name="email" type="email" autocomplete="email" maxlength="120" placeholder="For follow-up only"></div>
           <div class="review-field review-rating-field"><span class="review-label" id="ratingLabel">Overall rating <span>Required</span></span><div class="review-rating" role="radiogroup" aria-labelledby="ratingLabel">
@@ -41,15 +38,6 @@
               <input type="radio" id="star5" name="rating" value="5"><label for="star5" title="5 stars" aria-label="5 stars">★</label>
             </div><small class="review-hint">Choose the rating that best reflects your experience.</small></div>
           <div class="review-field review-car-field"><label for="reviewCar">Vehicle you rented</label><select id="reviewCar" name="car"><option value="Not specified">Choose your vehicle</option><option>Toyota Prado</option><option>Mitsubishi Outlander</option><option>Toyota RAV4</option><option>Hyundai Santa Fe</option><option>Honda CR-V</option><option>Toyota Land Cruiser V8</option><option>Other / not sure</option></select></div>
-          <div class="review-field review-field-full review-portrait-field">
-            <label for="reviewPortrait">Your portrait <span>Optional</span></label>
-            <label class="review-upload review-portrait-upload" for="reviewPortrait">
-              <span class="upload-icon">＋</span>
-              <span><b>Add a portrait photo</b><small>Optional · JPG, PNG or WEBP</small></span>
-              <input id="reviewPortrait" type="file" name="_attachment" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
-            </label>
-          </div>
-
           <div class="review-divider"><span>THE GOOD & THE GROWING</span></div>
           <section class="review-field review-field-full review-story-field" aria-labelledby="wentWellHeading">
             <label id="wentWellHeading" for="reviewWentWell"><span class="field-icon field-icon-good">✦</span> What went well?</label>
@@ -190,6 +178,47 @@
   } else {
     initReviewForm();
   }
+})();
+</script>
+
+
+<script>
+(function () {
+  var form = document.getElementById('reviewForm');
+  var status = document.getElementById('reviewStatus');
+  if (!form || !status) return;
+  form.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    var submit = form.querySelector('button[type="submit"]');
+    var label = submit ? submit.innerText : '';
+    if (submit) { submit.disabled = true; submit.innerText = 'Submitting…'; }
+    status.textContent = 'Submitting your review securely…';
+    status.setAttribute('data-state', 'loading');
+    var data = new FormData(form);
+    var payload = {
+      name: String(data.get('name') || '').trim(),
+      email: String(data.get('email') || '').trim(),
+      rating: Number(data.get('rating') || 0),
+      vehicle: String(data.get('car') || 'Not specified'),
+      whatWentWell: String(data.get('wentWell') || '').trim(),
+      whatToImprove: String(data.get('improve') || '').trim()
+    };
+    try {
+      var response = await fetch('/api/reviews', { method: 'POST', headers: { 'content-type': 'application/json', 'accept': 'application/json' }, body: JSON.stringify(payload) });
+      var result = await response.json().catch(function () { return {}; });
+      if (!response.ok) throw new Error(result.error || 'We could not save your review. Please try again.');
+      form.reset();
+      var group = document.querySelector('.review-rating');
+      if (group) { group.querySelectorAll('label[for^="star"]').forEach(function (label) { label.classList.remove('is-active'); label.style.setProperty('color', '#ddd2ce', 'important'); }); group.setAttribute('aria-label', 'Choose a rating from 1 to 5 stars'); }
+      status.textContent = 'Thank you. Your review has been received and is awaiting moderation before publication.';
+      status.setAttribute('data-state', 'success');
+    } catch (error) {
+      status.textContent = error.message || 'Submission failed. Please try again shortly.';
+      status.setAttribute('data-state', 'error');
+    } finally {
+      if (submit) { submit.disabled = false; submit.innerText = label || 'Submit'; }
+    }
+  });
 })();
 </script>
 
