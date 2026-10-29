@@ -1,8 +1,15 @@
-DriveHub GH fleet image update
+DriveHub GH — Experience & Reviews update
 
-Replace these three files in your repository, preserving the folder paths:
-- assets/fleet/hyundai-santa-fe.webp
-- assets/fleet/honda-cr-v.webp
-- assets/fleet/toyota-land-cruiser-v8.webp
+Updated files only:
+- DriveHub-GH-main/index.html
+- DriveHub-GH-main/fleet.html
+- DriveHub-GH-main/experience.html
+- DriveHub-GH-main/review-experience.css
 
-These images use the supplied official white DriveHub GH logo on the vehicle plates. The Santa Fe image is now silver metallic and faces in the same direction as the other fleet vehicles.
+Deploy by replacing these four files at the matching paths in the GitHub repository. Do not upload the enclosing DriveHub-GH-main folder as a new nested folder; preserve the listed paths relative to the repository root.
+
+Behaviour:
+- Homepage displays three randomly selected published reviews from /api/reviews on each page load.
+- Fleet page displays three randomly selected published reviews from /api/reviews.
+- Experience page contains the full published review wall, sorted newest first, with premium responsive styling and a link to submit a review.
+- All reviews are loaded from the existing public API, which returns approved public-facing fields only. Private improvement feedback is not requested or displayed.

@@ -1,5 +1,5 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#191719"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><meta name="description" content="Discover the DriveHub GH self-drive rental experience in Accra."><title>The Experience | DriveHub GH</title>  <link rel="stylesheet" href="command-button.css">
-</head><body class="experience-page"><div class="announcement"><span class="pulse"></span> PREMIUM SELF-DRIVE RENTALS IN ACCRA <span class="announcement-right">A better way to move.</span></div><header class="header" id="top"><a class="brand" href="index.html" aria-label="DriveHub GH home"><img src="assets/drivehub-logo.png" alt="DriveHub GH"></a><button class="menu-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button><nav class="nav"><a href="fleet.html">Our fleet</a><a href="experience.html" aria-current="page">The experience</a><a href="how-it-works.html">How it works</a><a href="faqs.html">AI Partner</a><a class="header-command-cta" href="/command/">DriveHub Command</a>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#191719"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="review-experience.css"><meta name="description" content="Read customer testimonials and published reviews of DriveHub GH premium self-drive rentals in Accra."><title>The Experience | DriveHub GH</title>  <link rel="stylesheet" href="command-button.css">
+</head><body class="experience-page"><div class="announcement"><span class="pulse"></span> PREMIUM SELF-DRIVE RENTALS IN ACCRA <span class="announcement-right">A better way to move.</span></div><header class="header" id="top"><a class="brand" href="index.html" aria-label="DriveHub GH home"><img src="assets/drivehub-logo.png" alt="DriveHub GH"></a><button class="menu-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button><nav class="nav"><a href="fleet.html">Our fleet</a><a href="experience.html" aria-current="page">Reviews & experience</a><a href="how-it-works.html">How it works</a><a href="faqs.html">AI Partner</a><a class="header-command-cta" href="/command/">DriveHub Command</a>
 </nav><a class="header-cta" href="find-your-ride.html">Find your ride </a></header><main class="experience-page-main">
   <section class="experience-hero">
     <div class="experience-hero-image" aria-hidden="true"></div>
@@ -61,6 +61,29 @@
     </div>
   </section>
 
+  <section class="experience-reviews" id="customer-reviews" aria-labelledby="customer-reviews-title">
+    <div class="experience-reviews-heading">
+      <div><div class="eyebrow"><span class="eyebrow-line"></span> REAL JOURNEYS. REAL WORDS.</div><h2 id="customer-reviews-title">The best part of the journey<br><em>is hearing about yours.</em></h2><p>Explore published feedback from customers who have travelled with DriveHub GH. Newest reviews appear first.</p></div>
+      <a class="button button-primary" href="leave-a-review.html">Share your experience</a>
+    </div>
+    <div class="experience-review-summary" id="experienceReviewSummary"><span class="summary-stars" aria-hidden="true">★★★★★</span><strong>Customer stories</strong><span>Published reviews from the DriveHub GH community</span></div>
+    <div class="experience-reviews-grid" id="experienceReviewsGrid" aria-live="polite"><div class="experience-review-loading">Loading published reviews…</div></div>
+    <div class="experience-reviews-footer"><span>Every story shown here has been approved for publication.</span><a href="leave-a-review.html">Have a story to share? <strong>Write a review ↗</strong></a></div>
+  </section>
+  <script>
+  (function(){
+    const grid=document.getElementById('experienceReviewsGrid'),summary=document.getElementById('experienceReviewSummary');if(!grid)return;
+    const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const dateLabel=value=>{if(!value)return '';const d=new Date(value);return Number.isNaN(d.getTime())?'':new Intl.DateTimeFormat('en-GH',{day:'numeric',month:'short',year:'numeric'}).format(d)};
+    fetch('/api/reviews',{headers:{Accept:'application/json'},cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('reviews unavailable');return r.json()}).then(payload=>{
+      const reviews=(Array.isArray(payload.data)?payload.data:[]).filter(r=>r.whatWentWell&&String(r.whatWentWell).trim()).sort((a,b)=>new Date(b.submittedAt||0)-new Date(a.submittedAt||0));
+      if(!reviews.length){grid.innerHTML='<div class="experience-review-empty"><h3>Our customer stories are on the way.</h3><p>Check back soon, or be the first to share your experience.</p><a class="button button-primary" href="leave-a-review.html">Write a review</a></div>';summary.hidden=true;return;}
+      const average=reviews.reduce((sum,r)=>sum+(Number(r.rating)||0),0)/reviews.length;
+      summary.innerHTML=`<span class="summary-stars" aria-label="${average.toFixed(1)} out of 5 stars">★★★★★</span><strong>${average.toFixed(1)} / 5</strong><span>${reviews.length} published ${reviews.length===1?'review':'reviews'}</span>`;
+      grid.innerHTML=reviews.map((r,i)=>{const rating=Math.max(0,Math.min(5,Number(r.rating)||0));return `<article class="experience-review-card ${i===0?'experience-review-featured':''}"><div class="experience-review-card-top"><span class="experience-review-index">${String(i+1).padStart(2,'0')}</span><span class="experience-review-stars" aria-label="${rating} out of 5 stars">${'★'.repeat(rating)}<span>${'☆'.repeat(5-rating)}</span></span></div><blockquote>“${esc(r.whatWentWell)}”</blockquote><div class="experience-review-meta"><div class="experience-review-avatar" aria-hidden="true">${esc((r.name||'D').trim().split(/\s+/).slice(0,2).map(n=>n[0]||'').join('').toUpperCase())}</div><div><strong>${esc(r.name||'DriveHub GH customer')}</strong><span>${dateLabel(r.submittedAt)||'DriveHub GH customer'}</span></div><span class="experience-review-verified">Published review</span></div></article>`}).join('');
+    }).catch(()=>{grid.innerHTML='<div class="experience-review-empty"><h3>Reviews are temporarily unavailable.</h3><p>Please refresh the page in a moment.</p></div>';});
+  })();
+  </script>
   <section class="experience-bottom">
     <div>
       <div class="eyebrow light"><span class="eyebrow-line"></span> LET’S GET YOU THERE</div>

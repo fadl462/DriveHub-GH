@@ -1,0 +1,25 @@
+/* Premium customer review presentation shared across public pages. */
+.review-cta-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.review-section-subtitle{max-width:540px;color:#797176;margin-top:14px}
+.reviews-loading,.reviews-empty{grid-column:1/-1;padding:34px;text-align:center;color:#797176}
+.testimonials-cta .button-secondary{background:#fff;color:#201b1d;border:1px solid #e7dadd}
+.experience-reviews{padding:100px max(6.5vw,24px) 94px;background:#f8f4f1;color:#211c1e}
+.experience-reviews-heading{max-width:1320px;margin:0 auto 34px;display:flex;align-items:flex-end;justify-content:space-between;gap:36px}
+.experience-reviews-heading h2{font-family:Manrope,sans-serif;font-size:clamp(38px,5vw,66px);line-height:1.06;letter-spacing:-.065em;margin:18px 0 15px}
+.experience-reviews-heading h2 em{font-style:normal;color:#c51d36}
+.experience-reviews-heading p:not(.eyebrow){max-width:610px;color:#756c70;line-height:1.75;margin:0}
+.experience-review-summary{max-width:1320px;margin:0 auto 24px;display:flex;align-items:center;gap:14px;padding:18px 22px;background:#fff;border:1px solid #eee3e1;border-radius:14px;color:#70676b}
+.experience-review-summary strong{font-size:15px;color:#241f21}.experience-review-summary span:last-child{margin-left:auto;font-size:13px}.summary-stars{color:#c51d36;letter-spacing:2px;font-size:18px}
+.experience-reviews-grid{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+.experience-review-card{position:relative;display:flex;flex-direction:column;min-height:260px;padding:27px 27px 24px;background:#fff;border:1px solid #eee2df;border-radius:16px;box-shadow:0 8px 30px rgba(40,25,28,.035);transition:transform .2s ease,box-shadow .2s ease}
+.experience-review-card:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(40,25,28,.08)}
+.experience-review-featured{background:#211a1d;color:#fff;border-color:#211a1d}.experience-review-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+.experience-review-index{font-size:11px;letter-spacing:.16em;color:#a49a9d;font-weight:700}.experience-review-featured .experience-review-index{color:#d7c9cd}
+.experience-review-stars{color:#c51d36;letter-spacing:2px;white-space:nowrap}.experience-review-stars span{color:#dfd3d5}
+.experience-review-card blockquote{margin:0 0 28px;font-size:16px;line-height:1.8;letter-spacing:-.01em;flex:1;color:#383034}.experience-review-featured blockquote{color:#fff}
+.experience-review-meta{display:flex;align-items:center;gap:11px;padding-top:17px;border-top:1px solid #f0e8e7}.experience-review-featured .experience-review-meta{border-color:rgba(255,255,255,.15)}
+.experience-review-avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#f8e8ea;color:#b51c32;font-size:11px;font-weight:800;flex-shrink:0}.experience-review-meta>div:nth-child(2){display:flex;flex-direction:column;gap:4px;min-width:0}.experience-review-meta strong{font-size:13px;color:#272124}.experience-review-featured .experience-review-meta strong{color:#fff}.experience-review-meta span{font-size:11px;color:#93888c}.experience-review-verified{margin-left:auto;white-space:nowrap;color:#a91b31!important;font-size:10px!important;font-weight:700;letter-spacing:.02em}.experience-review-featured .experience-review-verified{color:#f0aab4!important}
+.experience-review-loading,.experience-review-empty{grid-column:1/-1;background:#fff;border:1px dashed #e6d8d7;border-radius:16px;padding:54px 24px;text-align:center;color:#776c70}.experience-review-empty h3{color:#211c1e;margin:0 0 10px}.experience-review-empty p{margin:0 0 22px}
+.experience-reviews-footer{max-width:1320px;margin:26px auto 0;display:flex;justify-content:space-between;gap:20px;align-items:center;color:#877c80;font-size:12px}.experience-reviews-footer a{color:#30272b;text-decoration:none}.experience-reviews-footer a strong{color:#c51d36;margin-left:5px}
+@media(max-width:900px){.experience-reviews-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.experience-reviews-heading{align-items:flex-start;flex-direction:column}.experience-review-card{padding:23px}}
+@media(max-width:600px){.experience-reviews{padding:70px 18px}.experience-reviews-grid{grid-template-columns:1fr}.experience-review-summary{align-items:flex-start;flex-wrap:wrap}.experience-review-summary span:last-child{width:100%;margin-left:0}.experience-reviews-footer{align-items:flex-start;flex-direction:column}.review-cta-actions{width:100%}.review-cta-actions .button{flex:1;text-align:center}}
