@@ -1,10 +1,9 @@
-DriveHub GH — Review Card Left-Edge Animation Fix
+DriveHub GH — Experience page CTA restoration
 
-This ZIP contains the updated stylesheet only. Keep the existing experience.html and all other site files unchanged.
+Upload experience.html to the website root, replacing the currently deployed experience.html.
 
-Upload/replace:
-  DriveHub-GH-main/review-card-hover-refinement.css
+This file restores the top-right “Share your experience” button, removes its pointing-arrow icon, and keeps “Have a story to share?” on the left with “Write a review” as a separate button on the right. It retains the existing published-review API/rendering and dynamic rating calculation; it does not hard-code the 5.0/5.0 rating or replace review data.
 
-The stylesheet is already linked by the previously supplied experience.html package. If that HTML has already been uploaded, replace this CSS file in the website root and redeploy.
+The page continues to load the existing root-level stylesheets (styles.css, review-experience.css, review-card-hover-refinement.css, command-button.css) and existing assets. Do not upload this HTML into a nested folder.
 
-Change: removes the orbiting border and animates a 3px red line down the LEFT edge of each review card from top to bottom on hover/focus, while retaining the gentle card lift and highlight.
+After upload, purge Cloudflare cache or hard-refresh the page (Ctrl+Shift+R). This package has not been deployed to the live site.
