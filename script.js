@@ -152,7 +152,8 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
    ['Toyota RAV4','toyota-rav4'],
    ['Hyundai Santa Fe','hyundai-santa-fe'],
    ['Honda CR-V','honda-cr-v'],
-   ['Toyota Land Cruiser V8','toyota-land-cruiser-v8']
+   ['Toyota Land Cruiser V8','toyota-land-cruiser-v8'],
+   ['Acura MDX','acura-mdx']
   ];
   const mentioned=fleetModels.filter(([name])=>String(text).toLowerCase().includes(name.toLowerCase()));
   if(mentioned.length){
