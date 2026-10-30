@@ -1095,34 +1095,28 @@
 .car-photo,.fleet-vehicle-image,.fleet-model-image img,.summary-car-art img{image-rendering:auto;filter:none;-webkit-filter:none}
 .summary-car-art img{object-fit:cover;object-position:center 54%;backface-visibility:hidden}
 
-/* Find Your Ride: make the selected vehicle photo fill the entire journey-summary image panel. */
-.ride-page .summary-car-art{padding:0!important;overflow:hidden}
-.ride-page .summary-car-art img{display:block!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center 54%!important;padding:0!important;margin:0!important;border:0!important;background:transparent!important}
 
-/* Final Find Your Ride summary framing: show the complete vehicle without clipping. */
-.ride-page .summary-car-art{
-  height:220px!important;
-  min-height:220px!important;
-  padding:0!important;
-  background:#292124!important;
-  overflow:hidden!important;
+/* Fix: keep the DriveHub GH logo contained in the empty journey summary. */
+.ride-page .summary-empty-state .summary-empty-logo {
+  display: block !important;
+  position: static !important;
+  flex: 0 0 auto !important;
+  width: 112px !important;
+  height: 44px !important;
+  max-width: 100% !important;
+  max-height: 44px !important;
+  object-fit: contain !important;
+  object-position: left center !important;
+  padding: 0 !important;
+  margin: 0 0 5px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: brightness(0) invert(1) !important;
+  transform: none !important;
+  animation: none !important;
 }
-.ride-page .summary-car-art img{
-  display:block!important;
-  width:100%!important;
-  height:100%!important;
-  max-width:100%!important;
-  max-height:100%!important;
-  object-fit:contain!important;
-  object-position:center center!important;
-  padding:8px 10px!important;
-  margin:0!important;
-  box-sizing:border-box!important;
-  background:#292124!important;
-  transform:none!important;
-}
-.ride-page .summary-car-art:hover img{transform:none!important}
-@media(max-width:760px){
-  .ride-page .summary-car-art{height:200px!important;min-height:200px!important}
-  .ride-page .summary-car-art img{padding:6px 8px!important}
-}
+.ride-page .summary-empty-state { z-index: 2; }
+.ride-page .summary-empty-state strong,
+.ride-page .summary-empty-state small { position: relative; z-index: 2; }
