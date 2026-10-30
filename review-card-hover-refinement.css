@@ -1,0 +1,29 @@
+/* DriveHub GH — The Experience review-card hover refinement.
+   Load this stylesheet AFTER review-experience.css. */
+.experience-redesign .experience-review-card::before,
+.experience-redesign .experience-review-card:hover::before {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+
+.experience-redesign .experience-review-card {
+  transition: transform .25s ease, box-shadow .25s ease,
+              border-color .25s ease, background .25s ease !important;
+}
+
+.experience-redesign .experience-review-card:hover,
+.experience-redesign .experience-review-featured:hover {
+  background: linear-gradient(145deg, #fff 0%, #fffdfc 62%, #fff7f8 100%) !important;
+  border-color: rgba(197, 29, 54, .24) !important;
+  box-shadow: 0 16px 34px rgba(41, 24, 28, .085),
+              0 0 0 2px rgba(197, 29, 54, .035) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience-redesign .experience-review-card,
+  .experience-redesign .experience-review-card:hover,
+  .experience-redesign .experience-review-featured:hover {
+    transition: none !important;
+  }
+}
