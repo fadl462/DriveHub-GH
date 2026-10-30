@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#191719"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="review-experience.css"><link rel="stylesheet" href="review-card-hover-refinement.css"><meta name="description" content="Read customer testimonials and published reviews of DriveHub GH premium self-drive rentals in Accra."><title>The Experience | DriveHub GH</title>  <link rel="stylesheet" href="command-button.css">
 <style>
-.experience-review-cta-row{display:flex;align-items:center;justify-content:flex-start;gap:16px;padding-top:22px;margin-top:28px;border-top:1px solid #e8dcda;}
+.experience-review-cta-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:22px;margin-top:28px;border-top:1px solid #e8dcda;}
 .experience-review-cta-label{color:#756c70;font-size:14px;line-height:1.5;font-weight:500;}
 .experience-review-cta-row .experience-footer-review-button{margin-left:0;flex:0 0 auto;}
 .experience-review-summary strong,.experience-review-summary .experience-overall-rating{font-weight:800;font-size:clamp(22px,2vw,27px);letter-spacing:-.025em;white-space:nowrap;}
@@ -12,7 +12,6 @@
   <section class="experience-reviews experience-redesign" id="customer-reviews" aria-labelledby="customer-reviews-title">
     <div class="experience-review-toolbar">
       <div><span class="eyebrow"><span class="eyebrow-line"></span> CUSTOMER VOICES</span><p>Honest words. Memorable journeys. Shared by our customers.</p></div>
-      <a class="experience-share-button experience-toolbar-share" href="leave-a-review.html">Share your experience <span aria-hidden="true">↗</span></a>
     </div>
     <div class="experience-review-summary" id="experienceReviewSummary"><span class="summary-stars" aria-hidden="true">★★★★★</span><strong>Customer stories</strong><span>Published reviews from the DriveHub GH community</span></div>
     <div class="experience-reviews-grid" id="experienceReviewsGrid" aria-live="polite"><div class="experience-review-loading">Loading published reviews…</div></div>
@@ -40,7 +39,7 @@
     window.addEventListener('resize',()=>{const n=columnsForWidth();if(n!==lastCount&&cachedReviews.length){lastCount=n;paintReviews(cachedReviews);}});
     fetch('/api/reviews',{headers:{Accept:'application/json'},cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('reviews unavailable');return r.json()}).then(payload=>{
       const reviews=(Array.isArray(payload.data)?payload.data:[]).filter(r=>r.whatWentWell&&String(r.whatWentWell).trim()).sort((a,b)=>new Date(b.submittedAt||0)-new Date(a.submittedAt||0));cachedReviews=reviews;
-      if(!reviews.length){grid.innerHTML='<div class="experience-review-empty"><h3>Our customer stories are on the way.</h3><p>Check back soon, or be the first to share your experience.</p><a class="experience-share-button" href="leave-a-review.html">Write a review ↗</a></div>';summary.hidden=true;return;}
+      if(!reviews.length){grid.innerHTML='<div class="experience-review-empty"><h3>Our customer stories are on the way.</h3><p>Check back soon, or be the first to share your experience.</p><a class="experience-share-button" href="leave-a-review.html">Write a review</a></div>';summary.hidden=true;return;}
       const average=reviews.reduce((sum,r)=>sum+(Number(r.rating)||0),0)/reviews.length;
       summary.innerHTML=`<span class="summary-stars" aria-label="${average.toFixed(1)} out of 5 stars">★★★★★</span><strong class="experience-overall-rating">${average.toFixed(1)}/5.0</strong><span>${reviews.length} ${reviews.length===1?'review':'reviews'}</span>`;
       paintReviews(reviews);
