@@ -1,14 +1,12 @@
-DRIVEHUB GH — FIND YOUR RIDE SUMMARY FIX
+DriveHub GH — Find Your Ride empty-state logo fix
 
-Cause:
-The current Find Your Ride page contains an Acura MDX vehicle card, but script.js did not include Acura MDX in its selected-vehicle labels, image mapping, or supported URL vehicle list. When opened with ?vehicle=Acura%20MDX, the page therefore fell back to the empty-state mark (“DH.”) instead of showing the selected vehicle.
+Upload/replace these files at the website root, preserving the folders/paths:
+- find-your-ride.html
+- styles.css
 
-Fix:
-Updated script.js to recognize Acura MDX, display its selected vehicle name and note, load assets/fleet/acura-mdx.webp in the journey summary, and recognize Acura MDX in the vehicle query string.
+What this corrects:
+- Replaces the plain “DH.” empty-state text with the existing DriveHub GH logo asset.
+- Keeps the logo contained at a compact size in the journey-summary panel.
+- The logo is only part of the empty state; selecting a vehicle continues to show the vehicle image.
 
-Upload:
-1. Upload this script.js to the website root, replacing the existing script.js.
-2. Confirm assets/fleet/acura-mdx.webp already exists on the website. It was included in the previously prepared Acura MDX Fleet Website update. If it is missing, upload that asset too.
-3. Purge Cloudflare cache or hard-refresh with Ctrl+Shift+R.
-
-Only script.js is included as the functional change. No page layout, fleet card, rating, or other website files are replaced.
+Important: this package preserves the Find Your Ride page and styles from the prior logo correction. It does not change fleet data, other pages, or the Command Centre.
