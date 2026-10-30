@@ -1,7 +1,11 @@
-DriveHub GH — Experience page correction
+DriveHub GH — Experience page CTA and rating correction
 
-Upload experience.html to the repository root, replacing the existing experience.html.
+Upload/replace only experience.html at the repository root.
 
-Changes: the rating still uses the calculated average from the public reviews API, formatted as bold X.X/5.0; the review prompt and Write a review button are aligned together on the left with a small gap. On very narrow screens, the button wraps below the prompt for readability.
+Changes:
+- Removes the publication-approval notice from the public Experience page.
+- Makes “Have a story to share?” plain text, separate from the button.
+- Places a standalone “Write a review” button immediately beside the text, without an arrow.
+- Displays the calculated average rating in bold as 5.0/5.0 (the numeric value remains dynamically calculated from published reviews).
 
-This ZIP has not been deployed to Cloudflare Pages. After committing the file to GitHub, wait for the Pages deployment and hard-refresh the public page (Ctrl+Shift+R).
+After upload, wait for Cloudflare Pages to deploy and hard-refresh the page (Ctrl+Shift+R). This ZIP is prepared for upload; it has not been deployed to the live site.
