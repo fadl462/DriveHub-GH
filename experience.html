@@ -3,11 +3,22 @@
 .experience-redesign .experience-review-toolbar{justify-content:flex-start;align-items:flex-start;min-height:0;margin-bottom:16px;padding-bottom:16px;}
 .experience-review-cta-row{display:flex;align-items:center;justify-content:flex-start;gap:16px;padding-top:22px;margin-top:28px;border-top:1px solid #e8dcda;}
 .experience-review-cta-label{color:#756c70;font-size:14px;line-height:1.5;font-weight:500;}
-.experience-review-cta-row{justify-content:space-between;}
-.experience-review-cta-row .experience-footer-review-button{margin-left:auto;flex:0 0 auto;}
+.experience-review-cta-row{justify-content:space-between;gap:20px;}
+.experience-review-cta-row .experience-footer-review-button{margin-left:auto;flex:0 0 auto;white-space:nowrap;}
 .experience-review-summary strong,.experience-review-summary .experience-overall-rating{font-weight:800;font-size:clamp(22px,2vw,27px);letter-spacing:-.025em;white-space:nowrap;}
 @media(max-width:649px){.experience-review-cta-row{align-items:center;flex-direction:row;justify-content:flex-start;gap:12px}.experience-review-cta-label{font-size:13px}.experience-review-cta-row .experience-footer-review-button{padding:12px 15px;font-size:12px}}
 @media(max-width:380px){.experience-review-cta-row{align-items:flex-start;flex-direction:column;gap:10px}.experience-review-cta-row .experience-footer-review-button{margin-left:0}}
+
+/* CTA cleanup: keep labels and buttons visually separate; no pointing-arrow decoration. */
+.experience-page .experience-review-cta-row{display:flex;align-items:center;justify-content:space-between;gap:20px;}
+.experience-page .experience-review-cta-label{display:block;flex:1 1 auto;}
+.experience-page .experience-review-cta-row .experience-footer-review-button{display:inline-flex;align-items:center;justify-content:center;gap:0;margin-left:auto;flex:0 0 auto;white-space:nowrap;}
+.experience-page .experience-review-cta-row .experience-footer-review-button::before,
+.experience-page .experience-review-cta-row .experience-footer-review-button::after,
+.experience-page .experience-review-toolbar a::before,
+.experience-page .experience-review-toolbar a::after{content:none!important;display:none!important;}
+@media(max-width:649px){.experience-page .experience-review-cta-row{flex-direction:row;align-items:center;justify-content:space-between;gap:12px}.experience-page .experience-review-cta-label{font-size:13px}.experience-page .experience-review-cta-row .experience-footer-review-button{margin-left:auto;padding:12px 15px;font-size:12px}}
+@media(max-width:380px){.experience-page .experience-review-cta-row{flex-direction:column;align-items:flex-start}.experience-page .experience-review-cta-row .experience-footer-review-button{margin-left:0}}
 </style>
 </head><body class="experience-page"><div class="announcement"><span class="pulse"></span> PREMIUM SELF-DRIVE RENTALS IN ACCRA <span class="announcement-right">A better way to move.</span></div><header class="header" id="top"><a class="brand" href="index.html" aria-label="DriveHub GH home"><img src="assets/drivehub-logo.png" alt="DriveHub GH"></a><button class="menu-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button><nav class="nav"><a href="fleet.html">Our fleet</a><a href="experience.html" aria-current="page">The Experience</a><a href="how-it-works.html">How it works</a><a href="faqs.html">AI Partner</a><a class="header-command-cta" href="/command/" target="_blank" rel="noopener noreferrer">DriveHub Command</a>
 </nav><a class="header-cta" href="find-your-ride.html">Find your ride </a></header><main class="experience-page-main">
