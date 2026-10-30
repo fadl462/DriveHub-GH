@@ -144,6 +144,8 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   content.append(sender,bubble);wrap.appendChild(content);messages.appendChild(wrap);messages.scrollTop=messages.scrollHeight;return wrap;
  }
  function addAssistant(text,withWhatsApp=false){
+  const showReviewsLink=String(text).includes('[[REVIEWS_LINK]]');
+  text=String(text).replace('[[REVIEWS_LINK]]','').trim();
   const wrap=addMessage(text,'assistant');
   const bubble=wrap.querySelector('.message-bubble');
   const fleetModels=[
@@ -161,6 +163,7 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
    mentioned.forEach(([name,slug])=>{const a=document.createElement('a');a.href='/find-your-ride?vehicle='+encodeURIComponent(name);a.textContent='Choose '+name+' & enquire ↗';a.setAttribute('aria-label','Choose '+name+' and open a preselected rental enquiry');actions.appendChild(a);});
    bubble.appendChild(actions);
   }
+  if(showReviewsLink){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='/experience';a.textContent='Read customer reviews on The Experience page ↗';a.setAttribute('aria-label','Open DriveHub GH customer reviews');p.appendChild(a);bubble.appendChild(p);}
   if(withWhatsApp){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='https://wa.me/'+phone+'?text='+encodeURIComponent('Hello DriveHub GH, I need help with a self-drive rental enquiry.');a.target='_blank';a.rel='noopener';a.textContent='Continue with the DriveHub team on WhatsApp ↗';p.appendChild(a);bubble.appendChild(p);}
   messages.scrollTop=messages.scrollHeight;
  }
@@ -175,7 +178,9 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
    const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:history})});
    const data=await response.json().catch(()=>({}));
    if(!response.ok||!data.reply)throw new Error(data.error||'Assistant temporarily unavailable');
-   typing.remove();history.push({role:'assistant',content:data.reply});history=history.slice(-12);addAssistant(data.reply);
+   const reviewIntent=/\b(reviews?|testimonials?|customer experiences?|what customers (say|think)|share .*reviews|show .*reviews|read .*reviews)\b/i.test(clean);
+   if(reviewIntent)data.reply='Absolutely — you can browse all published customer reviews on our dedicated Experience page. [[REVIEWS_LINK]]';
+   typing.remove();history.push({role:'assistant',content:data.reply.replace('[[REVIEWS_LINK]]','').trim()});history=history.slice(-12);addAssistant(data.reply);
   }catch(err){
    typing.remove();history.pop();const q=clean.toLowerCase();let fallback='I can still guide you using the six vehicles published on our fleet page, but the live AI service is not responding right now. For confirmed prices, availability and rental terms, our team must verify the details.';
    if(/price|cost|rate|how much|deposit|fee/.test(q))fallback='I can’t verify a current rental rate or deposit from the website information available to me, and I won’t invent a price. Tell me your dates and preferred vehicle, and the DriveHub team can confirm the total. The live AI service is temporarily unavailable, so you can continue with our team on WhatsApp.';
