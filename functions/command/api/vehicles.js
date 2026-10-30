@@ -2,45 +2,51 @@ import { json, readJson, requireRole, audit, errorResponse } from "./_utils.js";
 
 const validStatuses = ["available", "reserved", "rented", "maintenance", "inactive"];
 
-// Public catalogue currently shown on fleet.html and find-your-ride.html.
-// Rates are GHS/day. D1 stores monetary amounts in minor units (pesewas).
-// These records are synchronised into the Command Centre inventory on read,
-// so staff do not need to recreate the public catalogue by hand.
+// Canonical public fleet catalogue. D1 stores prices in pesewas.
 const PUBLIC_FLEET = [
-  { key: "TOYOTA-PRADO", name: "Toyota Prado", rateGhs: 1500 },
-  { key: "MITSUBISHI-OUTLANDER", name: "Mitsubishi Outlander", rateGhs: 800 },
-  { key: "TOYOTA-RAV4", name: "Toyota RAV4", rateGhs: 800 },
-  { key: "HYUNDAI-SANTA-FE", name: "Hyundai Santa Fe", rateGhs: 800 },
-  { key: "HONDA-CR-V", name: "Honda CR-V", rateGhs: 1000 },
-  { key: "TOYOTA-LAND-CRUISER-V8", name: "Toyota Land Cruiser V8", rateGhs: 2000 },
-  { key: "ACURA-MDX", name: "Acura MDX", rateGhs: 1000 }
+  { key: "TOYOTA-PRADO", name: "Toyota Prado", aliases: [], rateGhs: 1500 },
+  { key: "MITSUBISHI-OUTLANDER-SILVER-METALLIC", name: "Mitsubishi Outlander (Silver Metallic)", aliases: ["Mitsubishi Outlander", "Mitsubishi Outlander - Silver Metallic"], rateGhs: 800 },
+  { key: "TOYOTA-RAV4", name: "Toyota RAV4", aliases: [], rateGhs: 800 },
+  { key: "HYUNDAI-SANTAFE-SILVER-METALLIC", name: "Hyundai Santafe (Silver Metallic)", aliases: ["Hyundai Santa Fe", "Santafe (Silver Metallic)", "Hyundai Santa Fe (Silver Metallic)"], rateGhs: 800 },
+  { key: "HONDA-CR-V", name: "Honda CR-V", aliases: [], rateGhs: 1000 },
+  { key: "TOYOTA-LAND-CRUISER-V8", name: "Toyota Land Cruiser V8", aliases: [], rateGhs: 2000 },
+  { key: "ACURA-MDX", name: "Acura MDX", aliases: [], rateGhs: 1000 }
 ];
+
+const normalize = value => String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
 async function syncPublicFleetToD1(db) {
   for (const vehicle of PUBLIC_FLEET) {
-    const id = `PUBLIC-${vehicle.key}`;
     const rateMinor = Math.round(vehicle.rateGhs * 100);
+    const names = [vehicle.name, ...vehicle.aliases];
+    const placeholders = names.map(() => "?").join(", ");
+    const existingRows = await db.prepare(
+      `SELECT id, name, registration_number, status, service_due_on, notes
+       FROM vehicles WHERE lower(trim(name)) IN (${placeholders}) ORDER BY
+       CASE WHEN lower(trim(name)) = lower(trim(?)) THEN 0 ELSE 1 END, created_at`
+    ).bind(...names.map(n => n.toLowerCase()), vehicle.name).all();
 
-    // First create the public vehicle if it is not already represented in D1.
-    // Deterministic IDs make repeated requests idempotent. No registration
-    // number is invented; operational status defaults to available only on
-    // first creation and is never reset on later reads.
-    await db.prepare(`
-      INSERT INTO vehicles (id, name, registration_number, daily_rate_minor, status, notes)
-      SELECT ?, ?, NULL, ?, 'available', 'Synced from the public website fleet catalogue.'
-      WHERE NOT EXISTS (
-        SELECT 1 FROM vehicles
-        WHERE lower(trim(name)) = lower(trim(?))
-      )
-    `).bind(id, vehicle.name, rateMinor, vehicle.name).run();
-
-    // Keep the starting price aligned with the public catalogue while
-    // preserving the D1 vehicle's ID, registration, status and service date.
-    await db.prepare(`
-      UPDATE vehicles
-      SET daily_rate_minor = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE lower(trim(name)) = lower(trim(?))
-    `).bind(rateMinor, vehicle.name).run();
+    const rows = existingRows.results || [];
+    if (!rows.length) {
+      const id = `PUBLIC-${vehicle.key}`;
+      await db.prepare(`
+        INSERT INTO vehicles (id, name, registration_number, daily_rate_minor, status, notes)
+        SELECT ?, ?, NULL, ?, 'available', 'Synced from the public website fleet catalogue.'
+        WHERE NOT EXISTS (SELECT 1 FROM vehicles WHERE lower(trim(name)) = lower(trim(?)))
+      `).bind(id, vehicle.name, rateMinor, vehicle.name).run();
+    } else {
+      // Rename one matching record to the canonical model label while retaining its
+      // ID, registration, status, service date, notes and any rental relationships.
+      // Other same-model rows are intentionally not deleted automatically: they may
+      // represent separate physical vehicles with their own plates/history.
+      const chosen = rows.find(row => normalize(row.name) === normalize(vehicle.name)) || rows[0];
+      if (chosen.name !== vehicle.name) {
+        await db.prepare("UPDATE vehicles SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
+          .bind(vehicle.name, chosen.id).run();
+      }
+      await db.prepare("UPDATE vehicles SET daily_rate_minor = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
+        .bind(rateMinor, chosen.id).run();
+    }
   }
 }
 
@@ -77,8 +83,6 @@ export async function onRequestPost({ env, data, request }) {
     if (serviceDue && !/^\d{4}-\d{2}-\d{2}$/.test(serviceDue)) return json({ error: "service_due_on must use YYYY-MM-DD" }, 400);
     if (notes && notes.length > 3000) return json({ error: "notes too long" }, 400);
 
-    // If the public catalogue already created this model, update that record
-    // rather than creating a second copy with the same name.
     const existing = await env.DB.prepare("SELECT id FROM vehicles WHERE lower(trim(name)) = lower(trim(?)) LIMIT 1").bind(name).first();
     if (existing) {
       await env.DB.prepare("UPDATE vehicles SET registration_number = COALESCE(?, registration_number), daily_rate_minor = ?, status = ?, service_due_on = ?, notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
