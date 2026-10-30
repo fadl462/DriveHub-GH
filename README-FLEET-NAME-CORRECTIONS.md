@@ -23,3 +23,6 @@ The visible names on `fleet.html` and `find-your-ride.html` should use these exa
 - Keep the existing starting prices unchanged.
 
 Upload `functions/command/api/vehicles.js` at the exact path, commit, and let Cloudflare Pages deploy. Apply the optional SQL only after reviewing the existing vehicle rows and any linked rentals.
+
+## Additional display de-duplication fix
+The `GET /api/vehicles` response now hides the generic `Mitsubishi Outlander` row when `Mitsubishi Outlander (Silver Metallic)` exists, and hides the generic `Hyundai Santa Fe` row when `Hyundai Santafe (Silver Metallic)` exists. This is a display/API filter only: it does not delete the underlying rows or their history. After deployment, the Command Centre Fleet page should show the canonical silver-metallic entries instead of both generic and canonical names.

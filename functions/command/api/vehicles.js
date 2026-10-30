@@ -58,7 +58,23 @@ export async function onRequestGet({ env, data, request }) {
     const status = url.searchParams.get("status") || "";
     if (status && !validStatuses.includes(status)) return json({ error: "invalid_status" }, 400);
     const rows = await env.DB.prepare(
-      "SELECT id, name, registration_number, daily_rate_minor, status, service_due_on, notes, created_at, updated_at FROM vehicles WHERE (? = '' OR status = ?) ORDER BY name LIMIT 200"
+      `SELECT id, name, registration_number, daily_rate_minor, status, service_due_on, notes, created_at, updated_at
+       FROM vehicles
+       WHERE (? = '' OR status = ?)
+         AND NOT (
+           lower(trim(name)) IN ('mitsubishi outlander', 'hyundai santa fe')
+           AND EXISTS (
+             SELECT 1 FROM vehicles canonical
+             WHERE (
+               lower(trim(canonical.name)) = 'mitsubishi outlander (silver metallic)'
+               AND lower(trim(name)) = 'mitsubishi outlander'
+             ) OR (
+               lower(trim(canonical.name)) = 'hyundai santafe (silver metallic)'
+               AND lower(trim(name)) = 'hyundai santa fe'
+             )
+           )
+         )
+       ORDER BY name LIMIT 200`
     ).bind(status, status).all();
     return json({ data: rows.results || [], synced_public_catalogue: true });
   } catch (error) {
