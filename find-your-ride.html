@@ -22,27 +22,31 @@
           <div class="ride-category-grid ride-fleet-grid" role="group" aria-label="Choose one of the DriveHub GH fleet vehicles">
             <button type="button" class="ride-category" data-ride-vehicle="Toyota Prado" aria-pressed="false">
               <span class="category-image" style="background-image:url('assets/fleet/toyota-prado.webp')" role="img" aria-label="Toyota Prado fleet vehicle"></span>
-              <span class="category-copy"><strong>Toyota Prado</strong><small>Room to go further</small></span><span class="category-check">✓</span>
+              <span class="category-copy"><strong>Toyota Prado</strong><small>Room to go further</small><small class="category-rate">From GHS 1,500/day</small></span><span class="category-check">✓</span>
             </button>
             <button type="button" class="ride-category" data-ride-vehicle="Mitsubishi Outlander" aria-pressed="false">
               <span class="category-image" style="background-image:url('assets/fleet/mitsubishi-outlander.webp')" role="img" aria-label="Mitsubishi Outlander fleet vehicle"></span>
-              <span class="category-copy"><strong>Mitsubishi Outlander</strong><small>Made for everyone</small></span><span class="category-check">✓</span>
+              <span class="category-copy"><strong>Mitsubishi Outlander</strong><small>Made for everyone</small><small class="category-rate">From GHS 800/day</small></span><span class="category-check">✓</span>
             </button>
             <button type="button" class="ride-category" data-ride-vehicle="Toyota RAV4" aria-pressed="false">
               <span class="category-image" style="background-image:url('assets/fleet/toyota-rav4.webp')" role="img" aria-label="Toyota RAV4 fleet vehicle"></span>
-              <span class="category-copy"><strong>Toyota RAV4</strong><small>Ready for your route</small></span><span class="category-check">✓</span>
+              <span class="category-copy"><strong>Toyota RAV4</strong><small>Ready for your route</small><small class="category-rate">From GHS 800/day</small></span><span class="category-check">✓</span>
             </button>
             <button type="button" class="ride-category" data-ride-vehicle="Hyundai Santa Fe" aria-pressed="false">
               <span class="category-image" style="background-image:url('assets/fleet/hyundai-santa-fe.webp')" role="img" aria-label="Hyundai Santa Fe fleet vehicle"></span>
-              <span class="category-copy"><strong>Hyundai Santa Fe</strong><small>Comfort in every mile</small></span><span class="category-check">✓</span>
+              <span class="category-copy"><strong>Hyundai Santa Fe</strong><small>Comfort in every mile</small><small class="category-rate">From GHS 800/day</small></span><span class="category-check">✓</span>
             </button>
             <button type="button" class="ride-category" data-ride-vehicle="Honda CR-V" aria-pressed="false">
               <span class="category-image" style="background-image:url('assets/fleet/honda-cr-v.webp')" role="img" aria-label="Honda CR-V fleet vehicle"></span>
-              <span class="category-copy"><strong>Honda CR-V</strong><small>Easy to make yours</small></span><span class="category-check">✓</span>
+              <span class="category-copy"><strong>Honda CR-V</strong><small>Easy to make yours</small><small class="category-rate">From GHS 1,000/day</small></span><span class="category-check">✓</span>
             </button>
             <button type="button" class="ride-category" data-ride-vehicle="Toyota Land Cruiser V8" aria-pressed="false">
               <span class="category-image" style="background-image:url('assets/fleet/toyota-land-cruiser-v8.webp')" role="img" aria-label="Toyota Land Cruiser V8 fleet vehicle"></span>
-              <span class="category-copy"><strong>Toyota Land Cruiser V8</strong><small>Space with presence</small></span><span class="category-check">✓</span>
+              <span class="category-copy"><strong>Toyota Land Cruiser V8</strong><small>Space with presence</small><small class="category-rate">From GHS 2,000/day</small></span><span class="category-check">✓</span>
+            </button>
+            <button type="button" class="ride-category" data-ride-vehicle="Acura MDX" aria-pressed="false">
+              <span class="category-image" style="background-image:url('assets/fleet/acura-mdx.webp')" role="img" aria-label="Maroon Acura MDX fleet vehicle"></span>
+              <span class="category-copy"><strong>Acura MDX</strong><small>Premium comfort</small><small class="category-rate">From GHS 1,000/day</small></span><span class="category-check">✓</span>
             </button>
           </div>
           <input type="hidden" id="vehicle" value="">
@@ -74,7 +78,7 @@
       </div>
       <aside class="ride-summary" aria-label="Your journey summary">
         <div class="summary-topline"><span>YOUR JOURNEY</span><span class="summary-live"><i></i> YOUR PLAN</span></div>
-        <div class="summary-car-art is-empty" id="summaryCarArt" aria-label="Preview of your selected drive"><img id="summaryVehicleImage" src="assets/fleet/toyota-prado.webp" alt="" hidden><span class="summary-empty-state" id="summaryEmptyState"><img class="summary-empty-logo" src="assets/drivehub-logo.png" alt="DriveHub GH"><strong>Your next drive starts here.</strong><small>Select a vehicle to see it in your journey summary.</small></span><span class="summary-visual-kicker" hidden>YOUR DRIVE, IN FOCUS</span><span class="summary-art-label" id="summaryPurposeLabel" hidden>MADE FOR CITY DAYS</span></div>
+        <div class="summary-car-art is-empty" id="summaryCarArt" aria-label="Preview of your selected drive"><img id="summaryVehicleImage" src="assets/fleet/toyota-prado.webp" alt="" hidden><span class="summary-empty-state" id="summaryEmptyState"><img class="summary-empty-logo" src="assets/drivehub-logo.png" alt="DriveHub GH"><strong>Your next drive starts here.</strong><small>Select a vehicle to see it in your journey summary.</small></span><strong>Your next drive starts here.</strong><small>Select a vehicle to see it in your journey summary.</small></span><span class="summary-visual-kicker" hidden>YOUR DRIVE, IN FOCUS</span><span class="summary-art-label" id="summaryPurposeLabel" hidden>MADE FOR CITY DAYS</span></div>
         <div class="summary-selected"><span class="summary-caption">YOUR RIDE</span><strong id="summaryVehicle">Choose your ride</strong><span id="summaryVehicleNote">We’ll help find your fit.</span></div>
         <div class="summary-divider"></div>
         <div class="summary-dates"><div><span class="summary-caption">PICKUP</span><strong id="summaryPickup">Choose a date</strong></div><div><span class="summary-caption">RETURN</span><strong id="summaryReturn">Choose a date</strong></div></div>

@@ -1,12 +1,11 @@
-DriveHub GH — Find Your Ride empty-state logo fix
+DriveHub GH — Find Your Ride: Acura + starting prices
 
-Upload/replace these files at the website root, preserving the folders/paths:
+Upload these files to the website root, preserving the paths shown in the ZIP:
 - find-your-ride.html
 - styles.css
 
-What this corrects:
-- Replaces the plain “DH.” empty-state text with the existing DriveHub GH logo asset.
-- Keeps the logo contained at a compact size in the journey-summary panel.
-- The logo is only part of the empty state; selecting a vehicle continues to show the vehicle image.
+The Find Your Ride vehicle grid now includes Acura MDX and shows each vehicle's starting daily rate, aligned with the rates already displayed on the Fleet page. The compact DriveHub GH logo in the empty journey summary is preserved.
 
-Important: this package preserves the Find Your Ride page and styles from the prior logo correction. It does not change fleet data, other pages, or the Command Centre.
+Keep your existing assets/ folder unchanged. The Acura image should already be available at assets/fleet/acura-mdx.webp from the earlier Acura asset package.
+
+After upload, hard-refresh the page with Ctrl+F5 and verify all seven vehicle cards, prices, and the empty-state logo. No other site pages are included or changed.
