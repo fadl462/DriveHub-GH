@@ -1,6 +1,15 @@
-DriveHub GH — AI Partner Acura Enquiry Link Fix
+DRIVEHUB GH — IMPORT 20 TESTIMONIALS AS PENDING
 
-Upload script.js to the website root, replacing the existing script.js.
-This is the only application file changed. It adds Acura MDX to the AI Partner's vehicle-action link list so a response mentioning Acura MDX receives a “Choose Acura MDX & enquire” link to /find-your-ride?vehicle=Acura%20MDX.
+This package contains the 20 testimonials from DriveHub_GH_Testimonials_Final.docx.
+All 20 are inserted with status='pending', rating=5, and no email address.
+The source does not provide customer email addresses, so none have been invented.
+The supplied name/location attribution is preserved in customer_name because the current
+reviews schema has no separate location field.
 
-No other site files or existing features are changed. After deployment, hard-refresh the AI Partner page (Ctrl+F5) and ask it to share the fleet.
+IMPORTANT:
+- This SQL has not been run against your live D1 database.
+- It does not approve or publish any review.
+- It is safe to re-run because it uses stable IDs with INSERT OR IGNORE.
+- Run it against the production D1 database used by DriveHub GH, then open Command Centre
+  > Reviews & reputation > Pending and refresh.
+- If the dashboard's counts are deployed, Pending should increase by 20 after successful import.
