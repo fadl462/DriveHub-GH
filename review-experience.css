@@ -196,3 +196,21 @@
 @media(min-width:1050px){.experience-redesign .experience-reviews-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 @media(min-width:650px) and (max-width:1049px){.experience-redesign .experience-reviews-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:649px){.experience-redesign .experience-reviews-grid{grid-template-columns:minmax(0,1fr)!important;gap:14px!important}.experience-redesign .experience-review-column{gap:14px!important}.experience-redesign .experience-review-card,.experience-redesign .experience-review-featured{padding:21px!important}}
+
+
+/* THE EXPERIENCE — hero removed; premium review wall (Oct 2026) */
+.experience-page{background:#f1eae6!important}
+.experience-page-main{background:radial-gradient(ellipse at 8% 8%,rgba(197,29,54,.075),transparent 30%),radial-gradient(ellipse at 95% 28%,rgba(156,94,83,.10),transparent 32%),linear-gradient(180deg,#f8f3ef 0%,#eee5e0 100%);min-height:65vh}
+.experience-redesign{padding:clamp(34px,4.5vw,62px) max(6.5vw,24px) 84px!important;background:transparent!important}
+.experience-redesign .experience-review-toolbar{max-width:1320px;margin:0 auto 24px;padding:8px 0 24px;border-bottom:1px solid rgba(128,75,78,.18);align-items:center}
+.experience-redesign .experience-review-toolbar .eyebrow{font-size:10px;letter-spacing:.19em}
+.experience-redesign .experience-review-toolbar p{font-size:15px;line-height:1.7;color:#75656a;margin-top:11px}
+.experience-toolbar-share{flex:0 0 auto;text-decoration:none!important}
+.experience-redesign .experience-review-summary{background:rgba(255,255,255,.88);border:1px solid rgba(174,130,130,.22);box-shadow:0 12px 32px rgba(58,32,38,.075);backdrop-filter:blur(8px)}
+.experience-redesign .experience-review-card,.experience-redesign .experience-review-featured{background:linear-gradient(145deg,#fff 0%,#fffaf8 100%)!important;border:1px solid rgba(176,139,135,.25)!important;box-shadow:0 12px 30px rgba(54,31,36,.075)!important;border-radius:20px!important}
+.experience-redesign .experience-review-card:hover,.experience-redesign .experience-review-featured:hover{transform:translateY(-5px)!important;box-shadow:0 22px 46px rgba(54,31,36,.14)!important;border-color:rgba(197,29,54,.30)!important}
+.experience-redesign .experience-review-card::after{content:"“";display:block;position:absolute;right:20px;top:36px;color:rgba(197,29,54,.075);font:700 82px/1 Georgia,serif;z-index:0;pointer-events:none}
+.experience-redesign .experience-review-card blockquote{position:relative;z-index:1}
+.experience-redesign .experience-review-meta{position:relative;z-index:1}
+.experience-redesign .experience-reviews-footer{border-top-color:rgba(128,75,78,.18)}
+@media(max-width:650px){.experience-redesign{padding:30px 18px 52px!important}.experience-redesign .experience-review-toolbar{gap:18px}.experience-toolbar-share{width:100%;box-sizing:border-box}}
