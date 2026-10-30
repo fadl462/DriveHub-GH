@@ -142,7 +142,28 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   const sender=document.createElement('span');sender.className='message-sender';sender.textContent=(who==='user'?'YOU':'DRIVEHUB AI PARTNER')+' · '+now;
   const bubble=document.createElement('div');bubble.className='message-bubble';
   const displayText=String(text).replace(/\[\[(?:REVIEWS_LINK|BOOKING_LINK|REVIEW_FORM_LINK|FLEET_LINK)\]\]/g,'').trim();
-  displayText.split(/\n{2,}/).filter(Boolean).forEach(part=>{const p=document.createElement('p');p.textContent=part; bubble.appendChild(p);});
+  displayText.split(/\n{2,}/).filter(Boolean).forEach(part=>{
+   const p=document.createElement('p');
+   // Render explicit URLs as real, safe, clickable links; never inject model text as HTML.
+   const urlPattern=/(https?:\/\/[^\s<>]+|\/find-your-ride(?:\?[^\s<>]*)?|\/experience|\/leave-a-review|\/fleet)(?![^\s<>])/g;
+   let cursor=0,match;
+   while((match=urlPattern.exec(part))){
+    if(match.index>cursor)p.appendChild(document.createTextNode(part.slice(cursor,match.index)));
+    let raw=match[0],trailing='';
+    while(/[),.!?;:]$/.test(raw)){trailing=raw.slice(-1)+trailing;raw=raw.slice(0,-1);}
+    let href=raw;
+    if(raw.startsWith('/'))href=raw;
+    try{const parsed=new URL(href,location.origin);if(!['https:','http:'].includes(parsed.protocol)||(!href.startsWith('/')&&parsed.origin!==location.origin&&parsed.protocol!=='https:'))throw new Error('unsafe');
+      const a=document.createElement('a');a.href=parsed.href;a.textContent=raw;a.className='chat-inline-link';
+      if(parsed.origin!==location.origin){a.target='_blank';a.rel='noopener noreferrer';}
+      p.appendChild(a);
+    }catch{p.appendChild(document.createTextNode(raw));}
+    if(trailing)p.appendChild(document.createTextNode(trailing));
+    cursor=urlPattern.lastIndex;
+   }
+   if(cursor<part.length)p.appendChild(document.createTextNode(part.slice(cursor)));
+   bubble.appendChild(p);
+  });
   content.append(sender,bubble);wrap.appendChild(content);messages.appendChild(wrap);messages.scrollTop=messages.scrollHeight;return wrap;
  }
  function addAssistant(text,withWhatsApp=false){
@@ -167,7 +188,11 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   const referral=replyText.includes('[[REVIEWS_LINK]]')?{href:'/experience',label:'Read customer reviews on The Experience page ↗'}:
    replyText.includes('[[BOOKING_LINK]]')?{href:'/find-your-ride',label:'Find your ride and start an enquiry ↗'}:
    replyText.includes('[[REVIEW_FORM_LINK]]')?{href:'/leave-a-review',label:'Share your experience ↗'}:
-   replyText.includes('[[FLEET_LINK]]')?{href:'/fleet',label:'Explore the full DriveHub GH fleet ↗'}:null;
+   replyText.includes('[[FLEET_LINK]]')?{href:'/fleet',label:'Explore the full DriveHub GH fleet ↗'}:
+   /\b(review|reviews|testimonial|customer feedback|previous customers|trust|rating|overall score)\b/.test(replyText)?{href:'/experience',label:'Read customer reviews on The Experience page ↗'}:
+   /\b(book|booking|availability|enquir|reserve|rent a car|find a car|hire a car)\b/.test(replyText)?{href:'/find-your-ride',label:'Find your ride and start an enquiry ↗'}:
+   /\b(share your experience|submit a review|leave a review|write a review)\b/.test(replyText)?{href:'/leave-a-review',label:'Share your experience ↗'}:
+   /\b(full fleet|our fleet|all vehicles|all cars)\b/.test(replyText)?{href:'/fleet',label:'Explore the full DriveHub GH fleet ↗'}:null;
   if(referral){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href=referral.href;a.textContent=referral.label;a.setAttribute('aria-label',referral.label);p.appendChild(a);bubble.appendChild(p);}
   if(withWhatsApp){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='https://wa.me/'+phone+'?text='+encodeURIComponent('Hello DriveHub GH, I need help with a self-drive rental enquiry.');a.target='_blank';a.rel='noopener';a.textContent='Continue with the DriveHub team on WhatsApp ↗';p.appendChild(a);bubble.appendChild(p);}
   messages.scrollTop=messages.scrollHeight;
