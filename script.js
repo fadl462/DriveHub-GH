@@ -103,7 +103,10 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
 (()=>{
  const root=document.querySelector('.concierge-page'); if(!root)return;
  const messages=document.getElementById('conciergeMessages'),form=document.getElementById('conciergeForm'),input=document.getElementById('conciergeInput'),suggestions=document.getElementById('conciergeSuggestions'),reset=document.getElementById('conciergeReset');
- const phone='233204116245'; let history=[]; let busy=false;
+ const phone='233204116245'; const CHAT_STORAGE_KEY='drivehub-gh-ai-partner-chat-v1'; let history=[]; let transcript=[]; let busy=false;
+ const saveTranscript=()=>{try{localStorage.setItem(CHAT_STORAGE_KEY,JSON.stringify({version:1,updatedAt:new Date().toISOString(),messages:transcript.slice(-100)}));}catch(e){}};
+ const loadTranscript=()=>{try{const parsed=JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY)||'null');return parsed&&parsed.version===1&&Array.isArray(parsed.messages)?parsed.messages.filter(m=>m&&['user','assistant'].includes(m.role)&&typeof m.content==='string').slice(-100):[];}catch(e){return [];}};
+ const clearTranscript=()=>{transcript=[];history=[];try{localStorage.removeItem(CHAT_STORAGE_KEY);}catch(e){}};
  const openingByTime=()=>{
   let hour=new Date().getHours();
   try{hour=Number(new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Accra',hour:'2-digit',hourCycle:'h23'}).format(new Date()));}catch(e){}
@@ -173,26 +176,34 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
  function addSuggestions(labels){if(!labels?.length)return;const chips=document.createElement('div');chips.className='chat-suggestions';labels.forEach(label=>{const b=document.createElement('button');b.type='button';b.dataset.prompt=label;b.textContent=label;chips.appendChild(b);});messages.appendChild(chips);messages.scrollTop=messages.scrollHeight;}
  async function send(text){
   const clean=String(text||'').trim();if(!clean||busy)return;
-  addMessage(clean,'user');if(suggestions)suggestions.remove();messages.querySelectorAll('.chat-suggestions').forEach(el=>el.remove());input.value='';setBusy(true);
+  addMessage(clean,'user');transcript.push({role:'user',content:clean});saveTranscript();if(suggestions)suggestions.remove();messages.querySelectorAll('.chat-suggestions').forEach(el=>el.remove());input.value='';setBusy(true);
   const typing=document.createElement('div');typing.className='chat-message assistant-message chat-typing';typing.innerHTML='<div class="message-avatar">DH</div><div class="message-content"><span class="message-sender">DRIVEHUB AI PARTNER</span><div class="message-bubble">Thinking through your question…</div></div>';messages.appendChild(typing);messages.scrollTop=messages.scrollHeight;
   history.push({role:'user',content:clean});history=history.slice(-12);
   try{
    const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:history})});
    const data=await response.json().catch(()=>({}));
    if(!response.ok||!data.reply)throw new Error(data.error||'Assistant temporarily unavailable');
-   typing.remove();history.push({role:'assistant',content:data.reply});history=history.slice(-12);addAssistant(data.reply);
+   typing.remove();history.push({role:'assistant',content:data.reply});history=history.slice(-12);transcript.push({role:'assistant',content:data.reply});saveTranscript();addAssistant(data.reply);
   }catch(err){
    typing.remove();history.pop();const q=clean.toLowerCase();let fallback='I can still guide you using the seven vehicles published on our fleet page, but the live AI service is not responding right now. For confirmed prices, availability and rental terms, our team must verify the details.';
    if(/price|cost|rate|how much|deposit|fee/.test(q))fallback='I can’t verify a current rental rate or deposit from the website information available to me, and I won’t invent a price. Tell me your dates and preferred vehicle, and the DriveHub team can confirm the total. The live AI service is temporarily unavailable, so you can continue with our team on WhatsApp.';
    else if(/family|children|kids|weekend|everyday|city/.test(q))fallback='For a versatile family or everyday trip, I’d start with the Mitsubishi Outlander or Honda CR-V. The Outlander is positioned for flexible family plans; the CR-V for practical everyday journeys. If you expect a longer journey or want a more substantial SUV, consider the Toyota Prado. Exact suitability and availability need team confirmation.';
    else if(/luxury|special occasion|land cruiser|v8/.test(q))fallback='The Toyota Land Cruiser V8 is our full-size, premium-feeling option for longer journeys or special occasions. The Toyota Prado is a strong alternative if you want a substantial SUV without defaulting to the V8. The team will confirm the exact unit, availability and rate.';
    else if(/out of town|long journey|long trip|road trip/.test(q))fallback='For a longer journey, I’d shortlist the Toyota Prado and Mitsubishi Outlander. The Prado is positioned for bigger plans; the Outlander for flexible everyday and family travel. Share your route, dates and passenger/luggage needs so the team can confirm which vehicle is suitable.';
-   addAssistant(fallback,true);
+   transcript.push({role:'assistant',content:fallback});saveTranscript();addAssistant(fallback,true);
   }finally{setBusy(false);input.focus();}
  }
  form?.addEventListener('submit',e=>{e.preventDefault();send(input.value);});
  root.addEventListener('click',e=>{const chip=e.target.closest('[data-prompt]');if(!chip)return;const prompt=chip.dataset.prompt;if(prompt){if(chip.classList.contains('concierge-topic'))document.querySelectorAll('.concierge-topic').forEach(b=>b.classList.toggle('is-active',b===chip));send(prompt);}});
- reset?.addEventListener('click',()=>{if(busy)return;messages.innerHTML='';history=[];const opening=setOpening();addAssistant(opening.message+'\n\n'+opening.question);addSuggestions(['Help me choose a car','Compare two SUVs','What do I need to rent?']);input.focus();});
+ reset?.addEventListener('click',()=>{if(busy)return;messages.innerHTML='';clearTranscript();const opening=setOpening();const openingText=opening.message+'\n\n'+opening.question;addAssistant(openingText);transcript.push({role:'assistant',content:openingText});saveTranscript();addSuggestions(['Help me choose a car','Compare two SUVs','What do I need to rent?']);input.focus();});
+ // Restore the conversation after refresh. The API knowledge is loaded server-side on each new request,
+ // so a refreshed page keeps the transcript while future answers use the latest deployed business knowledge.
+ const savedTranscript=loadTranscript();
+ if(savedTranscript.length){
+  transcript=savedTranscript;history=savedTranscript.slice(-12);
+  messages.innerHTML='';
+  savedTranscript.forEach(item=>{if(item.role==='user')addMessage(item.content,'user');else addAssistant(item.content);});
+ }
  const pickup=document.getElementById('tripPickup'),ret=document.getElementById('tripReturn');const localDate=d=>{const x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10);};if(pickup&&ret){pickup.min=localDate(new Date());ret.min=localDate(new Date());pickup.addEventListener('change',()=>{ret.min=pickup.value||localDate(new Date());if(ret.value&&ret.value<ret.min)ret.value=ret.min;});}
  document.getElementById('conciergeTripForm')?.addEventListener('submit',e=>{e.preventDefault();if(!pickup.value||!ret.value)return;if(ret.value<pickup.value){ret.setCustomValidity('Return date must be on or after pickup date.');ret.reportValidity();return;}ret.setCustomValidity('');const days=Math.round((new Date(ret.value+'T12:00:00')-new Date(pickup.value+'T12:00:00'))/86400000)+1;const vehicle=document.getElementById('tripVehicle').value;const purpose=document.getElementById('tripPurpose').value;const region=document.getElementById('tripRegion')?.value||'Not specified';const exactLocation=document.getElementById('tripLocation')?.value||'Not specified';const msg=`Hello DriveHub GH, please help me plan a self-drive rental.\n\nPreferred vehicle: ${vehicle}\nDestination region: ${region}\nTown / exact destination: ${exactLocation}\nPickup date: ${pickup.value}\nReturn date: ${ret.value}\nRental duration: ${days} calendar days (pickup and return dates both counted)\nMain use: ${purpose}\n\nPlease confirm availability, total price, documents and pickup arrangements before I commit.`;window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener');});
 })();
