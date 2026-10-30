@@ -1,16 +1,7 @@
-DriveHub GH — Review card hover refinement
+DriveHub GH — The Experience hover refinement
 
-Purpose
-- Removes the animated/rotating thin perimeter line from review cards.
-- Preserves the existing hover lift and shadow.
-- Adds a subtle warm flash on hover.
-- Respects reduced-motion preferences.
+Upload the contents of the DriveHub-GH-main folder to the root of the existing website, preserving the folder paths. This package contains only the two required files:
+- experience.html (updated to load the refinement stylesheet after review-experience.css)
+- review-card-hover-refinement.css (removes the animated rotating border line and keeps a subtle lift/shadow with a gentle warm highlight on hover)
 
-Install without overwriting existing changes
-1. Add review-card-hover-refinement.css to the website root.
-2. In experience.html, add this stylesheet link AFTER the existing review-experience.css link:
-   <link rel="stylesheet" href="review-card-hover-refinement.css">
-3. Commit both changes and let Cloudflare Pages deploy.
-
-Only add the new stylesheet link; do not replace experience.html with an older copy.
-This package contains only the new CSS override and this README.
+The existing review-experience.css and all other site files are intentionally not replaced. This ZIP has not been deployed to Cloudflare Pages.
