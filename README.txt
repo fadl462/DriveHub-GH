@@ -1,9 +1,5 @@
-DriveHub GH — Acura MDX image asset
+DriveHub GH — The Experience CTA layout fix
 
-UPLOAD PATH IN YOUR GITHUB REPOSITORY:
-assets/fleet/acura-mdx.webp
+Upload experience.html to the root of the DriveHub-GH GitHub repository, replacing the existing experience.html.
 
-This package contains one optimised WebP image only, as requested.
-
-IMPORTANT:
-This package adds the image asset; it does not yet add the Acura MDX vehicle card to fleet.html or find-your-ride.html, and it does not configure the GHS 1,000/day starting price. Those require code changes in the website files. Do not assume the vehicle will appear on the live site after uploading this image alone.
+Change: “Have a story to share?” is plain text on the left; only “Write a review” is clickable on the right. The button has no arrow. Responsive layout is included.
