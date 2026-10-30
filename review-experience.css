@@ -214,3 +214,6 @@
 .experience-redesign .experience-review-meta{position:relative;z-index:1}
 .experience-redesign .experience-reviews-footer{border-top-color:rgba(128,75,78,.18)}
 @media(max-width:650px){.experience-redesign{padding:30px 18px 52px!important}.experience-redesign .experience-review-toolbar{gap:18px}.experience-toolbar-share{width:100%;box-sizing:border-box}}
+
+/* Overall published-review rating: prominent, consistent X.X/5.0 format. */
+.experience-review-summary .experience-overall-rating { display:inline-block; font-weight:800; font-size:clamp(1.05rem, 1.5vw, 1.3rem); letter-spacing:-0.025em; color:#191719; white-space:nowrap; }
