@@ -1,9 +1,9 @@
-DriveHub GH — Experience page CTA restoration
+DriveHub GH — Leave a Review dropdown alignment fix
 
-Upload experience.html to the website root, replacing the currently deployed experience.html.
+Files:
+- review-dropdown-alignment.css: scopes the styling change to the “Vehicle you rented” dropdown only.
+- leave-a-review.html: add the stylesheet link below after the existing review-background-fix.css link.
 
-This file restores the top-right “Share your experience” button, removes its pointing-arrow icon, and keeps “Have a story to share?” on the left with “Write a review” as a separate button on the right. It retains the existing published-review API/rendering and dynamic rating calculation; it does not hard-code the 5.0/5.0 rating or replace review data.
+<link rel="stylesheet" href="review-dropdown-alignment.css">
 
-The page continues to load the existing root-level stylesheets (styles.css, review-experience.css, review-card-hover-refinement.css, command-button.css) and existing assets. Do not upload this HTML into a nested folder.
-
-After upload, purge Cloudflare cache or hard-refresh the page (Ctrl+Shift+R). This package has not been deployed to the live site.
+No other page styles or form behavior need to change. Upload the CSS file to the site root and add the stylesheet line to leave-a-review.html. Hard refresh with Ctrl+F5 after deployment.
