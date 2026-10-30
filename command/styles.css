@@ -199,3 +199,7 @@ body:not(:has(#view-overview.active)) .heading-actions{display:none!important}
 /* Fleet alerts are relevant on Fleet only; Overview has its own operational alerts. */
 #fleetAlerts{display:none}
 body:has(#view-fleet.active) #fleetAlerts{display:block}
+
+/* Give the Recent rentals and private customer feedback panels clear separation. */
+#customerImprovementPanel, #improvementFeedbackList { margin-top: 22px; }
+#customerImprovementPanel { clear: both; }

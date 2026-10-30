@@ -61,3 +61,20 @@ export async function onRequestPatch({ request, env, data }) {
     return json({ ok: true, id, status });
   } catch (error) { return errorResponse(error); }
 }
+
+
+export async function onRequestDelete({ request, env, data }) {
+  const staff = data?.staff;
+  if (!requireRole(staff, ["admin", "review_moderator"])) return json({ error: "forbidden" }, 403);
+  try {
+    const body = await readJson(request);
+    const id = String(body.id || "").trim();
+    if (!id) return json({ error: "Provide a review id." }, 400);
+    const existing = await env.DB.prepare("SELECT id, status FROM reviews WHERE id = ?").bind(id).first();
+    if (!existing) return json({ error: "review_not_found" }, 404);
+    if (String(existing.status).toLowerCase() !== "rejected") return json({ error: "Only rejected reviews can be permanently deleted." }, 409);
+    await env.DB.prepare("DELETE FROM reviews WHERE id = ?").bind(id).run();
+    await audit(env.DB, staff, "review_deleted", "review", id, { previousStatus: "rejected" });
+    return json({ ok: true, id, deleted: true });
+  } catch (error) { return errorResponse(error); }
+}
