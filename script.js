@@ -30,6 +30,7 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   'Hyundai Santa Fe':['Hyundai Santa Fe','A refined option for relaxed travel.'],
   'Honda CR-V':['Honda CR-V','Comfort and versatility for everyday journeys.'],
   'Toyota Land Cruiser V8':['Toyota Land Cruiser V8','Full-size presence for longer journeys and special occasions.'],
+  'Acura MDX':['Acura MDX','Premium comfort for a refined journey.'],
   // Legacy links are normalised below; these labels keep old bookmarks readable.
   'Any available car':['Help me choose','We’ll match a car to your plans.'],
   'SUV':['Choose from our SUV fleet','Select a model below.']
@@ -48,7 +49,8 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
    'Toyota RAV4':['assets/fleet/toyota-rav4.webp','Toyota RAV4 from the DriveHub GH fleet'],
    'Hyundai Santa Fe':['assets/fleet/hyundai-santa-fe.webp','Hyundai Santa Fe from the DriveHub GH fleet'],
    'Honda CR-V':['assets/fleet/honda-cr-v.webp','Honda CR-V from the DriveHub GH fleet'],
-   'Toyota Land Cruiser V8':['assets/fleet/toyota-land-cruiser-v8.webp','Toyota Land Cruiser V8 from the DriveHub GH fleet']
+   'Toyota Land Cruiser V8':['assets/fleet/toyota-land-cruiser-v8.webp','Toyota Land Cruiser V8 from the DriveHub GH fleet'],
+   'Acura MDX':['assets/fleet/acura-mdx.webp','Acura MDX from the DriveHub GH fleet']
   };
   const visual=imageByChoice[choice]||['',''];
   const hasVehicle=Boolean(choice&&visual[0]);
@@ -77,7 +79,7 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
  if(pickup&&ret){pickup.min=localDate(new Date());ret.min=pickup.value||localDate(new Date());pickup.addEventListener('change',()=>{ret.min=pickup.value||localDate(new Date());if(ret.value&&ret.value<ret.min)ret.value=ret.min;refresh();});ret.addEventListener('change',refresh);}
  destinationRegion?.addEventListener('change',refresh);destinationTown?.addEventListener('input',refresh);
  const query=new URLSearchParams(location.search);const requested=query.get('vehicle');
- const modelNames=['Toyota Prado','Mitsubishi Outlander','Toyota RAV4','Hyundai Santa Fe','Honda CR-V','Toyota Land Cruiser V8'];
+ const modelNames=['Toyota Prado','Mitsubishi Outlander','Toyota RAV4','Hyundai Santa Fe','Honda CR-V','Toyota Land Cruiser V8','Acura MDX'];
  function selectModel(name){
   const match=[...root.querySelectorAll('[data-ride-vehicle]')].find(b=>b.dataset.rideVehicle.toLowerCase()===String(name).toLowerCase());
   if(match){match.click();return true;}return false;
@@ -155,10 +157,10 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   const mentioned=fleetModels.filter(([name])=>String(text).toLowerCase().includes(name.toLowerCase()));
   if(mentioned.length){
    const actions=document.createElement('div');actions.className='concierge-car-actions';
-   mentioned.forEach(([name,slug])=>{const a=document.createElement('a');a.href='/find-your-ride?vehicle='+encodeURIComponent(name);a.textContent='Choose '+name+' & enquire ';a.setAttribute('aria-label','Choose '+name+' and open a preselected rental enquiry');actions.appendChild(a);});
+   mentioned.forEach(([name,slug])=>{const a=document.createElement('a');a.href='/find-your-ride?vehicle='+encodeURIComponent(name);a.textContent='Choose '+name+' & enquire ↗';a.setAttribute('aria-label','Choose '+name+' and open a preselected rental enquiry');actions.appendChild(a);});
    bubble.appendChild(actions);
   }
-  if(withWhatsApp){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='https://wa.me/'+phone+'?text='+encodeURIComponent('Hello DriveHub GH, I need help with a self-drive rental enquiry.');a.target='_blank';a.rel='noopener';a.textContent='Continue with the DriveHub team on WhatsApp ';p.appendChild(a);bubble.appendChild(p);}
+  if(withWhatsApp){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='https://wa.me/'+phone+'?text='+encodeURIComponent('Hello DriveHub GH, I need help with a self-drive rental enquiry.');a.target='_blank';a.rel='noopener';a.textContent='Continue with the DriveHub team on WhatsApp ↗';p.appendChild(a);bubble.appendChild(p);}
   messages.scrollTop=messages.scrollHeight;
  }
  function setBusy(on){busy=on;input.disabled=on;form.querySelector('button[type="submit"]').disabled=on;form.querySelector('button[type="submit"] span').textContent=on?'Thinking…':'Send';form.setAttribute('aria-busy',String(on));}
