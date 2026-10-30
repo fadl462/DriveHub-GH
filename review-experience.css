@@ -217,3 +217,11 @@
 
 /* Overall published-review rating: prominent, consistent X.X/5.0 format. */
 .experience-review-summary .experience-overall-rating { display:inline-block; font-weight:800; font-size:clamp(1.05rem, 1.5vw, 1.3rem); letter-spacing:-0.025em; color:#191719; white-space:nowrap; }
+
+/* Rating consistency: prominent, accessible public overall score */
+.experience-page .experience-review-summary strong {
+  font-weight: 800;
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  color: #191719;
+  letter-spacing: -0.035em;
+}
