@@ -1,3 +1,5 @@
+import { FAQ_KNOWLEDGE } from './faq-knowledge.js';
+
 const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 const MAX_MESSAGES = 12;
 const MAX_MESSAGE_CHARS = 1200;
@@ -114,7 +116,7 @@ export async function onRequestPost({ request, env }) {
   }
   try {
     const result = await env.AI.run(MODEL, {
-      messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
+      messages: [{ role: 'system', content: SYSTEM_PROMPT + '\n\nINTENT AND RESPONSE EXAMPLES (100 canonical Q&A pairs): Use these as semantic examples, not exact-match scripts. A visitor may ask indirectly, use slang, misspell words, or phrase the same intent differently. Match the underlying intent, answer naturally, and preserve the same verified facts and boundaries. Do not claim these examples make live availability or policy data available.\n' + JSON.stringify(FAQ_KNOWLEDGE) }, ...messages],
       max_tokens: 320,
       temperature: 0.35,
       top_p: 0.85,
