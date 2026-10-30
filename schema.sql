@@ -98,7 +98,9 @@ CREATE TABLE IF NOT EXISTS reviews (
   reviewed_by TEXT REFERENCES staff_users(id),
   reviewed_at TEXT,
   submitted_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  published_at TEXT
+  published_at TEXT,
+  improvement_status TEXT NOT NULL DEFAULT 'new' CHECK (improvement_status IN ('new','under_review','action_planned','resolved')),
+  management_notes TEXT
 );
 
 CREATE TABLE IF NOT EXISTS maintenance_records (
