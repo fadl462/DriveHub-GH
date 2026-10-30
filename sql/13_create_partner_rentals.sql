@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS partner_rentals (
+ id TEXT PRIMARY KEY,
+ booking_reference TEXT NOT NULL UNIQUE,
+ customer_name TEXT NOT NULL,
+ partner_id TEXT NOT NULL REFERENCES rental_partners(id),
+ sourced_vehicle_id TEXT REFERENCES sourced_vehicles(id),
+ vehicle_name TEXT NOT NULL,
+ registration_number TEXT,
+ pickup_date TEXT NOT NULL,
+ return_date TEXT NOT NULL,
+ billable_days INTEGER NOT NULL CHECK(billable_days >= 1),
+ customer_daily_rate_minor INTEGER NOT NULL CHECK(customer_daily_rate_minor >= 0),
+ supplier_daily_rate_minor INTEGER NOT NULL CHECK(supplier_daily_rate_minor >= 0),
+ customer_total_minor INTEGER NOT NULL CHECK(customer_total_minor >= 0),
+ supplier_total_minor INTEGER NOT NULL CHECK(supplier_total_minor >= 0),
+ status TEXT NOT NULL DEFAULT 'upcoming' CHECK(status IN ('upcoming','active','completed','cancelled')),
+ notes TEXT,
+ created_by TEXT REFERENCES staff_users(id),
+ created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ CHECK(return_date >= pickup_date)
+);
