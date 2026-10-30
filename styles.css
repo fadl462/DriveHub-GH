@@ -1055,7 +1055,7 @@
 
 /* Find Your Ride: complete vehicle framing, clear empty state, and robust destination wrapping. */
 .ride-page .summary-car-art{background:radial-gradient(circle at 75% 15%,#63313a 0,transparent 43%),linear-gradient(135deg,#33272a,#191719 75%);}
-.ride-page .summary-car-art img{object-fit:contain;object-position:center center;padding:10px 14px;box-sizing:border-box;background:linear-gradient(180deg,#302528,#211b1e);}
+.ride-page .summary-car-art img{width:100%;height:100%;object-fit:cover;object-position:center center;padding:0;box-sizing:border-box;background:transparent;}
 .ride-page .summary-car-art.is-empty:after{background:linear-gradient(135deg,#ffffff05,#00000012);}
 .ride-page .summary-empty-state{position:absolute;inset:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:25px 23px;gap:9px;color:#fff;}
 .ride-page .summary-empty-state[hidden]{display:none;}
@@ -1067,7 +1067,7 @@
 .ride-page .summary-selected strong{display:block;overflow-wrap:anywhere;line-height:1.25;}
 .ride-page .summary-dates>div{min-width:0;}
 .ride-page .summary-dates strong{display:block;overflow-wrap:anywhere;line-height:1.4;}
-@media(max-width:760px){.ride-page .summary-empty-state{padding:20px}.ride-page .summary-empty-state strong{font-size:17px}.ride-page .summary-car-art img{padding:8px 12px}}
+@media(max-width:760px){.ride-page .summary-empty-state{padding:20px}.ride-page .summary-empty-state strong{font-size:17px}.ride-page .summary-car-art img{width:100%;height:100%;object-fit:cover;padding:0}}
 .ride-page .summary-car-art [hidden]{display:none!important;}
 
 
