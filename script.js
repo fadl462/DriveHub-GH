@@ -30,7 +30,6 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   'Hyundai Santa Fe':['Hyundai Santa Fe','A refined option for relaxed travel.'],
   'Honda CR-V':['Honda CR-V','Comfort and versatility for everyday journeys.'],
   'Toyota Land Cruiser V8':['Toyota Land Cruiser V8','Full-size presence for longer journeys and special occasions.'],
-  'Acura MDX':['Acura MDX','Premium comfort for a refined journey.'],
   // Legacy links are normalised below; these labels keep old bookmarks readable.
   'Any available car':['Help me choose','We’ll match a car to your plans.'],
   'SUV':['Choose from our SUV fleet','Select a model below.']
@@ -49,8 +48,7 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
    'Toyota RAV4':['assets/fleet/toyota-rav4.webp','Toyota RAV4 from the DriveHub GH fleet'],
    'Hyundai Santa Fe':['assets/fleet/hyundai-santa-fe.webp','Hyundai Santa Fe from the DriveHub GH fleet'],
    'Honda CR-V':['assets/fleet/honda-cr-v.webp','Honda CR-V from the DriveHub GH fleet'],
-   'Toyota Land Cruiser V8':['assets/fleet/toyota-land-cruiser-v8.webp','Toyota Land Cruiser V8 from the DriveHub GH fleet'],
-   'Acura MDX':['assets/fleet/acura-mdx.webp','Acura MDX from the DriveHub GH fleet']
+   'Toyota Land Cruiser V8':['assets/fleet/toyota-land-cruiser-v8.webp','Toyota Land Cruiser V8 from the DriveHub GH fleet']
   };
   const visual=imageByChoice[choice]||['',''];
   const hasVehicle=Boolean(choice&&visual[0]);
@@ -79,7 +77,7 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
  if(pickup&&ret){pickup.min=localDate(new Date());ret.min=pickup.value||localDate(new Date());pickup.addEventListener('change',()=>{ret.min=pickup.value||localDate(new Date());if(ret.value&&ret.value<ret.min)ret.value=ret.min;refresh();});ret.addEventListener('change',refresh);}
  destinationRegion?.addEventListener('change',refresh);destinationTown?.addEventListener('input',refresh);
  const query=new URLSearchParams(location.search);const requested=query.get('vehicle');
- const modelNames=['Toyota Prado','Mitsubishi Outlander','Toyota RAV4','Hyundai Santa Fe','Honda CR-V','Toyota Land Cruiser V8','Acura MDX'];
+ const modelNames=['Toyota Prado','Mitsubishi Outlander','Toyota RAV4','Hyundai Santa Fe','Honda CR-V','Toyota Land Cruiser V8'];
  function selectModel(name){
   const match=[...root.querySelectorAll('[data-ride-vehicle]')].find(b=>b.dataset.rideVehicle.toLowerCase()===String(name).toLowerCase());
   if(match){match.click();return true;}return false;
@@ -115,7 +113,7 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
    ['Good morning.','Let’s find your fit.','From city errands to longer journeys, let’s match your plans with the right car.','Where are you headed, and who’s coming along?']
   ]:hour>=12&&hour<17?[
    ['Good afternoon.','What can I help you plan?','Tell me the journey, the dates, or the kind of car you’re considering. We’ll take it from there.','What matters most: space, comfort, or everyday flexibility?'],
-   ['Afternoon!','Let’s make the next move easy.','I can help you compare our six vehicles and prepare a clear rental enquiry.','What does your next trip look like?'],
+   ['Afternoon!','Let’s make the next move easy.','I can help you compare our seven vehicles and prepare a clear rental enquiry.','What does your next trip look like?'],
    ['Good afternoon.','Where are we going?','A family plan, a work trip, or time away? I’ll help you shortlist the right ride.','What are you planning today?']
   ]:hour>=17&&hour<22?[
    ['Good evening.','Where can I take you?','Planning tomorrow or getting away soon? Tell me a little and I’ll help you choose your ride.','Is it family time, business, or a getaway?'],
@@ -140,12 +138,11 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   const content=document.createElement('div');content.className='message-content';
   const sender=document.createElement('span');sender.className='message-sender';sender.textContent=(who==='user'?'YOU':'DRIVEHUB AI PARTNER')+' · '+now;
   const bubble=document.createElement('div');bubble.className='message-bubble';
-  String(text).split(/\n{2,}/).forEach(part=>{const p=document.createElement('p');p.textContent=part; bubble.appendChild(p);});
+  const displayText=String(text).replace(/\[\[(?:REVIEWS_LINK|BOOKING_LINK|REVIEW_FORM_LINK|FLEET_LINK)\]\]/g,'').trim();
+  displayText.split(/\n{2,}/).filter(Boolean).forEach(part=>{const p=document.createElement('p');p.textContent=part; bubble.appendChild(p);});
   content.append(sender,bubble);wrap.appendChild(content);messages.appendChild(wrap);messages.scrollTop=messages.scrollHeight;return wrap;
  }
  function addAssistant(text,withWhatsApp=false){
-  const showReviewsLink=String(text).includes('[[REVIEWS_LINK]]');
-  text=String(text).replace('[[REVIEWS_LINK]]','').trim();
   const wrap=addMessage(text,'assistant');
   const bubble=wrap.querySelector('.message-bubble');
   const fleetModels=[
@@ -163,7 +160,12 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
    mentioned.forEach(([name,slug])=>{const a=document.createElement('a');a.href='/find-your-ride?vehicle='+encodeURIComponent(name);a.textContent='Choose '+name+' & enquire ↗';a.setAttribute('aria-label','Choose '+name+' and open a preselected rental enquiry');actions.appendChild(a);});
    bubble.appendChild(actions);
   }
-  if(showReviewsLink){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='/experience';a.textContent='Read customer reviews on The Experience page ↗';a.setAttribute('aria-label','Open DriveHub GH customer reviews');p.appendChild(a);bubble.appendChild(p);}
+  const replyText=String(text).toLowerCase();
+  const referral=replyText.includes('[[REVIEWS_LINK]]')?{href:'/experience',label:'Read customer reviews on The Experience page ↗'}:
+   replyText.includes('[[BOOKING_LINK]]')?{href:'/find-your-ride',label:'Find your ride and start an enquiry ↗'}:
+   replyText.includes('[[REVIEW_FORM_LINK]]')?{href:'/leave-a-review',label:'Share your experience ↗'}:
+   replyText.includes('[[FLEET_LINK]]')?{href:'/fleet',label:'Explore the full DriveHub GH fleet ↗'}:null;
+  if(referral){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href=referral.href;a.textContent=referral.label;a.setAttribute('aria-label',referral.label);p.appendChild(a);bubble.appendChild(p);}
   if(withWhatsApp){const p=document.createElement('p');p.className='assistant-handoff';const a=document.createElement('a');a.href='https://wa.me/'+phone+'?text='+encodeURIComponent('Hello DriveHub GH, I need help with a self-drive rental enquiry.');a.target='_blank';a.rel='noopener';a.textContent='Continue with the DriveHub team on WhatsApp ↗';p.appendChild(a);bubble.appendChild(p);}
   messages.scrollTop=messages.scrollHeight;
  }
@@ -178,11 +180,9 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
    const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:history})});
    const data=await response.json().catch(()=>({}));
    if(!response.ok||!data.reply)throw new Error(data.error||'Assistant temporarily unavailable');
-   const reviewIntent=/\b(reviews?|testimonials?|customer experiences?|what customers (say|think)|share .*reviews|show .*reviews|read .*reviews)\b/i.test(clean);
-   if(reviewIntent)data.reply='Absolutely — you can browse all published customer reviews on our dedicated Experience page. [[REVIEWS_LINK]]';
-   typing.remove();history.push({role:'assistant',content:data.reply.replace('[[REVIEWS_LINK]]','').trim()});history=history.slice(-12);addAssistant(data.reply);
+   typing.remove();history.push({role:'assistant',content:data.reply});history=history.slice(-12);addAssistant(data.reply);
   }catch(err){
-   typing.remove();history.pop();const q=clean.toLowerCase();let fallback='I can still guide you using the six vehicles published on our fleet page, but the live AI service is not responding right now. For confirmed prices, availability and rental terms, our team must verify the details.';
+   typing.remove();history.pop();const q=clean.toLowerCase();let fallback='I can still guide you using the seven vehicles published on our fleet page, but the live AI service is not responding right now. For confirmed prices, availability and rental terms, our team must verify the details.';
    if(/price|cost|rate|how much|deposit|fee/.test(q))fallback='I can’t verify a current rental rate or deposit from the website information available to me, and I won’t invent a price. Tell me your dates and preferred vehicle, and the DriveHub team can confirm the total. The live AI service is temporarily unavailable, so you can continue with our team on WhatsApp.';
    else if(/family|children|kids|weekend|everyday|city/.test(q))fallback='For a versatile family or everyday trip, I’d start with the Mitsubishi Outlander or Honda CR-V. The Outlander is positioned for flexible family plans; the CR-V for practical everyday journeys. If you expect a longer journey or want a more substantial SUV, consider the Toyota Prado. Exact suitability and availability need team confirmation.';
    else if(/luxury|special occasion|land cruiser|v8/.test(q))fallback='The Toyota Land Cruiser V8 is our full-size, premium-feeling option for longer journeys or special occasions. The Toyota Prado is a strong alternative if you want a substantial SUV without defaulting to the V8. The team will confirm the exact unit, availability and rate.';
