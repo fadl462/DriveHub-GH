@@ -1,7 +1,10 @@
-DriveHub GH — The Experience hover refinement
+DriveHub GH — Review Card Left-Edge Animation Fix
 
-Upload the contents of the DriveHub-GH-main folder to the root of the existing website, preserving the folder paths. This package contains only the two required files:
-- experience.html (updated to load the refinement stylesheet after review-experience.css)
-- review-card-hover-refinement.css (removes the animated rotating border line and keeps a subtle lift/shadow with a gentle warm highlight on hover)
+This ZIP contains the updated stylesheet only. Keep the existing experience.html and all other site files unchanged.
 
-The existing review-experience.css and all other site files are intentionally not replaced. This ZIP has not been deployed to Cloudflare Pages.
+Upload/replace:
+  DriveHub-GH-main/review-card-hover-refinement.css
+
+The stylesheet is already linked by the previously supplied experience.html package. If that HTML has already been uploaded, replace this CSS file in the website root and redeploy.
+
+Change: removes the orbiting border and animates a 3px red line down the LEFT edge of each review card from top to bottom on hover/focus, while retaining the gentle card lift and highlight.

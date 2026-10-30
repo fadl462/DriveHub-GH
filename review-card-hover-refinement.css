@@ -1,17 +1,38 @@
 /* DriveHub GH — The Experience review-card hover refinement.
-   Load this stylesheet AFTER review-experience.css. */
-.experience-redesign .experience-review-card::before,
-.experience-redesign .experience-review-card:hover::before {
-  content: none !important;
-  display: none !important;
+   Keeps the existing card lift and gentle highlight; replaces the orbiting border
+   with a red accent that fills the LEFT edge from TOP to BOTTOM on hover. */
+.experience-redesign .experience-review-card::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: auto !important;
+  width: 3px !important;
+  height: auto !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: #c51d36 !important;
+  transform: scaleY(0) !important;
+  transform-origin: top center !important;
+  opacity: 1 !important;
   animation: none !important;
+  -webkit-mask: none !important;
+  mask: none !important;
+  pointer-events: none !important;
+  z-index: 3 !important;
+  transition: transform .34s ease !important;
+}
+.experience-redesign .experience-review-card:hover::before,
+.experience-redesign .experience-review-card:focus-within::before {
+  transform: scaleY(1) !important;
 }
 
 .experience-redesign .experience-review-card {
   transition: transform .25s ease, box-shadow .25s ease,
               border-color .25s ease, background .25s ease !important;
 }
-
 .experience-redesign .experience-review-card:hover,
 .experience-redesign .experience-review-featured:hover {
   background: linear-gradient(145deg, #fff 0%, #fffdfc 62%, #fff7f8 100%) !important;
@@ -24,6 +45,9 @@
   .experience-redesign .experience-review-card,
   .experience-redesign .experience-review-card:hover,
   .experience-redesign .experience-review-featured:hover {
+    transition: none !important;
+  }
+  .experience-redesign .experience-review-card::before {
     transition: none !important;
   }
 }
