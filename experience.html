@@ -24,7 +24,7 @@
       reviews.forEach((r,i)=>{
         const rating=Math.max(0,Math.min(5,Number(r.rating)||0));
         const card=document.createElement('article');card.className='experience-review-card review-card-enter';card.style.setProperty('--card-order',i);
-        card.innerHTML=`<div class="experience-review-card-top"><span class="experience-review-index">${String(i+1).padStart(2,'0')}</span><span class="experience-review-stars" aria-label="${rating} out of 5 stars">${'★'.repeat(rating)}<span>${'☆'.repeat(5-rating)}</span></span></div><blockquote>“${esc(r.whatWentWell)}”</blockquote><div class="experience-review-meta"><div class="experience-review-avatar" aria-hidden="true">${esc((r.name||'D').trim().split(/\s+/).slice(0,2).map(n=>n[0]||'').join('').toUpperCase())}</div><div><strong>${esc(r.name||'DriveHub GH customer')}</strong><span>${dateLabel(r.submittedAt)||'DriveHub GH customer'}</span></div><span class="experience-review-verified">Published review</span></div>`;
+        card.innerHTML=`<div class="experience-review-card-top"><span class="experience-review-index">${String(i+1).padStart(2,'0')}</span><span class="experience-review-stars" aria-label="${rating} out of 5 stars">${'★'.repeat(rating)}<span>${'☆'.repeat(5-rating)}</span></span></div><blockquote>“${esc(r.whatWentWell)}”</blockquote><div class="experience-review-meta"><div class="experience-review-avatar" aria-hidden="true">${esc((r.name||'D').trim().split(/\s+/).slice(0,2).map(n=>n[0]||'').join('').toUpperCase())}</div><div><strong>${esc(r.name||'DriveHub GH customer')}</strong></div></div>`;
         cols[i%count].appendChild(card);
       });
     }
@@ -34,7 +34,7 @@
       const reviews=(Array.isArray(payload.data)?payload.data:[]).filter(r=>r.whatWentWell&&String(r.whatWentWell).trim()).sort((a,b)=>new Date(b.submittedAt||0)-new Date(a.submittedAt||0));cachedReviews=reviews;
       if(!reviews.length){grid.innerHTML='<div class="experience-review-empty"><h3>Our customer stories are on the way.</h3><p>Check back soon, or be the first to share your experience.</p><a class="experience-share-button" href="leave-a-review.html">Write a review ↗</a></div>';summary.hidden=true;return;}
       const average=reviews.reduce((sum,r)=>sum+(Number(r.rating)||0),0)/reviews.length;
-      summary.innerHTML=`<span class="summary-stars" aria-label="${average.toFixed(1)} out of 5 stars">★★★★★</span><strong>${average.toFixed(1)} / 5</strong><span>${reviews.length} published ${reviews.length===1?'review':'reviews'}</span>`;
+      summary.innerHTML=`<span class="summary-stars" aria-label="${average.toFixed(1)} out of 5 stars">★★★★★</span><strong>${average.toFixed(1)} / 5</strong><span>${reviews.length} ${reviews.length===1?'review':'reviews'}</span>`;
       paintReviews(reviews);
     }).catch(()=>{grid.innerHTML='<div class="experience-review-empty"><h3>Reviews are temporarily unavailable.</h3><p>Please refresh the page in a moment.</p></div>';});
   })();
