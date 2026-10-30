@@ -6,13 +6,20 @@
 .experience-review-summary strong,.experience-review-summary .experience-overall-rating{font-weight:800;font-size:clamp(22px,2vw,27px);letter-spacing:-.025em;white-space:nowrap;}
 @media(max-width:649px){.experience-review-cta-row{align-items:center;flex-direction:row;justify-content:flex-start;gap:12px}.experience-review-cta-label{font-size:13px}.experience-review-cta-row .experience-footer-review-button{padding:12px 15px;font-size:12px}}
 @media(max-width:380px){.experience-review-cta-row{align-items:flex-start;flex-direction:column;gap:10px}.experience-review-cta-row .experience-footer-review-button{margin-left:0}}
+
+/* Keep the Share your experience label optically centred inside its button. */
+.experience-review-toolbar .experience-toolbar-share{display:inline-flex;align-items:center;justify-content:center;gap:0;text-align:center;line-height:1.2;white-space:nowrap;padding:16px 25px;box-sizing:border-box;}
+.experience-review-toolbar .experience-toolbar-share span[aria-hidden="true"]{display:none!important;}
+.experience-reviews-footer .experience-footer-review-button{display:inline-flex;align-items:center;justify-content:center;text-align:center;line-height:1.2;white-space:nowrap;box-sizing:border-box;}
+.experience-review-cta-row{align-items:center;}
+@media(max-width:649px){.experience-review-toolbar .experience-toolbar-share{padding:14px 18px;}}
 </style>
 </head><body class="experience-page"><div class="announcement"><span class="pulse"></span> PREMIUM SELF-DRIVE RENTALS IN ACCRA <span class="announcement-right">A better way to move.</span></div><header class="header" id="top"><a class="brand" href="index.html" aria-label="DriveHub GH home"><img src="assets/drivehub-logo.png" alt="DriveHub GH"></a><button class="menu-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button><nav class="nav"><a href="fleet.html">Our fleet</a><a href="experience.html" aria-current="page">The Experience</a><a href="how-it-works.html">How it works</a><a href="faqs.html">AI Partner</a><a class="header-command-cta" href="/command/" target="_blank" rel="noopener noreferrer">DriveHub Command</a>
 </nav><a class="header-cta" href="find-your-ride.html">Find your ride </a></header><main class="experience-page-main">
   <section class="experience-reviews experience-redesign" id="customer-reviews" aria-labelledby="customer-reviews-title">
     <div class="experience-review-toolbar">
       <div><span class="eyebrow"><span class="eyebrow-line"></span> CUSTOMER VOICES</span><p>Honest words. Memorable journeys. Shared by our customers.</p></div>
-      <a class="experience-share-button experience-toolbar-share" href="leave-a-review.html">Share your experience <span aria-hidden="true"></span></a>
+      <a class="experience-share-button experience-toolbar-share" href="leave-a-review.html">Share your experience <span aria-hidden="true">↗</span></a>
     </div>
     <div class="experience-review-summary" id="experienceReviewSummary"><span class="summary-stars" aria-hidden="true">★★★★★</span><strong>Customer stories</strong><span>Published reviews from the DriveHub GH community</span></div>
     <div class="experience-reviews-grid" id="experienceReviewsGrid" aria-live="polite"><div class="experience-review-loading">Loading published reviews…</div></div>
@@ -40,7 +47,7 @@
     window.addEventListener('resize',()=>{const n=columnsForWidth();if(n!==lastCount&&cachedReviews.length){lastCount=n;paintReviews(cachedReviews);}});
     fetch('/api/reviews',{headers:{Accept:'application/json'},cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('reviews unavailable');return r.json()}).then(payload=>{
       const reviews=(Array.isArray(payload.data)?payload.data:[]).filter(r=>r.whatWentWell&&String(r.whatWentWell).trim()).sort((a,b)=>new Date(b.submittedAt||0)-new Date(a.submittedAt||0));cachedReviews=reviews;
-      if(!reviews.length){grid.innerHTML='<div class="experience-review-empty"><h3>Our customer stories are on the way.</h3><p>Check back soon, or be the first to share your experience.</p><a class="experience-share-button" href="leave-a-review.html">Write a review </a></div>';summary.hidden=true;return;}
+      if(!reviews.length){grid.innerHTML='<div class="experience-review-empty"><h3>Our customer stories are on the way.</h3><p>Check back soon, or be the first to share your experience.</p><a class="experience-share-button" href="leave-a-review.html">Write a review ↗</a></div>';summary.hidden=true;return;}
       const average=reviews.reduce((sum,r)=>sum+(Number(r.rating)||0),0)/reviews.length;
       summary.innerHTML=`<span class="summary-stars" aria-label="${average.toFixed(1)} out of 5 stars">★★★★★</span><strong class="experience-overall-rating">${average.toFixed(1)}/5.0</strong><span>${reviews.length} ${reviews.length===1?'review':'reviews'}</span>`;
       paintReviews(reviews);
