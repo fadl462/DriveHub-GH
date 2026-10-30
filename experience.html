@@ -8,7 +8,7 @@
     </div>
     <div class="experience-review-summary" id="experienceReviewSummary"><span class="summary-stars" aria-hidden="true">★★★★★</span><strong>Customer stories</strong><span>Published reviews from the DriveHub GH community</span></div>
     <div class="experience-reviews-grid" id="experienceReviewsGrid" aria-live="polite"><div class="experience-review-loading">Loading published reviews…</div></div>
-    <div class="experience-reviews-footer"><span>Every story shown here has been approved for publication.</span><a class="experience-footer-review-button" href="leave-a-review.html">Have a story to share? <strong>Write a review <span aria-hidden="true">↗</span></strong></a></div>
+    <div class="experience-reviews-footer"><a class="experience-footer-review-button" href="leave-a-review.html">Write a review</a></div>
   </section>
   <script>
   (function(){
@@ -34,7 +34,7 @@
       const reviews=(Array.isArray(payload.data)?payload.data:[]).filter(r=>r.whatWentWell&&String(r.whatWentWell).trim()).sort((a,b)=>new Date(b.submittedAt||0)-new Date(a.submittedAt||0));cachedReviews=reviews;
       if(!reviews.length){grid.innerHTML='<div class="experience-review-empty"><h3>Our customer stories are on the way.</h3><p>Check back soon, or be the first to share your experience.</p><a class="experience-share-button" href="leave-a-review.html">Write a review ↗</a></div>';summary.hidden=true;return;}
       const average=reviews.reduce((sum,r)=>sum+(Number(r.rating)||0),0)/reviews.length;
-      summary.innerHTML=`<span class="summary-stars" aria-label="${average.toFixed(1)} out of 5 stars">★★★★★</span><strong class="experience-overall-rating">${average.toFixed(1)}/5.0</strong><span>${reviews.length} ${reviews.length===1?'review':'reviews'}</span>`;
+      summary.innerHTML=`<span class="summary-stars" aria-label="${average.toFixed(1)} out of 5 stars">★★★★★</span><strong>${average.toFixed(1)} / 5</strong><span>${reviews.length} ${reviews.length===1?'review':'reviews'}</span>`;
       paintReviews(reviews);
     }).catch(()=>{grid.innerHTML='<div class="experience-review-empty"><h3>Reviews are temporarily unavailable.</h3><p>Please refresh the page in a moment.</p></div>';});
   })();
