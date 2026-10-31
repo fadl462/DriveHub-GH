@@ -1,8 +1,6 @@
-DriveHub GH homepage change
+DriveHub GH — How It Works tagline removal
 
-Removed only the hero-area prompt:
-“Share your experience — Your feedback helps future guests choose with confidence.”
+Only changed file: DriveHub-GH-main/how-it-works.html
+Removed the hero footer text “01 A CLEARER WAY TO RENT” from the How It Works page. No other files are included.
 
-The separate “Share your experience” button elsewhere on the homepage and the leave-a-review page remain unchanged.
-
-Replace DriveHub-GH-main/index.html in your repository, commit/push, and wait for Cloudflare Pages deployment. Then hard-refresh the homepage (Ctrl+F5). This ZIP does not deploy the change.
+Replace this file in your repository, commit/push, and wait for Cloudflare Pages deployment. This ZIP does not deploy the site.
