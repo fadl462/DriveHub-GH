@@ -1,15 +1,8 @@
-DRIVEHUB GH — IMPORT 20 TESTIMONIALS AS PENDING
+DriveHub GH homepage change
 
-This package contains the 20 testimonials from DriveHub_GH_Testimonials_Final.docx.
-All 20 are inserted with status='pending', rating=5, and no email address.
-The source does not provide customer email addresses, so none have been invented.
-The supplied name/location attribution is preserved in customer_name because the current
-reviews schema has no separate location field.
+Removed only the hero-area prompt:
+“Share your experience — Your feedback helps future guests choose with confidence.”
 
-IMPORTANT:
-- This SQL has not been run against your live D1 database.
-- It does not approve or publish any review.
-- It is safe to re-run because it uses stable IDs with INSERT OR IGNORE.
-- Run it against the production D1 database used by DriveHub GH, then open Command Centre
-  > Reviews & reputation > Pending and refresh.
-- If the dashboard's counts are deployed, Pending should increase by 20 after successful import.
+The separate “Share your experience” button elsewhere on the homepage and the leave-a-review page remain unchanged.
+
+Replace DriveHub-GH-main/index.html in your repository, commit/push, and wait for Cloudflare Pages deployment. Then hard-refresh the homepage (Ctrl+F5). This ZIP does not deploy the change.
