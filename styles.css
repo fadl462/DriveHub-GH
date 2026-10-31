@@ -1120,3 +1120,49 @@
 .ride-page .summary-empty-state { z-index: 2; }
 .ride-page .summary-empty-state strong,
 .ride-page .summary-empty-state small { position: relative; z-index: 2; }
+
+
+/* Homepage hero alignment fix — keep the review prompt inside the hero */
+.home-page .hero.home-hero h1 {
+  max-width: 780px;
+  font-size: clamp(54px, 6.2vw, 82px);
+  line-height: 1.02;
+}
+.home-page .hero.home-hero .hero-content {
+  padding-bottom: 34px;
+}
+.home-page .hero.home-hero .testimonial-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: 22px;
+  position: relative;
+  z-index: 2;
+}
+.home-page .hero.home-hero .testimonial-review-link {
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: rgba(255,255,255,.55);
+  text-underline-offset: 4px;
+}
+.home-page .hero.home-hero .testimonial-actions > span {
+  color: rgba(255,255,255,.78);
+  font-size: 10px;
+  line-height: 1.5;
+}
+@media (max-width: 700px) {
+  .home-page .hero.home-hero h1 {
+    font-size: clamp(47px, 10vw, 64px);
+    max-width: 100%;
+  }
+  .home-page .hero.home-hero .testimonial-actions {
+    margin-top: 18px;
+    gap: 7px;
+  }
+  .home-page .hero.home-hero .testimonial-actions > span {
+    flex-basis: 100%;
+  }
+}
