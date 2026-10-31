@@ -1,12 +1,11 @@
-DriveHub GH — Find Your Ride vehicle image correction
+DRIVEHUB GH — FIND YOUR RIDE IMAGE FIX
 
-Files included (replace these files at the same repository-relative paths):
+This update removes the duplicated background image that caused the selected vehicle to appear as a picture-in-picture image. The summary now displays one vehicle image across the entire upper panel. The image uses object-fit: contain so the whole vehicle stays visible; any extra space around the photo is filled by the panel's dark background.
+
+Replace these files in the ROOT of the DriveHub-GH repository:
 - script.js
 - styles.css
 
-What changed:
-- The selected vehicle is rendered with object-fit: contain so the whole vehicle remains visible rather than being cut off.
-- The summary image panel uses the same selected vehicle image as a full-bleed cover backdrop, so the top area still feels filled and intentional.
-- The selected vehicle backdrop updates when the user changes vehicles, including Acura MDX.
+Commit the changes and wait for Cloudflare Pages to deploy. Then hard-refresh Find Your Ride (Ctrl+F5) and test several vehicles, including Acura MDX.
 
-Upload the two files to the repository root, replacing the existing script.js and styles.css, then commit. This ZIP does not deploy the website by itself.
+This ZIP contains only the two updated files and this guide. It does not deploy the website automatically.
