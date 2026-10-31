@@ -1179,3 +1179,11 @@
 .ride-page .summary-car-art.is-empty img{display:none;}
 .ride-page .summary-car-art:after{pointer-events:none;}
 @media(max-width:760px){.ride-page .summary-car-art{height:180px;margin-left:-20px;margin-right:-20px}.ride-page .summary-car-art img{object-fit:cover !important;object-position:center 54% !important;padding:0 !important;}}
+
+
+/* Final Find Your Ride image treatment: full vehicle visible over a full-bleed matching backdrop. */
+.ride-page .summary-car-art{background-color:#211e20;background-repeat:no-repeat;background-size:cover;background-position:center;}
+.ride-page .summary-car-art img{object-fit:contain !important;object-position:center center !important;padding:0 !important;transform:none !important;}
+.ride-page .summary-car-art:hover img{transform:none !important;}
+.ride-page .summary-car-art:after{background:linear-gradient(180deg,#15121440 0%,transparent 28%,#15121430 100%);}
+@media(max-width:760px){.ride-page .summary-car-art img{object-fit:contain !important;padding:0 !important;}}

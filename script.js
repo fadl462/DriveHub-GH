@@ -53,7 +53,7 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   };
   const visual=imageByChoice[choice]||['',''];
   const hasVehicle=Boolean(choice&&visual[0]);
-  if(summaryArt){summaryArt.classList.toggle('is-empty',!hasVehicle);}
+  if(summaryArt){summaryArt.classList.toggle('is-empty',!hasVehicle);summaryArt.style.backgroundImage=hasVehicle?`linear-gradient(180deg,rgba(21,18,20,.18),rgba(21,18,20,.38)),url("${visual[0]}")` : '';summaryArt.style.backgroundSize=hasVehicle?'cover':'auto';summaryArt.style.backgroundPosition='center';}
   if(emptyState)emptyState.hidden=hasVehicle;
   if(summaryImage){summaryImage.hidden=!hasVehicle;if(hasVehicle){summaryImage.style.opacity='1';if(summaryImage.getAttribute('src')!==visual[0])summaryImage.src=visual[0];summaryImage.alt=visual[1];}}
   root.querySelectorAll('.summary-visual-kicker,.summary-art-label').forEach(el=>el.hidden=!hasVehicle);

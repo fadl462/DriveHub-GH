@@ -1,11 +1,12 @@
-DriveHub GH — Find Your Ride image fix
+DriveHub GH — Find Your Ride vehicle image correction
 
-Replace these files at the repository root:
+Files included (replace these files at the same repository-relative paths):
 - script.js
 - styles.css
 
-Changes:
-- The selected vehicle image now fills the full width and height of the summary image panel using cover framing.
-- Added the missing Acura MDX mapping so its image appears when selected.
+What changed:
+- The selected vehicle is rendered with object-fit: contain so the whole vehicle remains visible rather than being cut off.
+- The summary image panel uses the same selected vehicle image as a full-bleed cover backdrop, so the top area still feels filled and intentional.
+- The selected vehicle backdrop updates when the user changes vehicles, including Acura MDX.
 
-Commit to main and wait for the Cloudflare Pages deployment to complete before testing. This ZIP does not deploy the website by itself.
+Upload the two files to the repository root, replacing the existing script.js and styles.css, then commit. This ZIP does not deploy the website by itself.
