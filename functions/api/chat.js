@@ -24,7 +24,7 @@ VERIFIED BUSINESS FACTS:
 - Vehicle images are illustrative model visuals. Do not invent engine size, fuel economy, passenger/seating capacity, luggage capacity, transmission, safety equipment, trim, or other technical specifications.
 - Location: 22 Baiden Avenue, 2nd Manu Street, Westland, Accra, Ghana.
 - Phone: 020 411 6245. Email: drivehubgh1@gmail.com. WhatsApp: https://wa.me/233204116245.
-- Current website review snapshot: 5.0/5.0 from 9 reviews as shown on The Experience page. Treat this as a published snapshot, not a live database query; if asked to read reviews, direct the visitor to the page instead of copying reviews into chat.
+- Review totals and average ratings must come from the LIVE APPROVED REVIEW CONTEXT supplied with each request when available. Never hard-code or assume a review count. If live review data is unavailable, say you cannot verify the current total and direct the visitor to The Experience page.
 - Experience/reviews page: https://drivehub-gh.pages.dev/experience
 - Find Your Ride page: https://drivehub-gh.pages.dev/find-your-ride
 - Review submission page: https://drivehub-gh.pages.dev/leave-a-review
@@ -34,7 +34,7 @@ VERIFIED BUSINESS FACTS:
 
 ANSWER-FIRST, REFERRAL-SECOND:
 - Answer the visitor's actual question first whenever the verified facts above are enough to answer it. Do not reflexively redirect every question.
-- For an overall review-score question, answer: “The Experience page currently shows 5.0/5.0 from 9 reviews.” Then invite the visitor to browse the full published reviews. End with the exact marker [[REVIEWS_LINK]] on its own line so the interface displays a prominent link.
+- For an overall review-score question, use the live approved-review count and average supplied in the request context. If that context is unavailable, be transparent that you cannot verify the current total. Then invite the visitor to browse the full published reviews. End with the exact marker [[REVIEWS_LINK]] on its own line so the interface displays a prominent link.
 - When users ask to see, read, share, browse, or find reviews/testimonials/customer experiences, do not reproduce individual reviews. Give one short sentence and end with the exact marker [[REVIEWS_LINK]] on its own line.
 - For fleet requests, list all seven vehicles and starting prices clearly. Do not omit Acura MDX. The interface adds direct vehicle enquiry actions for each mentioned model.
 - For booking, finding a car, an enquiry, or availability, explain briefly as useful and end with the exact marker [[BOOKING_LINK]] on its own line. WhatsApp is also available at https://wa.me/233204116245.
@@ -92,6 +92,34 @@ export async function onRequestOptions({ request }) {
   }});
 }
 
+
+// Fetch current approved-review statistics from D1 on every chat request.
+// This prevents stale review counts/ratings from being baked into the prompt.
+async function getLiveReviewContext(env) {
+  if (!env.DB || typeof env.DB.prepare !== 'function') {
+    return 'LIVE APPROVED-REVIEW CONTEXT: unavailable (D1 binding missing). Do not state a review count or average as fact.';
+  }
+  try {
+    const result = await env.DB.prepare(`
+      SELECT COUNT(*) AS review_count,
+             ROUND(AVG(rating), 1) AS average_rating
+      FROM reviews
+      WHERE lower(status) = 'approved'
+        AND what_went_well IS NOT NULL
+        AND trim(what_went_well) <> ''
+    `).first();
+    const count = Number(result?.review_count || 0);
+    const average = result?.average_rating == null ? null : Number(result.average_rating);
+    if (!count || average == null) {
+      return 'LIVE APPROVED-REVIEW CONTEXT: 0 currently published reviews found in D1. Do not substitute an old hard-coded count.';
+    }
+    return `LIVE APPROVED-REVIEW CONTEXT (queried from D1 for this request): ${average.toFixed(1)}/5.0 average from ${count} approved published reviews. Use these figures for questions about the current review total or average.`;
+  } catch (error) {
+    console.error('AI Partner live review context query failed', error);
+    return 'LIVE APPROVED-REVIEW CONTEXT: query failed. Do not state a review count or average as fact.';
+  }
+}
+
 export async function onRequestPost({ request, env }) {
   const origin = request.headers.get('Origin') || '';
   if (origin && !ALLOWED_ORIGINS.has(origin)) return json({ error: 'Origin not allowed.' }, 403, origin);
@@ -115,8 +143,9 @@ export async function onRequestPost({ request, env }) {
     return json({ error: 'Please enter a question.' }, 400, origin);
   }
   try {
+    const liveReviewContext = await getLiveReviewContext(env);
     const result = await env.AI.run(MODEL, {
-      messages: [{ role: 'system', content: SYSTEM_PROMPT + '\n\nINTENT AND RESPONSE EXAMPLES (100 canonical Q&A pairs): Use these as semantic examples, not exact-match scripts. A visitor may ask indirectly, use slang, misspell words, or phrase the same intent differently. Match the underlying intent, answer naturally, and preserve the same verified facts and boundaries. Do not claim these examples make live availability or policy data available.\n' + JSON.stringify(FAQ_KNOWLEDGE) }, ...messages],
+      messages: [{ role: 'system', content: SYSTEM_PROMPT + '\n\n' + liveReviewContext + '\n\nINTENT AND RESPONSE EXAMPLES (100 canonical Q&A pairs): Use these as semantic examples, not exact-match scripts. A visitor may ask indirectly, use slang, misspell words, or phrase the same intent differently. Match the underlying intent, answer naturally, and preserve the same verified facts and boundaries. Do not claim these examples make live availability or policy data available. If an example conflicts with live context, live context takes precedence.\n' + JSON.stringify(FAQ_KNOWLEDGE) }, ...messages],
       max_tokens: 320,
       temperature: 0.35,
       top_p: 0.85,
