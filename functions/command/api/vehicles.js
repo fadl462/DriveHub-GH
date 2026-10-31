@@ -61,19 +61,9 @@ export async function onRequestGet({ env, data, request }) {
       `SELECT id, name, registration_number, daily_rate_minor, status, service_due_on, notes, created_at, updated_at
        FROM vehicles
        WHERE (? = '' OR status = ?)
-         AND NOT (
-           lower(trim(name)) IN ('mitsubishi outlander', 'hyundai santa fe')
-           AND EXISTS (
-             SELECT 1 FROM vehicles canonical
-             WHERE (
-               lower(trim(canonical.name)) = 'mitsubishi outlander (silver metallic)'
-               AND lower(trim(name)) = 'mitsubishi outlander'
-             ) OR (
-               lower(trim(canonical.name)) = 'hyundai santafe (silver metallic)'
-               AND lower(trim(name)) = 'hyundai santa fe'
-             )
-           )
-         )
+         -- These generic labels are retired catalogue aliases. The public fleet has
+         -- one canonical silver-metallic model for each; never display the old labels.
+         AND lower(trim(name)) NOT IN ('mitsubishi outlander', 'hyundai santa fe')
        ORDER BY name LIMIT 200`
     ).bind(status, status).all();
     return json({ data: rows.results || [], synced_public_catalogue: true });
