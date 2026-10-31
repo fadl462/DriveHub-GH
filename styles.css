@@ -1162,3 +1162,12 @@
  .ride-page .summary-car-art{height:170px}
  .ride-page .summary-date-fields{gap:8px}
 }
+
+
+/* Find Your Ride refinement: show the full selected vehicle and keep the enquiry panel clean. */
+.ride-page .summary-car-art{height:205px; background:radial-gradient(ellipse at center,#3b3032 0%,#211e20 72%);}
+.ride-page .summary-car-art img{object-fit:contain !important;object-position:center center !important;padding:5px 8px !important;transform:none !important;}
+.ride-page .summary-car-art:hover img{transform:none !important;}
+.ride-page .summary-car-art:after{background:linear-gradient(180deg,#15121426 0%,transparent 24%,#15121426 100%);}
+.ride-page .summary-note,.ride-page .summary-trust{display:none !important;}
+@media(max-width:760px){.ride-page .summary-car-art{height:180px}.ride-page .summary-car-art img{padding:5px !important;}}

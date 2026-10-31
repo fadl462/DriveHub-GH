@@ -1,15 +1,11 @@
-DriveHub GH — AI Partner build fix
+DriveHub GH — Find Your Ride visual cleanup
 
-Replace the existing file in your GitHub repository at:
-functions/api/chat.js
+Replace these files in the ROOT of your existing GitHub repository:
+- find-your-ride.html
+- styles.css
 
-This version keeps the pickup-location guidance INSIDE the JavaScript system prompt. The failed version placed the heading “PICKUP AND DELIVERY — VERIFIED BUSINESS INFORMATION” outside the template string, causing the Cloudflare Pages build error “Expected ";" but found "AND".”
+Changes:
+- The selected vehicle image now uses contain framing so the complete vehicle is visible instead of cropping its front/rear.
+- Removed the two footnotes beneath the Send rental enquiry button to make the form cleaner.
 
-Steps:
-1. Open the DriveHub-GH GitHub repository.
-2. Open functions > api > chat.js.
-3. Edit the file and replace its contents with the chat.js included in this ZIP.
-4. Commit the change to main.
-5. Check the Cloudflare Pages deployment.
-
-This ZIP contains only the corrected API file and this note. It does not itself deploy the site or change the live database.
+Do not upload the ZIP itself into GitHub. Extract it locally and upload/replace the two files at the repository root, preserving their exact paths. Commit to main and check the Cloudflare Pages deployment.
