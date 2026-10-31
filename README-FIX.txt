@@ -1,11 +1,11 @@
-DriveHub GH — Find Your Ride visual cleanup
+DriveHub GH — Find Your Ride image fix
 
-Replace these files in the ROOT of your existing GitHub repository:
-- find-your-ride.html
+Replace these files at the repository root:
+- script.js
 - styles.css
 
 Changes:
-- The selected vehicle image now uses contain framing so the complete vehicle is visible instead of cropping its front/rear.
-- Removed the two footnotes beneath the Send rental enquiry button to make the form cleaner.
+- The selected vehicle image now fills the full width and height of the summary image panel using cover framing.
+- Added the missing Acura MDX mapping so its image appears when selected.
 
-Do not upload the ZIP itself into GitHub. Extract it locally and upload/replace the two files at the repository root, preserving their exact paths. Commit to main and check the Cloudflare Pages deployment.
+Commit to main and wait for the Cloudflare Pages deployment to complete before testing. This ZIP does not deploy the website by itself.

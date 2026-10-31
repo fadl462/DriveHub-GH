@@ -48,7 +48,8 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
    'Toyota RAV4':['assets/fleet/toyota-rav4.webp','Toyota RAV4 from the DriveHub GH fleet'],
    'Hyundai Santa Fe':['assets/fleet/hyundai-santa-fe.webp','Hyundai Santa Fe from the DriveHub GH fleet'],
    'Honda CR-V':['assets/fleet/honda-cr-v.webp','Honda CR-V from the DriveHub GH fleet'],
-   'Toyota Land Cruiser V8':['assets/fleet/toyota-land-cruiser-v8.webp','Toyota Land Cruiser V8 from the DriveHub GH fleet']
+   'Toyota Land Cruiser V8':['assets/fleet/toyota-land-cruiser-v8.webp','Toyota Land Cruiser V8 from the DriveHub GH fleet'],
+  'Acura MDX':['assets/fleet/acura-mdx.webp','Acura MDX from the DriveHub GH fleet']
   };
   const visual=imageByChoice[choice]||['',''];
   const hasVehicle=Boolean(choice&&visual[0]);
