@@ -1122,47 +1122,43 @@
 .ride-page .summary-empty-state small { position: relative; z-index: 2; }
 
 
-/* Homepage hero alignment fix — keep the review prompt inside the hero */
-.home-page .hero.home-hero h1 {
-  max-width: 780px;
-  font-size: clamp(54px, 6.2vw, 82px);
-  line-height: 1.02;
+/* Find Your Ride: the premium journey summary is the single enquiry form. */
+.ride-page .ride-form{grid-template-columns:minmax(0,1.65fr) minmax(320px,.9fr);gap:22px;align-items:start}
+.ride-page .ride-form-main{padding:26px}
+.ride-page .ride-summary{padding:22px 22px 19px}
+.ride-page .summary-form-fields{margin-top:2px}
+.ride-page .summary-form-heading{margin:0 0 12px}
+.ride-page .summary-destination-heading{margin-top:21px}
+.ride-page .summary-purpose-heading{margin-top:19px}
+.ride-page .summary-date-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ride-page .summary-field{gap:7px;margin:0 0 12px}
+.ride-page .summary-field>span:first-child{font-size:9px;color:#d4c8ca}
+.ride-page .summary-input{height:42px;padding:0 9px;background:#211e20;border-color:#ffffff28;border-radius:7px;gap:7px}
+.ride-page .summary-input:focus-within{border-color:#e06b77;box-shadow:0 0 0 3px #be1e2d24}
+.ride-page .summary-input input,.ride-page .summary-input select{color:#fff;font:10px var(--sans);color-scheme:dark}
+.ride-page .summary-input input::placeholder{color:#a89da0}
+.ride-page .summary-input select option{background:#191719;color:#fff}
+.ride-page .summary-input .field-symbol{font-size:13px;flex:0 0 auto}
+.ride-page .summary-duration{margin-top:5px;padding:11px 0;font-size:9px}
+.ride-page .summary-pickup-area{display:flex;flex-direction:column;gap:6px;margin-top:13px}
+.ride-page .summary-pickup-area strong{font-size:10px;line-height:1.5;font-weight:600;color:#fff}
+.ride-page .summary-purpose-grid{gap:6px}
+.ride-page .summary-purpose-grid .purpose-chip{padding:8px 9px;font-size:9px;background:#211e20;border-color:#ffffff26;color:#e6dcdd}
+.ride-page .summary-purpose-grid .purpose-chip:hover{border-color:#d58c93}
+.ride-page .summary-purpose-grid .purpose-chip.is-active{background:#fff;color:#191719;border-color:#fff}
+.ride-page .ride-submit{margin-top:18px;justify-content:center;min-height:48px}
+.ride-page .summary-note{margin-bottom:13px}
+.ride-page .ride-duration{display:none}
+@media(max-width:900px){
+ .ride-page .ride-form{grid-template-columns:minmax(0,1fr) minmax(290px,.8fr);gap:15px}
+ .ride-page .ride-form-main{padding:18px}
+ .ride-page .ride-summary{padding:18px}
+ .ride-page .summary-car-art{margin-left:-18px;margin-right:-18px}
 }
-.home-page .hero.home-hero .hero-content {
-  padding-bottom: 34px;
-}
-.home-page .hero.home-hero .testimonial-actions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px 14px;
-  margin-top: 22px;
-  position: relative;
-  z-index: 2;
-}
-.home-page .hero.home-hero .testimonial-review-link {
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  text-decoration: underline;
-  text-decoration-color: rgba(255,255,255,.55);
-  text-underline-offset: 4px;
-}
-.home-page .hero.home-hero .testimonial-actions > span {
-  color: rgba(255,255,255,.78);
-  font-size: 10px;
-  line-height: 1.5;
-}
-@media (max-width: 700px) {
-  .home-page .hero.home-hero h1 {
-    font-size: clamp(47px, 10vw, 64px);
-    max-width: 100%;
-  }
-  .home-page .hero.home-hero .testimonial-actions {
-    margin-top: 18px;
-    gap: 7px;
-  }
-  .home-page .hero.home-hero .testimonial-actions > span {
-    flex-basis: 100%;
-  }
+@media(max-width:700px){
+ .ride-page .ride-form{grid-template-columns:1fr}
+ .ride-page .ride-summary{position:relative;top:auto;order:-1}
+ .ride-page .ride-form-main{order:1}
+ .ride-page .summary-car-art{height:170px}
+ .ride-page .summary-date-fields{gap:8px}
 }
