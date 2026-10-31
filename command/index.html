@@ -22,6 +22,7 @@
         <button class="nav-item" data-view="rentals"><span>▣</span> Rentals</button>
         <button class="nav-item" data-view="fleet"><span>◇</span> Fleet</button>
         <button class="nav-item" data-view="customers"><span>♙</span> Customers</button>
+        <button class="nav-item" data-view="partners"><span>⇄</span> Partners & sourcing</button>
         <button class="nav-item" data-view="audit"><span>◷</span> Audit trail</button>
       <button class="nav-item" data-view="reports"><span>▥</span> Reports</button>
       </nav>
@@ -43,7 +44,6 @@
           <div class="heading-actions"><button class="btn btn-light" id="exportBtn">↓ Export overview</button><button class="btn btn-primary" id="quickAddBtn">＋ Quick action</button></div>
         </div>
 
-        <div class="demo-notice"><span>ⓘ</span><div><strong>Interactive preview</strong><p>Some workspace sections still use browser preview data. Invoices and payments load from the connected database; when live financial records cannot be verified, do not issue documents or record payments.</p></div><button id="dismissNotice" aria-label="Dismiss notice">×</button></div>
 
         <section class="view active" id="view-overview">
           <div class="metric-grid">
@@ -57,11 +57,16 @@
             <article class="panel"><div class="panel-heading"><div><h2>Needs attention</h2><p>Items that may need a follow-up</p></div><span class="round-icon">↗</span></div><div class="attention-list" id="attentionList"></div><button class="text-link" data-goto="reviews">Review all action items <span>→</span></button></article>
           </div>
           <article class="panel table-panel"><div class="panel-heading"><div><h2>Recent rentals</h2><p>Latest activity across your fleet</p></div><button class="btn btn-light btn-small" data-goto="rentals">View rentals →</button></div><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Vehicle</th><th>Rental period</th><th>Amount</th><th>Status</th></tr></thead><tbody id="recentRentals"></tbody></table></div></article>
+          <article class="panel" id="customerImprovementPanel" style="margin-bottom:20px;border:1px solid #e8c6c8">
+            <div class="panel-heading"><div><h2>Customer improvement feedback</h2><p>Private feedback from customers — management use only</p></div><span class="round-icon" id="improvementNewCount">0 new</span></div>
+            <div id="improvementFeedbackList"><div class="empty-state">Loading live customer feedback…</div></div>
+          </article>
+
         </section>
 
         <section class="view" id="view-reviews">
           <div class="section-toolbar"><div class="filter-tabs" id="reviewFilters"><button class="selected" data-filter="Pending">Pending <span id="pendingCount">0</span></button><button data-filter="Approved">Approved <span id="approvedCount">0</span></button><button data-filter="Rejected">Rejected <span id="rejectedCount">0</span></button><button data-filter="All">All reviews <span id="allReviewsCount">0</span></button></div><input class="search-input" id="reviewSearch" placeholder="Search reviews…" aria-label="Search reviews"></div>
-          <div class="review-summary"><div><span>Average rating</span><strong id="avgRating">4.7 <small>/ 5</small></strong></div><div><span>Awaiting approval</span><strong id="reviewPendingSummary">3</strong></div><div><span>Approved this month</span><strong id="approvedMonth">12</strong></div></div>
+          <div class="review-summary"><div><span>Average rating</span><strong id="avgRating">— <small>/ 5</small></strong></div><div><span>Awaiting approval</span><strong id="reviewPendingSummary">0</strong></div><div><span>Approved this month</span><strong id="approvedMonth">0</strong></div></div>
           <div id="reviewsList" class="reviews-list"></div>
         </section>
 
@@ -78,16 +83,26 @@
         </section>
 
         <section class="view" id="view-rentals">
-          <div class="section-toolbar"><div><h2 class="section-title">Rental operations</h2><p class="section-desc">Track reservations, active hires, returns and rental-day calculations.</p></div><button class="btn btn-primary" id="newRentalBtn">＋ Add rental</button></div>
+          <div class="section-toolbar rental-primary-toolbar"><div class="rental-toolbar-label" aria-hidden="true"></div><button class="btn btn-primary" id="newRentalBtn">＋ Add rental</button></div>
           <div class="section-toolbar secondary"><div class="filter-tabs" id="rentalFilters"><button class="selected" data-filter="All">All rentals</button><button data-filter="Active">Active</button><button data-filter="Upcoming">Upcoming</button><button data-filter="Completed">Completed</button></div><input class="search-input" id="rentalSearch" placeholder="Search rentals…" aria-label="Search rentals"></div>
           <article class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Booking</th><th>Customer</th><th>Vehicle</th><th>Pickup</th><th>Return</th><th>Billable days</th><th>Status</th><th>Actions</th></tr></thead><tbody id="rentalRows"></tbody></table></div></article>
-          <p class="helper-note">Billing rule: pickup day and return day are both counted. A rental from 10 Oct to 14 Oct is 5 billable days.</p>
+          <p class="helper-note">Billing rule: pickup day and return day are both counted. A rental from 10 Oct to 14 Oct is 5 billable days. Deletion requires typing DELETE; rentals with recorded payments are protected to preserve financial history. This preview currently stores standard rental records in this browser.</p>
         </section>
 
         <div class="fleet-alerts-panel" id="fleetAlerts" aria-live="polite"></div>
 <section class="view" id="view-fleet">
+          <div class="section-toolbar fleet-toolbar"><div><h2 class="section-title">Your fleet</h2><p class="section-desc">Manage vehicles, daily rates and service readiness.</p></div><button class="btn btn-primary" id="addVehicleBtn" type="button">＋ Add vehicle</button></div>
           <div class="fleet-grid" id="fleetGrid"></div>
           <article class="panel table-panel"><div class="panel-heading"><div><h2>Fleet maintenance</h2><p>Schedule service windows, track progress and protect rental availability.</p></div><button class="btn btn-light btn-small" id="addMaintenanceBtn">＋ Schedule service</button></div><div class="maintenance-list" id="maintenanceList"></div></article>
+        </section>
+
+        <section class="view" id="view-partners">
+          <div class="section-toolbar"><div><h2 class="section-title">Rental partners & sourcing</h2><p class="section-desc">Manage trusted suppliers, temporary vehicles and supplier payments separately from your owned fleet.</p></div><div class="partner-actions"><button class="btn btn-light" id="addSourcedVehicleBtn">＋ Add sourced vehicle</button><button class="btn btn-primary" id="addPartnerBtn">＋ Add rental partner</button></div></div>
+          <div class="metric-grid compact partner-metrics"><article class="metric-card"><div class="metric-top"><span>Active partners</span><span class="metric-icon red">⇄</span></div><strong id="partnerCountMetric">0</strong><div class="metric-foot">Approved supplier relationships</div></article><article class="metric-card"><div class="metric-top"><span>Sourced vehicles</span><span class="metric-icon cream">◇</span></div><strong id="sourcedVehicleCountMetric">0</strong><div class="metric-foot">Temporary, not owned fleet</div></article><article class="metric-card"><div class="metric-top"><span>Supplier payments recorded</span><span class="metric-icon green">↗</span></div><strong id="supplierPaymentsMetric">GH₵ 0</strong><div class="metric-foot">Recorded outgoing payments</div></article></div>
+          <article class="panel table-panel"><div class="panel-heading"><div><h2>Rental partners</h2><p>Contact details and agreed payment terms.</p></div><span class="round-icon" id="partnersConnectionState">Live database</span></div><div class="table-wrap"><table><thead><tr><th>Company</th><th>Contact</th><th>Phone / email</th><th>Payment terms</th><th>Status</th></tr></thead><tbody id="partnerRows"><tr><td colspan="5">Loading partners…</td></tr></tbody></table></div></article>
+          <article class="panel table-panel"><div class="panel-heading"><div><h2>Sourced vehicles</h2><p>Partner-owned vehicles available for specific bookings. These do not count as DriveHub GH fleet.</p></div></div><div class="table-wrap"><table><thead><tr><th>Vehicle</th><th>Partner</th><th>Registration</th><th>Supplier/day</th><th>Customer/day</th><th>Availability</th><th>Margin/day</th></tr></thead><tbody id="sourcedVehicleRows"><tr><td colspan="7">Loading sourced vehicles…</td></tr></tbody></table></div></article>
+          <article class="panel table-panel"><div class="panel-heading"><div><h2>Supplier payments</h2><p>Outgoing payments are separate from customer receipts.</p></div><button class="btn btn-light btn-small" id="recordSupplierPaymentBtn">＋ Record supplier payment</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Supplier</th><th>Amount</th><th>Method</th><th>Reference</th></tr></thead><tbody id="supplierPaymentRows"><tr><td colspan="5">Loading payments…</td></tr></tbody></table></div></article>
+          <p class="helper-note">Partner supplier rates and margins are internal management information. They must never be shown on customer-facing pages or invoices.</p>
         </section>
 
         <section class="view" id="view-customers">
