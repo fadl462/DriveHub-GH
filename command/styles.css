@@ -169,7 +169,7 @@
 @media(max-width:1200px){.fleet-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.fleet-grid{grid-template-columns:1fr}.fleet-toolbar{align-items:stretch}.fleet-toolbar .btn{width:100%}.maintenance-item{align-items:flex-start;flex-wrap:wrap}.maintenance-item time{width:100%;margin-left:43px}}
 /* Partner sourcing workspace */
-.partner-actions{display:flex;gap:9px;flex-wrap:wrap}.partner-metrics{margin-bottom:18px}#view-partners .table-panel{margin-bottom:16px}#view-partners .table-panel:last-of-type{margin-bottom:0}#view-partners .table-wrap small{display:block;color:var(--muted);font-size:10px;margin-top:4px;max-width:240px;overflow-wrap:anywhere}#partnersConnectionState{white-space:nowrap;font-size:10px}.field .helper-note{grid-column:1/-1}
+.field .helper-note{grid-column:1/-1}
 @media(max-width:760px){.partner-actions{width:100%}.partner-actions .btn{flex:1;white-space:nowrap}.partner-metrics{grid-template-columns:1fr 1fr}.partner-metrics .metric-card:last-child{grid-column:1/-1}}
 
 /* Rental deletion is intentionally visually distinct from routine actions. */
@@ -216,3 +216,13 @@ body:has(#view-fleet.active) #fleetAlerts{display:block}
 .vehicle-card-actions [data-vehicle-delete]{color:#a3132a;border-color:#e6b9c0}
 .vehicle-card-actions [data-vehicle-delete]:hover{background:#fff2f4}
 .vehicle-record-note{display:block;margin-top:8px;color:var(--muted,#887d7a);font-size:11px;line-height:1.45}
+
+/* Command Centre operational management actions — keep controls visible on desktop and mobile. */
+.vehicle-card-actions{display:flex!important;visibility:visible!important;opacity:1!important;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--line,#eee5e2)}
+.vehicle-card-actions button{display:inline-flex!important;visibility:visible!important;opacity:1!important;align-items:center;justify-content:center;min-height:36px;padding:8px 12px;font-size:12px;cursor:pointer}
+.vehicle-card-actions [data-vehicle-delete],.customer-row-actions [data-customer-delete]{color:#a3132a;border-color:#e6b9c0}
+.vehicle-card-actions [data-vehicle-delete]:hover,.customer-row-actions [data-customer-delete]:hover{background:#fff2f4}
+.customer-row-actions{white-space:nowrap;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.customer-row-actions .table-action{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:5px 9px}
+.customer-row-actions .danger{color:#a3132a;border-color:#e6b9c0}
+@media(max-width:760px){.vehicle-card-actions{justify-content:flex-start}.customer-row-actions{min-width:190px}}
