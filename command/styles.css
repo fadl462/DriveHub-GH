@@ -209,3 +209,10 @@ body:has(#view-fleet.active) #fleetAlerts{display:block}
 .vehicle-card-actions .btn{min-height:32px;padding:7px 12px;font-size:12px}
 .vehicle-card-actions [data-vehicle-delete]{color:#a3132a;border-color:#e6b9c0}
 .vehicle-card-actions [data-vehicle-delete]:hover{background:#fff2f4}
+
+/* Fleet card management actions remain visible for both database and legacy preview records. */
+.vehicle-card-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--line,#eee5e2)}
+.vehicle-card-actions .btn{min-height:34px;padding:8px 12px;font-size:12px;cursor:pointer}
+.vehicle-card-actions [data-vehicle-delete]{color:#a3132a;border-color:#e6b9c0}
+.vehicle-card-actions [data-vehicle-delete]:hover{background:#fff2f4}
+.vehicle-record-note{display:block;margin-top:8px;color:var(--muted,#887d7a);font-size:11px;line-height:1.45}
