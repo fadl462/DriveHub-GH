@@ -15,7 +15,7 @@ export async function onRequestPost({env,data,request}){
   if(!validDate(pickup)||!validDate(returned)||returned<pickup)throw Object.assign(new Error('Valid pickup_date and return_date are required'),{status:400});
   if(!['upcoming','active','completed','cancelled'].includes(status))throw Object.assign(new Error('Invalid rental status'),{status:400});
   const [customer,vehicle]=await Promise.all([env.DB.prepare('SELECT id,full_name FROM customers WHERE id=?').bind(customerId).first(),env.DB.prepare('SELECT id,name,daily_rate_minor,status FROM vehicles WHERE id=?').bind(vehicleId).first()]);
-  if(!customer)throw Object.assign(new Error('customer_not_found'),{status:404});if(!vehicle)throw Object.assign(new Error('vehicle_not_found'),{status:404});
+  if(!customer)throw Object.assign(new Error('customer_not_found'),{status:404});if(!vehicle)throw Object.assign(new Error('vehicle_not_found'),{status:404});if(['inactive','maintenance'].includes(String(vehicle.status||'').toLowerCase()))throw Object.assign(new Error('vehicle_not_available_for_rental'),{status:409});
   const conflict=await env.DB.prepare("SELECT id FROM rentals WHERE vehicle_id=? AND status IN ('upcoming','active') AND pickup_date<=? AND return_date>=? LIMIT 1").bind(vehicleId,returned,pickup).first();if(conflict)throw Object.assign(new Error('vehicle_date_conflict'),{status:409});
   const days=Math.round((Date.parse(returned+'T12:00:00Z')-Date.parse(pickup+'T12:00:00Z'))/86400000)+1;if(days<1)throw Object.assign(new Error('invalid_rental_period'),{status:400});
   const total=days*rate;if(!Number.isSafeInteger(total))throw Object.assign(new Error('invoice_total_out_of_range'),{status:400});
