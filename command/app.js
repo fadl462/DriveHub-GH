@@ -167,7 +167,6 @@ function daysInclusive(a,b){const x=new Date(a+'T12:00:00'),y=new Date(b+'T12:00
 function localISODate(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function invoiceBalance(i){return Math.max(0,Number(i.total||0)-Number(i.paid||0))}
 function effectiveInvoiceStatus(i){
- if(String(i.status||'').toLowerCase()==='void') return 'Voided';
  if(invoiceBalance(i)<=0) return 'Paid';
  if(i.due && i.due < localISODate()) return 'Overdue';
  if(Number(i.paid||0)>0) return 'Partially paid';
@@ -177,12 +176,12 @@ function maintenanceStart(m){return m.startDate||m.date||''}
 function maintenanceEnd(m){return m.endDate||m.date||maintenanceStart(m)}
 function maintenanceOverlaps(m,start,end){return maintenanceStart(m)<=end&&maintenanceEnd(m)>=start}
 function rentalIsCurrent(r){const today=localISODate();return r.status!=='Completed' && r.status!=='Cancelled' && r.pickup<=today && r.returned>=today}
-function refreshInvoiceStatuses(){state.invoices.forEach(i=>{if(String(i.status||'').toLowerCase()!=='void')i.status=effectiveInvoiceStatus(i)})}
+function refreshInvoiceStatuses(){state.invoices.forEach(i=>{i.status=effectiveInvoiceStatus(i)})}
 function renderKpis(){
  refreshInvoiceStatuses();
  const revenue=state.payments.reduce((sum,p)=>sum+Number(p.amount||0),0);
  const active=state.rentals.filter(r=>rentalIsCurrent(r)||r.status==='Active').length;
- const outstanding=state.invoices.filter(i=>String(i.status||'').toLowerCase()!=='void').reduce((sum,i)=>sum+invoiceBalance(i),0);
+ const outstanding=state.invoices.reduce((sum,i)=>sum+invoiceBalance(i),0);
  const overdue=state.invoices.filter(i=>effectiveInvoiceStatus(i)==='Overdue').length;
  const assigned=state.fleet.filter(v=>v.status==='Rented'||v.status==='Assigned').length;
  const total=state.fleet.length;
@@ -200,7 +199,12 @@ function renderKpis(){
  const bars=$$('#revenueMetric').length;
 }
 
-function nav(view){currentView=view;try{sessionStorage.setItem('dh-command-active-view',view);if(location.hash!==`#${view}`)history.replaceState(null,'',`#${view}`)}catch{};$$('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$$('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${view}`));const titles={overview:'Overview',reviews:'Reviews & reputation',invoices:'Invoices',payments:'Payments & receipts',rentals:'Rental operations',fleet:'Fleet management',customers:'Customers',reports:'Reports & insights',audit:'Audit trail',settings:'Settings'};$('#crumbCurrent').textContent=titles[view]||view; if(view==='audit') renderAudit();$('#pageTitle').innerHTML=view==='overview'?'Good evening. <em>Let\'s move.</em>':titles[view];$('#eyebrow').textContent=view==='overview'?'YOUR BUSINESS, AT A GLANCE':'DRIVEHUB GH · '+titles[view].toUpperCase();$('#pageSubtitle').textContent=({overview:"A clear view of today's activity across DriveHub GH.",reviews:'Listen, respond and decide what gets published.',invoices:'Keep every rental charge and balance accounted for.',payments:'Track recorded payments and issue receipts.',rentals:'Know what is booked, active and due back.',fleet:'Make every vehicle work harder and stay road-ready.',customers:'Understand your customers and their rental history.',reports:'Turn day-to-day activity into clear business decisions.',settings:'Manage company preferences and production readiness.'})[view];$('#sidebar').classList.remove('open');if(view==='reviews')renderReviews();if(view==='invoices')renderInvoices();if(view==='payments')renderPayments();if(view==='rentals')renderRentals();if(view==='fleet')renderFleet();if(view==='customers')renderCustomers();}
+function nav(view){
+ if(!['overview','reviews','invoices','payments','rentals','fleet','customers','reports','audit','settings'].includes(view))view='overview';
+ currentView=view;
+ try{sessionStorage.setItem('dh-command-active-view',view);localStorage.setItem('dh-command-active-view',view)}catch{}
+ try{if(location.hash!==`#${view}`)location.hash=view}catch{}
+ $$('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$$('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${view}`));const titles={overview:'Overview',reviews:'Reviews & reputation',invoices:'Invoices',payments:'Payments & receipts',rentals:'Rental operations',fleet:'Fleet management',customers:'Customers',reports:'Reports & insights',audit:'Audit trail',settings:'Settings'};$('#crumbCurrent').textContent=titles[view]||view; if(view==='audit') renderAudit();$('#pageTitle').innerHTML=view==='overview'?'Good evening. <em>Let\'s move.</em>':titles[view];$('#eyebrow').textContent=view==='overview'?'YOUR BUSINESS, AT A GLANCE':'DRIVEHUB GH · '+titles[view].toUpperCase();$('#pageSubtitle').textContent=({overview:"A clear view of today's activity across DriveHub GH.",reviews:'Listen, respond and decide what gets published.',invoices:'Keep every rental charge and balance accounted for.',payments:'Track recorded payments and issue receipts.',rentals:'Know what is booked, active and due back.',fleet:'Make every vehicle work harder and stay road-ready.',customers:'Understand your customers and their rental history.',reports:'Turn day-to-day activity into clear business decisions.',settings:'Manage company preferences and production readiness.'})[view];$('#sidebar').classList.remove('open');if(view==='reviews')renderReviews();if(view==='invoices')renderInvoices();if(view==='payments')renderPayments();if(view==='rentals')renderRentals();if(view==='fleet')renderFleet();if(view==='customers')renderCustomers();}
 $$('.nav-item[data-view]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.view)));
 $$('[data-goto]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.goto)));
 $('#mobileMenu').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
@@ -249,10 +253,9 @@ function renderReviews(){const counts={Pending:state.reviews.filter(r=>r.status=
 $('#reviewFilters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;reviewFilter=b.dataset.filter;$$('#reviewFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderReviews()});$('#reviewSearch').addEventListener('input',renderReviews);
 function renderInvoices(){
  refreshInvoiceStatuses();
- const activeInvoices=state.invoices.filter(i=>String(i.status||'').toLowerCase()!=='void');
- const total=activeInvoices.reduce((s,i)=>s+Number(i.total||0),0);
- const paid=activeInvoices.reduce((s,i)=>s+Number(i.paid||0),0);
- const balance=activeInvoices.reduce((s,i)=>s+invoiceBalance(i),0);
+ const total=state.invoices.reduce((s,i)=>s+Number(i.total||0),0);
+ const paid=state.invoices.reduce((s,i)=>s+Number(i.paid||0),0);
+ const balance=state.invoices.reduce((s,i)=>s+invoiceBalance(i),0);
  if($('#invoiceTotalMetric'))$('#invoiceTotalMetric').textContent=money(total);
  if($('#invoicePaidMetric'))$('#invoicePaidMetric').textContent=money(paid);
  if($('#invoiceBalanceMetric'))$('#invoiceBalanceMetric').textContent=money(balance);
@@ -282,13 +285,6 @@ function printReceipt(p){
  win.document.open();win.document.write(doc);win.document.close();
 }
 
-function linkedInvoiceForRental(r){
- return state.invoices.find(i=>String(i.rentalId||i.rental_id||'')===String(r.id));
-}
-function paymentsForInvoice(inv){
- if(!inv)return [];
- return state.payments.filter(p=>String(p.invoiceId||p.invoice_id||p.invoice||'')===String(inv.id));
-}
 function renderRentals(){
  const q=($('#rentalSearch')?.value||'').toLowerCase();
  const rows=state.rentals.filter(r=>(rentalFilter==='All'||r.status===rentalFilter)&&[r.id,r.customer,r.vehicle].join(' ').toLowerCase().includes(q));
@@ -297,38 +293,11 @@ function renderRentals(){
  if($('#rentalActiveMetric'))$('#rentalActiveMetric').textContent=count('Active');
  if($('#rentalCompletedMetric'))$('#rentalCompletedMetric').textContent=count('Completed');
  if($('#rentalCancelledMetric'))$('#rentalCancelledMetric').textContent=count('Cancelled');
- $('#rentalRows').innerHTML=rows.map(r=>{
-  const inv=linkedInvoiceForRental(r);
-  const action=inv
-   ? (r.status!=='Cancelled'?`<button class="table-action rental-cancel-action" data-rental-cancel="${escapeHTML(r.id)}" type="button">Cancel</button>`:'<span class="muted">Cancelled</span>')
-   : `<button class="table-action rental-delete-action" data-rental-delete="${escapeHTML(r.id)}" type="button">Delete</button>`;
-  return `<tr><td><strong>${escapeHTML(r.id)}</strong></td><td>${escapeHTML(r.customer)}</td><td>${escapeHTML(r.vehicle)}${r.sourceType==='partner'?'<small>Partner-sourced · '+escapeHTML(r.partnerName||'supplier')+' · Cost '+money(r.supplierTotal||0)+'</small>':''}</td><td>${fmtDate(r.pickup)}</td><td>${fmtDate(r.returned)}</td><td><strong>${daysInclusive(r.pickup,r.returned)}</strong></td><td>${statusBadge(r.status)}</td><td><div class="row-actions"><button class="table-action" data-rental-edit="${escapeHTML(r.id)}" type="button">Edit</button>${r.status!=='Completed'&&r.status!=='Cancelled'?`<button class="table-action" data-rental-complete="${escapeHTML(r.id)}" type="button">Complete</button>`:''}${action}</div></td></tr>`;
- }).join('')||'<tr><td colspan="8">No rentals match this filter.</td></tr>';
+ $('#rentalRows').innerHTML=rows.map(r=>`<tr><td><strong>${escapeHTML(r.id)}</strong></td><td>${escapeHTML(r.customer)}</td><td>${escapeHTML(r.vehicle)}${r.sourceType==='partner'?'<small>Partner-sourced · '+escapeHTML(r.partnerName||'supplier')+' · Cost '+money(r.supplierTotal||0)+'</small>':''}</td><td>${fmtDate(r.pickup)}</td><td>${fmtDate(r.returned)}</td><td><strong>${daysInclusive(r.pickup,r.returned)}</strong></td><td>${statusBadge(r.status)}</td><td><div class="row-actions"><button class="table-action" data-rental-edit="${escapeHTML(r.id)}" type="button">Edit</button>${r.status!=='Completed'&&r.status!=='Cancelled'?`<button class="table-action" data-rental-complete="${escapeHTML(r.id)}" type="button">Complete</button><button class="table-action rental-cancel-action" data-rental-cancel="${escapeHTML(r.id)}" type="button">Cancel</button>`:''}</div></td></tr>`).join('')||'<tr><td colspan="8">No rentals match this filter.</td></tr>';
 }
 $('#rentalRows').addEventListener('click',e=>{
- const del=e.target.closest('[data-rental-delete]');
- if(del){
-  const r=state.rentals.find(x=>x.id===del.dataset.rentalDelete);if(!r)return;
-  const linked=linkedInvoiceForRental(r);
-  if(linked){toast('This rental has a linked invoice. Use Cancel rental instead.');return;}
-  const ok=confirm(`Permanently delete draft rental ${r.id} for ${r.customer}?\\n\\nNo linked invoice or payment record was found. This action cannot be undone.`);
-  if(!ok)return;
-  state.rentals=state.rentals.filter(x=>x.id!==r.id);
-  recordAudit('Draft rental deleted','rentals',`${r.id} · ${r.customer} · ${r.vehicle} · No linked invoice or payment`);
-  save();renderOverview();renderRentals();renderFleet();renderCustomers();toast('Draft rental deleted. No invoice or payment records were changed.');return;
- }
  const cancel=e.target.closest('[data-rental-cancel]');
- if(cancel){
-  const r=state.rentals.find(x=>x.id===cancel.dataset.rentalCancel);if(!r)return;
-  const inv=linkedInvoiceForRental(r);if(!inv){toast('Linked invoice not found. Refresh the rental list and try again.');return;}
-  const payments=paymentsForInvoice(inv);
-  if(payments.length){toast('This invoice has recorded payment(s). Cancellation is blocked until a refund/credit workflow is completed. No financial records were changed.');return;}
-  if(confirm(`Cancel rental ${r.id}?\\n\\nIts linked unpaid invoice ${inv.id} will be marked VOID. No payment or receipt will be deleted.`)){
-   r.status='Cancelled';inv.status='void';inv.voidedAt=new Date().toISOString();
-   recordAudit('Rental cancelled; invoice voided','rentals',`${r.id} · ${inv.id} · No payments recorded`);
-   save();renderOverview();renderRentals();renderFleet();renderInvoices();renderPayments();toast('Rental cancelled and its unpaid invoice voided.');
-  }return;
- }
+ if(cancel){const r=state.rentals.find(x=>x.id===cancel.dataset.rentalCancel);if(r&&confirm(`Cancel rental ${r.id}? This will release the vehicle dates in this browser preview.`)){r.status='Cancelled';recordAudit('Rental cancelled','rentals',`${r.id} · ${r.vehicle} · ${r.pickup} to ${r.returned}`);save();renderOverview();renderRentals();renderFleet();toast('Rental cancelled in this browser preview.')}return}
  const complete=e.target.closest('[data-rental-complete]');
  if(complete){const r=state.rentals.find(x=>x.id===complete.dataset.rentalComplete);if(r&&confirm(`Mark rental ${r.id} as completed?`)){r.status='Completed';recordAudit('Rental completed','rentals',`${r.id} · ${r.vehicle}`);save();renderOverview();renderRentals();renderFleet();toast('Rental marked completed in this browser preview.')}return}
  const edit=e.target.closest('[data-rental-edit]');
@@ -595,10 +564,18 @@ document.addEventListener('click',e=>{const button=e.target.closest('[data-alert
 
 renderOverview();renderReviews();renderInvoices();renderPayments();renderRentals();renderFleet();renderCustomers();
 const validViews=['overview','reviews','invoices','payments','rentals','fleet','customers','reports','audit','settings'];
-const readSavedView=()=>{let fromHash='';try{fromHash=decodeURIComponent((location.hash||'').replace(/^#/,'' )).trim().toLowerCase()}catch{};let fromSession='';try{fromSession=(sessionStorage.getItem('dh-command-active-view')||'').trim().toLowerCase()}catch{};return validViews.includes(fromHash)?fromHash:(validViews.includes(fromSession)?fromSession:'overview')};
-const initialView=readSavedView();
-nav(initialView);
+function getCommandRoute(){
+ let hashView='';
+ try{hashView=decodeURIComponent((location.hash||'').replace(/^#/,'')).trim().toLowerCase()}catch{}
+ if(validViews.includes(hashView))return hashView;
+ let saved='';
+ try{saved=(sessionStorage.getItem('dh-command-active-view')||localStorage.getItem('dh-command-active-view')||'').trim().toLowerCase()}catch{}
+ return validViews.includes(saved)?saved:'overview';
+}
+function restoreCommandRoute(){nav(getCommandRoute())}
+restoreCommandRoute();
 loadD1Customers();
 loadD1Vehicles({quiet:true});
 loadD1Reviews({quiet:true});
-window.addEventListener('hashchange',()=>{let view='';try{view=decodeURIComponent((location.hash||'').replace(/^#/,'' )).trim().toLowerCase()}catch{};if(validViews.includes(view)&&view!==currentView)nav(view)});
+window.addEventListener('hashchange',()=>{const view=getCommandRoute();if(view!==currentView)nav(view)});
+window.addEventListener('pageshow',()=>{const view=getCommandRoute();if(view!==currentView)nav(view)});
