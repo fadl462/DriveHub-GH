@@ -32,3 +32,42 @@ export async function onRequestPost({env,data,request}){
   return json({data:{rental_id:rentalId,invoice_id:invoiceId,invoice_number:invoiceNumber,customer_id:customerId,vehicle_id:vehicleId,pickup_date:pickup,return_date:returned,billable_days:days,daily_rate_minor:rate,total_minor:total,paid_minor:0,balance_minor:total,invoice_status:'issued',status}},201);
  }catch(e){return errorResponse(e)}
 }
+
+
+export async function onRequestDelete({env,data,request}){
+ if(!requireRole(data.staff,writeRoles))return json({error:'forbidden'},403);
+ if(!env.DB)return json({error:'database_not_configured'},503);
+ try{
+  const url=new URL(request.url),body=await readJson(request).catch(()=>({}));
+  const id=String(url.searchParams.get('id')||body.id||'').trim();
+  if(!id)return json({error:'rental_id_required'},400);
+  const rental=await env.DB.prepare(`SELECT id,customer_id,vehicle_id,status FROM rentals WHERE id=?`).bind(id).first();
+  if(!rental)return json({error:'rental_not_found'},404);
+  const linked=await env.DB.prepare(`SELECT id,invoice_number,status,total_minor FROM invoices WHERE rental_id=? ORDER BY created_at`).bind(id).all();
+  const invoices=linked.results||[];
+  if(invoices.length>1)return json({error:'multiple_invoices_linked_to_rental; manual_reconciliation_required'},409);
+  if(!invoices.length){
+   await env.DB.batch([
+    env.DB.prepare('DELETE FROM rentals WHERE id=?').bind(id),
+    env.DB.prepare(`INSERT INTO audit_log (id,actor_staff_id,action,entity_type,entity_id,before_json,after_json)
+      VALUES (?,?, 'rental.deleted', 'rental', ?, ?, ?)`).bind(crypto.randomUUID(),data.staff.id,id,JSON.stringify(rental),JSON.stringify({deleted:true,reason:'no linked invoice'}))
+   ]);
+   return json({ok:true,action:'deleted',rental_id:id});
+  }
+  const invoice=invoices[0];
+  const payment=await env.DB.prepare('SELECT COUNT(*) AS payment_count, COALESCE(SUM(amount_minor),0) AS paid_minor FROM payments WHERE invoice_id=?').bind(invoice.id).first();
+  if(Number(payment?.payment_count||0)>0){
+   return json({error:'rental_has_payments_refund_or_credit_workflow_required',rental_id:id,invoice_id:invoice.id,payment_count:Number(payment.payment_count),paid_minor:Number(payment.paid_minor||0)},409);
+  }
+  if(String(invoice.status).toLowerCase()==='void'&&String(rental.status).toLowerCase()==='cancelled'){
+   return json({ok:true,action:'already_cancelled',rental_id:id,invoice_id:invoice.id});
+  }
+  await env.DB.batch([
+   env.DB.prepare("UPDATE rentals SET status='cancelled',updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(id),
+   env.DB.prepare("UPDATE invoices SET status='void',updated_at=CURRENT_TIMESTAMP WHERE id=? AND status<>'void'").bind(invoice.id),
+   env.DB.prepare(`INSERT INTO audit_log (id,actor_staff_id,action,entity_type,entity_id,before_json,after_json)
+    VALUES (?,?, 'rental.cancelled_invoice.voided', 'rental', ?, ?, ?)`).bind(crypto.randomUUID(),data.staff.id,id,JSON.stringify({rental_status:rental.status,invoice_status:invoice.status}),JSON.stringify({rental_status:'cancelled',invoice_status:'void',invoice_id:invoice.id}))
+  ]);
+  return json({ok:true,action:'cancelled',rental_id:id,invoice_id:invoice.id,invoice_status:'void'});
+ }catch(e){return errorResponse(e)}
+}

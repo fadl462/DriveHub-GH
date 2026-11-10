@@ -70,7 +70,7 @@
         </section>
 
         <section class="view" id="view-invoices">
-          <div class="section-toolbar"><div class="filter-tabs" id="invoiceFilters"><button class="selected" data-filter="All">All invoices</button><button data-filter="Unpaid">Unpaid</button><button data-filter="Partially paid">Partially paid</button><button data-filter="Paid">Paid</button><button data-filter="Overdue">Overdue</button></div><p class="helper-note invoice-source-note">Invoices are generated automatically when a rental is saved. To bill a customer, create or update the rental in Rental operations.</p></div>
+          <div class="section-toolbar"><div class="filter-tabs" id="invoiceFilters"><button class="selected" data-filter="All">All invoices</button><button data-filter="Unpaid">Unpaid</button><button data-filter="Partially paid">Partially paid</button><button data-filter="Paid">Paid</button><button data-filter="Overdue">Overdue</button><button data-filter="Voided">Voided</button></div><p class="helper-note invoice-source-note">Invoices are generated automatically when a rental is saved. To bill a customer, create or update the rental in Rental operations.</p></div>
           <div class="metric-grid compact"><article class="metric-card"><div class="metric-top"><span>Total invoiced</span><span class="metric-icon red">▤</span></div><strong id="invoiceTotalMetric">GH₵ 0</strong><div class="metric-foot">Across current records</div></article><article class="metric-card"><div class="metric-top"><span>Paid</span><span class="metric-icon green">✓</span></div><strong id="invoicePaidMetric">GH₵ 0</strong><div class="metric-foot">Payments allocated to invoices</div></article><article class="metric-card"><div class="metric-top"><span>Outstanding</span><span class="metric-icon rose">!</span></div><strong id="invoiceBalanceMetric">GH₵ 0</strong><div class="metric-foot">Requires follow-up</div></article></div>
           <article class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Customer</th><th>Issued</th><th>Due date</th><th>Total</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead><tbody id="invoiceRows"></tbody></table></div></article>
         </section>
@@ -138,6 +138,6 @@
   <div id="profileContent"></div>
 </dialog>
 <dialog id="actionDialog" class="action-dialog"><form method="dialog" id="actionForm"><div class="dialog-head"><div><p class="eyebrow">DRIVEHUB COMMAND</p><h2 id="dialogTitle">Quick action</h2></div><button class="close-dialog" value="cancel" aria-label="Close">×</button></div><div id="dialogFields" class="dialog-fields"></div><div class="dialog-actions"><button class="btn btn-light" value="cancel">Cancel</button><button class="btn btn-primary" id="dialogSubmit" value="default">Save record</button></div></form></dialog>
-  <script src="app.js?v=20261110-menu-invoice-consolidated-3"></script>
+  <script src="app.js?v=20261110-rental-delete-safe-1"></script>
 </body>
 </html>
