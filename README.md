@@ -1,37 +1,29 @@
-# DriveHub GH — Functional controls restored + refresh route fix
+# DriveHub GH — Refresh Route Hardening (final correction)
 
-This consolidated package uses the safe-rental-deletion frontend as its functional base. It does not replace it with the older route-only frontend.
+## Root cause corrected
+The standalone `＋ Create invoice` button had already been removed from `command/index.html`, but `command/app.js` still attempted to assign an `onclick` handler to `#newInvoiceBtn`. Because that element no longer exists, the browser throws a null-reference error during application startup. That interrupts the remaining startup code, including the route restoration logic.
 
-## Included files
+This patch removes that obsolete event binding and keeps invoice creation tied to rental creation, as requested.
+
+## Files
 - `command/index.html`
 - `command/app.js`
-- `functions/command/api/rentals.js`
 
-## Preserved management controls
-- Rental Edit and Complete actions.
-- Draft rental Delete and invoiced rental Cancel actions.
-- Customer Edit and Delete actions.
-- Fleet vehicle Edit and Delete actions.
-- Safe invoice/payment handling from the rental-deletion patch.
-- Audit trail entries for draft deletion and cancellation.
-- Invoice filters including Voided; voided invoices excluded from active totals.
-
-## Preserved interface requirements
-- Sidebar order: Overview, Rentals, Invoices, Payments & receipts, Reviews, Fleet, Customers, Audit trail, Reports.
-- No standalone Create invoice button.
-- Invoices page explains invoices are generated from rentals.
-- Direct invoice-dialog attempts are blocked with a clear message.
-- Route is saved in URL hash, session storage and local storage and restored on startup/pageshow.
+## Also retained
+- Early route bootstrap reads the URL hash before the application starts.
+- Sidebar and active view are restored from the requested hash (e.g. `#rentals`).
+- The rental, fleet and customer edit/delete controls from the Controls Restored package are preserved.
+- No standalone Create invoice button is added back.
+- Cache-busting version updated.
 
 ## Install
-Replace the three files at the exact paths above, then deploy to Cloudflare Pages.
+Replace only the two files at their exact paths and deploy to Cloudflare Pages. Then hard-refresh `/command/#rentals`.
 
-## Regression test checklist
-1. Open Rentals. Check the Actions column (scroll the table horizontally if necessary) for Edit and Delete/Cancel.
-2. Open Fleet. Confirm Edit and Delete controls appear on vehicle cards.
-3. Open Customers. Confirm Edit and Delete controls appear.
-4. Refresh on Rentals, Invoices, and Payments & receipts; confirm each section remains selected.
-5. Confirm Create invoice is absent and the automatic-invoice note is visible.
+## Verification checklist
+1. Open Rentals and refresh; Rentals must remain selected.
+2. Repeat with Invoices, Payments & receipts, Fleet and Customers.
+3. Confirm rental Edit/Complete/Delete or Cancel controls are present as appropriate.
+4. Confirm vehicle and customer Edit/Delete controls remain present.
+5. Confirm the standalone `＋ Create invoice` button remains absent.
 
-## Important limitation
-The safe deletion frontend still includes browser-preview state for some rental operations. The D1 DELETE API is included, but production persistence must be verified against the live database; do not interpret browser-only changes as confirmed D1 changes. Cancellation is deliberately blocked when payments exist until refund/credit handling is implemented.
+The JavaScript passes `node --check`. This package has not been deployed or live-tested on Cloudflare Pages.

@@ -138,6 +138,23 @@
   <div id="profileContent"></div>
 </dialog>
 <dialog id="actionDialog" class="action-dialog"><form method="dialog" id="actionForm"><div class="dialog-head"><div><p class="eyebrow">DRIVEHUB COMMAND</p><h2 id="dialogTitle">Quick action</h2></div><button class="close-dialog" value="cancel" aria-label="Close">×</button></div><div id="dialogFields" class="dialog-fields"></div><div class="dialog-actions"><button class="btn btn-light" value="cancel">Cancel</button><button class="btn btn-primary" id="dialogSubmit" value="default">Save record</button></div></form></dialog>
-  <script src="app.js?v=20261110-functional-controls-route-restore-1"></script>
+  <script>
+  /* Route bootstrap: apply the requested section before the application renders.
+     This prevents a later initialisation/render step from flashing or resetting to Overview. */
+  (function(){
+    var allowed=['overview','rentals','invoices','payments','reviews','fleet','customers','audit','reports','settings'];
+    var view='';
+    try{view=decodeURIComponent((location.hash||'').replace(/^#/,'' )).trim().toLowerCase();}catch(e){}
+    if(!allowed.includes(view)){
+      try{view=(sessionStorage.getItem('dh-command-active-view')||localStorage.getItem('dh-command-active-view')||'').trim().toLowerCase();}catch(e){}
+    }
+    if(!allowed.includes(view))view='overview';
+    window.__DH_INITIAL_VIEW=view;
+    try{sessionStorage.setItem('dh-command-active-view',view);localStorage.setItem('dh-command-active-view',view);}catch(e){}
+    document.querySelectorAll('.nav-item[data-view]').forEach(function(el){el.classList.toggle('active',el.dataset.view===view);});
+    document.querySelectorAll('.view').forEach(function(el){el.classList.toggle('active',el.id==='view-'+view);});
+  })();
+  </script>
+  <script src="app.js?v=20261110-refresh-route-bootstrap-3"></script>
 </body>
 </html>
