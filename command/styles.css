@@ -226,3 +226,15 @@ body:has(#view-fleet.active) #fleetAlerts{display:block}
 .customer-row-actions .table-action{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:5px 9px}
 .customer-row-actions .danger{color:#a3132a;border-color:#e6b9c0}
 @media(max-width:760px){.vehicle-card-actions{justify-content:flex-start}.customer-row-actions{min-width:190px}}
+
+/* Payments & receipts — outstanding balance workflow */
+.payment-metric-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.payment-outstanding-panel{margin-bottom:20px}
+.payment-outstanding-panel .panel-heading{align-items:center}
+.payment-row-actions{flex-wrap:wrap;min-width:190px}
+.payment-row-actions .table-action{white-space:nowrap}
+.payment-full-action{border-color:#c8102e;color:#c8102e}
+.balance-due{color:#b42335}
+#outstandingInvoiceRows td small{display:block;margin-top:4px;color:#8a7d80;font-size:11px}
+@media(max-width:900px){.payment-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.payment-metric-grid{grid-template-columns:1fr}}

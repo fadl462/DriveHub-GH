@@ -1,29 +1,32 @@
-# DriveHub GH — Refresh Route Hardening (final correction)
+# DriveHub GH — Outstanding Payments & Receipt Workflow
 
-## Root cause corrected
-The standalone `＋ Create invoice` button had already been removed from `command/index.html`, but `command/app.js` still attempted to assign an `onclick` handler to `#newInvoiceBtn`. Because that element no longer exists, the browser throws a null-reference error during application startup. That interrupts the remaining startup code, including the route restoration logic.
-
-This patch removes that obsolete event binding and keeps invoice creation tied to rental creation, as requested.
-
-## Files
+## Updated files
 - `command/index.html`
 - `command/app.js`
+- `command/styles.css`
 
-## Also retained
-- Early route bootstrap reads the URL hash before the application starts.
-- Sidebar and active view are restored from the requested hash (e.g. `#rentals`).
-- The rental, fleet and customer edit/delete controls from the Controls Restored package are preserved.
-- No standalone Create invoice button is added back.
-- Cache-busting version updated.
+## What this adds
+- Payments & receipts now includes an Outstanding invoices table sourced from invoices.
+- Each unpaid or partly paid invoice shows invoice number, customer, due date, invoice total, amount paid and remaining balance.
+- **Part payment** opens the payment form with the invoice/customer selected and the amount left blank.
+- **Mark fully paid** opens the same payment form with the exact remaining balance prefilled. Staff still select/confirm payment method and date; the system does not assume money was received.
+- Each successful payment is recorded as its own transaction in D1, using the existing conditional payment API. Overpayments are rejected by both frontend and backend.
+- After successful payment, invoice balance/status reloads from D1.
+- Each payment gets its own receipt number and a print dialog suitable for saving as PDF.
+- Payment history remains visible, with a PDF print option for each transaction.
+- A new outstanding-balance metric is included.
+
+## D1 integration
+The frontend loads `/command/api/invoices` and `/command/api/payments` and records payments through `POST /command/api/payments`.
+This uses the existing backend endpoints in `functions/command/api/` and requires:
+- Cloudflare Pages Functions deployed from `functions/command/api/invoices.js` and `payments.js`
+- D1 binding `DB` correctly configured
+- Existing invoice/payment tables and migration `command/migrations/0002_invoice_items.sql` (plus any previously applied schema/ledger migrations)
+
+If the D1 financial API is unavailable, the UI explicitly falls back to the browser preview state; preview entries are not production accounting records. Check the browser console and Cloudflare Pages Functions logs if the live ledger cannot be loaded.
 
 ## Install
-Replace only the two files at their exact paths and deploy to Cloudflare Pages. Then hard-refresh `/command/#rentals`.
+Replace the three files at their exact paths. No new migration is required for this frontend update.
 
-## Verification checklist
-1. Open Rentals and refresh; Rentals must remain selected.
-2. Repeat with Invoices, Payments & receipts, Fleet and Customers.
-3. Confirm rental Edit/Complete/Delete or Cancel controls are present as appropriate.
-4. Confirm vehicle and customer Edit/Delete controls remain present.
-5. Confirm the standalone `＋ Create invoice` button remains absent.
-
-The JavaScript passes `node --check`. This package has not been deployed or live-tested on Cloudflare Pages.
+## Validation
+`node --check command/app.js` should pass. Live D1 authentication, staff roles, and payment writes must be tested in the deployed Cloudflare environment. The PDF action opens the browser print dialog; choose **Save as PDF**.
