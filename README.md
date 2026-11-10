@@ -1,28 +1,37 @@
-# DriveHub GH — consolidated UI regression correction
+# DriveHub GH — Functional controls restored + refresh route fix
 
-This package combines the route-restoration code with the previously agreed menu and invoice-page rules.
+This consolidated package uses the safe-rental-deletion frontend as its functional base. It does not replace it with the older route-only frontend.
 
-## Files
+## Included files
 - `command/index.html`
 - `command/app.js`
+- `functions/command/api/rentals.js`
 
-## Restored requirements
-- The URL-hash/session/local route restoration logic remains in `app.js`.
+## Preserved management controls
+- Rental Edit and Complete actions.
+- Draft rental Delete and invoiced rental Cancel actions.
+- Customer Edit and Delete actions.
+- Fleet vehicle Edit and Delete actions.
+- Safe invoice/payment handling from the rental-deletion patch.
+- Audit trail entries for draft deletion and cancellation.
+- Invoice filters including Voided; voided invoices excluded from active totals.
+
+## Preserved interface requirements
 - Sidebar order: Overview, Rentals, Invoices, Payments & receipts, Reviews, Fleet, Customers, Audit trail, Reports.
-- Settings remains in its existing bottom section.
-- The standalone `＋ Create invoice` button and form are removed.
-- The invoice page explains that invoices originate from rental records.
-- A defensive guard prevents opening a standalone invoice action.
-- Adds a Voided invoice filter.
-- Cache-busts the Command Centre JavaScript reference.
+- No standalone Create invoice button.
+- Invoices page explains invoices are generated from rentals.
+- Direct invoice-dialog attempts are blocked with a clear message.
+- Route is saved in URL hash, session storage and local storage and restored on startup/pageshow.
 
 ## Install
-Replace these two files at their exact paths and deploy to Cloudflare Pages. Then hard-refresh `/command/#invoices`.
+Replace the three files at the exact paths above, then deploy to Cloudflare Pages.
 
-## Test
-1. Confirm the sidebar order.
-2. Confirm `＋ Create invoice` is absent and the rental-origin message is visible.
-3. Open Rentals, refresh, and confirm Rentals remains selected.
-4. Open Invoices, refresh, and confirm Invoices remains selected.
+## Regression test checklist
+1. Open Rentals. Check the Actions column (scroll the table horizontally if necessary) for Edit and Delete/Cancel.
+2. Open Fleet. Confirm Edit and Delete controls appear on vehicle cards.
+3. Open Customers. Confirm Edit and Delete controls appear.
+4. Refresh on Rentals, Invoices, and Payments & receipts; confirm each section remains selected.
+5. Confirm Create invoice is absent and the automatic-invoice note is visible.
 
-This is a code patch and has not been deployed or verified on the live site.
+## Important limitation
+The safe deletion frontend still includes browser-preview state for some rental operations. The D1 DELETE API is included, but production persistence must be verified against the live database; do not interpret browser-only changes as confirmed D1 changes. Cancellation is deliberately blocked when payments exist until refund/credit handling is implemented.
