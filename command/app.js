@@ -342,48 +342,17 @@ document.addEventListener('click',e=>{
   if(b.type==='submit')return; // action handlers can add more specific events later
   recordAudit('Clicked action',currentView,label.slice(0,120));
 },true);
-function populateRevenueYears(){
- const select=$('#revenueYear');if(!select)return;
- const currentYear=new Date().getFullYear();
- const paymentYears=state.payments.map(p=>Number(String(p.date||'').slice(0,4))).filter(y=>Number.isInteger(y)&&y>=2000&&y<=9999);
- const firstYear=Math.min(currentYear-5,...paymentYears);
- const lastYear=Math.max(currentYear+10,...paymentYears);
- const selected=Number(select.value)||currentYear;
- select.innerHTML=Array.from({length:lastYear-firstYear+1},(_,i)=>firstYear+i)
-  .map(y=>`<option value="${y}">${y}</option>`).join('');
- select.value=String(selected>=firstYear&&selected<=lastYear?selected:currentYear);
-}
 function renderChart(){
- const select=$('#revenueYear');if(!select)return;
- if(!select.options.length)populateRevenueYears();
- const year=Number(select.value)||new Date().getFullYear();
- const months=Array.from({length:12},(_,i)=>({
-  key:`${year}-${String(i+1).padStart(2,'0')}`,
-  label:new Date(year,i,1).toLocaleDateString('en-GB',{month:'short'}),
-  value:0
- }));
- state.payments.forEach(p=>{
-  const date=String(p.date||'');
-  const key=date.slice(0,7);
-  const month=months.find(m=>m.key===key);
-  if(month)month.value+=Number(p.amount||0);
- });
- const max=Math.max(0,...months.map(m=>m.value));
- const annualTotal=months.reduce((sum,m)=>sum+m.value,0);
- const compact=value=>`GH₵${new Intl.NumberFormat('en-GH',{notation:'compact',maximumFractionDigits:1}).format(value)}`;
- $('#revenueChart').innerHTML=months.map(m=>{
-  const height=max>0?(m.value/max*100):0;
-  return `<div class="bar-wrap" style="--bar-height:${height}%">
-   <span class="bar-value">${compact(m.value)}</span>
-   <div class="bar" style="height:${height}%" data-value="${money(m.value)}" title="${m.label} ${year}: ${money(m.value)}"></div>
-  </div>`;
- }).join('');
+ const count=Number($('#revenueRange').value||7), now=new Date();
+ const months=[];
+ for(let i=count-1;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,label:d.toLocaleDateString('en-GB',{month:'short'}) ,value:0})}
+ state.payments.forEach(p=>{const key=String(p.date||'').slice(0,7),m=months.find(x=>x.key===key);if(m)m.value+=Number(p.amount||0)});
+ const max=Math.max(1,...months.map(m=>m.value));
+ $('#revenueChart').innerHTML=months.map(m=>`<div class="bar-wrap"><div class="bar" style="height:${Math.max(4,m.value/max*100)}%" data-value="${money(m.value)}" title="${m.label}: ${money(m.value)}"></div></div>`).join('');
  $('.chart-axis').innerHTML=months.map(m=>`<span>${m.label}</span>`).join('');
- const subtitle=$('.revenue-panel .panel-heading p');
- if(subtitle)subtitle.textContent=`${year} · Jan–Dec monthly comparison · Annual total ${money(annualTotal)}`;
+ const subtitle=$('.revenue-panel .panel-heading p');if(subtitle)subtitle.textContent=`Recorded payments across the last ${count} month${count===1?'':'s'}`;
 }
-$('#revenueYear').addEventListener('change',renderChart);
-
+$('#revenueRange').addEventListener('change',renderChart);
 function renderAttention(){const pending=state.reviews.filter(r=>r.status==='Pending').length;const overdue=state.invoices.filter(i=>effectiveInvoiceStatus(i)==='Overdue').length;const available=state.fleet.filter(v=>v.status==='Available').length;const list=[{icon:'✳',red:true,title:`${pending} reviews awaiting approval`,desc:'Read feedback and approve or reject publication.',goto:'reviews'},{icon:'!',title:`${overdue} overdue invoices`,desc:'Follow up on unpaid rental balances.',goto:'invoices'},{icon:'◇',title:`${available} vehicles currently available`,desc:'Check upcoming bookings and fleet utilisation.',goto:'fleet'}];$('#attentionList').innerHTML=list.map(x=>`<div class="attention-item"><span class="attention-symbol ${x.red?'red':''}">${x.icon}</span><div><strong>${x.title}</strong><p>${x.desc}</p><button class="text-link" data-goto="${x.goto}">Open →</button></div></div>`).join('');$$('#attentionList [data-goto]').forEach(b=>b.onclick=()=>nav(b.dataset.goto));$('#pendingBadge').textContent=pending;$('#pendingCount').textContent=pending;$('#reviewPendingSummary').textContent=pending}
 function renderRecent(){const rows=state.rentals.slice(0,4);$('#recentRentals').innerHTML=rows.map(r=>`<tr><td><div class="customer-cell">${avatar(r.customer)}<div><strong>${escapeHTML(r.customer)}</strong><small>${r.id}</small></div></div></td><td>${escapeHTML(r.vehicle)}${r.sourceType==='partner'?'<small>Partner-sourced · '+escapeHTML(r.partnerName||'supplier')+' · Cost '+money(r.supplierTotal||0)+'</small>':''}</td><td>${fmtDate(r.pickup)} – ${fmtDate(r.returned)}<small>${daysInclusive(r.pickup,r.returned)} billable days</small></td><td><strong>${money(r.rate*daysInclusive(r.pickup,r.returned))}</strong></td><td>${statusBadge(r.status)}</td></tr>`).join('')}
 function renderCustomerImprovements(){
@@ -408,6 +377,14 @@ function renderInvoices(){
  const total=operationalInvoices.reduce((s,i)=>s+Number(i.total||0),0);
  const paid=operationalInvoices.reduce((s,i)=>s+Number(i.paid||0),0);
  const balance=operationalInvoices.reduce((s,i)=>s+invoiceBalance(i),0);
+ const invoiceTabCounts={
+  invoiceAllCount:operationalInvoices.length,
+  invoiceUnpaidCount:operationalInvoices.filter(i=>effectiveInvoiceStatus(i)==='Unpaid').length,
+  invoicePartialCount:operationalInvoices.filter(i=>effectiveInvoiceStatus(i)==='Partially paid').length,
+  invoicePaidCount:operationalInvoices.filter(i=>effectiveInvoiceStatus(i)==='Paid').length,
+  invoiceOverdueCount:operationalInvoices.filter(i=>effectiveInvoiceStatus(i)==='Overdue').length
+ };
+ Object.entries(invoiceTabCounts).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value});
  if($('#invoiceTotalMetric'))$('#invoiceTotalMetric').textContent=money(total);
  if($('#invoicePaidMetric'))$('#invoicePaidMetric').textContent=money(paid);
  if($('#invoiceBalanceMetric'))$('#invoiceBalanceMetric').textContent=money(balance);
@@ -481,6 +458,8 @@ function renderRentals(){
  const operationalRentals=state.rentals.filter(r=>!isOperationallyArchivedRentalId(r.id));
  const rows=operationalRentals.filter(r=>(rentalFilter==='All'||r.status===rentalFilter)&&[r.id,r.customer,r.vehicle].join(' ').toLowerCase().includes(q));
  const count=status=>operationalRentals.filter(r=>r.status===status).length;
+ const rentalTabCounts={rentalAllCount:operationalRentals.length,rentalActiveCount:count('Active'),rentalUpcomingCount:count('Upcoming'),rentalCompletedCount:count('Completed')};
+ Object.entries(rentalTabCounts).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value});
  if($('#rentalUpcomingMetric'))$('#rentalUpcomingMetric').textContent=count('Upcoming');
  if($('#rentalActiveMetric'))$('#rentalActiveMetric').textContent=count('Active');
  if($('#rentalCompletedMetric'))$('#rentalCompletedMetric').textContent=count('Completed');
