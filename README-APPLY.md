@@ -1,22 +1,25 @@
-# DriveHub GH — Customer uniqueness rules
+# DriveHub GH — Automatic Rental Invoice Generation
 
-Replace these files at their existing paths:
+## Replace this file
 - `command/app.js`
-- `functions/command/api/customers.js`
 
-## Behaviour after this update
-- Different customers may have the same full name.
-- A phone number can belong to only one active customer.
-- Phone comparisons ignore spaces, punctuation and formatting; Ghana `+233` and local `0` formats are treated as equivalent.
-- Existing email duplicate checking remains in the Command Centre form.
-- Saving a new customer no longer silently replaces an existing customer with the same name.
-- The API checks phone uniqueness too, so browser-side validation cannot be bypassed.
+## What this fixes
+- Standard DriveHub fleet rentals are saved to Cloudflare D1 through `/command/api/rentals`, rather than being stored only in the browser.
+- The existing D1 rental API creates the rental, linked invoice, and invoice line item in one D1 batch. A successful save therefore creates the invoice automatically.
+- The customer and vehicle selectors submit their D1 record IDs, not display names, preserving correct foreign-key links even when two customers share a name.
+- The Rentals and Invoices views load their records from D1 at startup and after a rental is created. The generated invoice remains visible after refresh.
+- Existing vehicle/date conflict checks and maintenance checks are retained.
 
-No existing customer records are deleted, merged, or changed.
+## Partner-sourced rentals
+The existing partner-rental endpoint stores partner rentals separately and does not create a standard fleet invoice. This package preserves that workflow and clearly informs staff of that limitation. Automatic invoicing is implemented for standard DriveHub-owned fleet rentals.
 
 ## Deploy and test
-1. Replace the two files at the paths above.
+1. Replace `command/app.js` at the exact path above.
 2. Commit and push to the Cloudflare Pages deployment branch.
-3. Test adding a different person with an existing customer's name but a different phone number — it should save.
-4. Test reusing an existing customer's phone number — it should be rejected and identify the existing customer.
-5. Confirm a customer edit updates that record rather than creating another one.
+3. Wait for deployment to complete.
+4. Add a test rental using a customer and vehicle from the live D1 selectors.
+5. Confirm the success message shows the generated invoice number and total.
+6. Open Invoices and confirm the invoice is present.
+7. Refresh the Command Centre and confirm the rental and invoice remain.
+
+The existing `/command/api/rentals` backend already performs rental + invoice + invoice-item creation in one D1 batch and returns the generated invoice number. This update connects the front-end rental workflow to that existing API.
