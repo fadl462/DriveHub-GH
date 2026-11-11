@@ -1,26 +1,33 @@
-# DriveHub GH — Rental Editor and D1 Persistence Fix
+# DriveHub GH — Live Rentals Connection and Database Editing Fix
 
-Replace these files at their exact repository paths:
+Replace these three files:
 - `command/app.js`
+- `command/index.html`
 - `functions/command/api/rentals.js`
 
-## What this fixes
-- Removes the browser `prompt()` rental editor that changed only local preview state.
-- Adds a proper edit dialog populated from the selected rental's actual D1 customer and vehicle IDs.
-- Saves edits through `PUT /command/api/rentals/{route}` (Cloudflare Pages function uses the same `/command/api/rentals` path and PUT method).
-- Updates the selected rental by its exact rental ID, not by customer name. This prevents Agent Larbi (DH-211, February) from being confused with Company (Larbi) (DH-210, October).
-- Recalculates the linked invoice subtotal and total when dates or daily rate change, retaining the same invoice ID/number, discount and existing payment rows. Invoice payment status is recalculated from the preserved payments.
-- Refreshes Rentals and Invoices from D1 after a successful edit. Failed edits do not mutate local preview state.
+## What this corrects
+- Loads Rentals and Invoices from the authenticated D1 APIs at Command Centre startup.
+- Replaces local browser-preview rentals with the persisted D1 rental list after a successful API response.
+- Changes the workspace badge from "Workspace preview" to "Live database" only after both live rental and invoice APIs respond successfully.
+- Carries the actual `customer_id` and `vehicle_id` through the rental list so the editor targets the selected rental's exact database relationships.
+- Replaces the old `prompt()` editor with a proper edit dialog.
+- Saves edits with `PUT /command/api/rentals`, updating the selected rental by rental ID.
+- Recalculates the linked invoice rental line, subtotal, total and payment status while preserving invoice number, discounts and all payment records.
+- If the live API fails, the UI retains preview data but editing is blocked with an explicit explanation. It does not pretend a local preview edit was saved.
 
-## Important record protection
-This is an editor/API correction. It does not directly change DH-210, DH-211, any customer assignment, or any existing payment. Select the intended rental row before editing. DH-211 remains Agent Larbi (February); DH-210 remains Company (Larbi) (October).
+## Protecting the two Larbi records
+No customer assignment is hard-coded or changed by this update. The editor reads customer and vehicle IDs from the selected D1 row:
+- DH-211 should display the customer linked to DH-211 (Agent Larbi).
+- DH-210 should display the customer linked to DH-210 (Company (Larbi)).
+No database record is modified until a staff member explicitly saves the edit form.
 
-## Deploy and verify
-1. Replace the two files at the paths above.
-2. Commit and push to the Cloudflare Pages deployment branch.
+## Deploy
+1. Replace the three files at the exact paths above.
+2. Commit and push to the Cloudflare Pages production branch.
 3. Wait for deployment.
-4. Open Rentals and edit DH-211. Confirm Agent Larbi and its February dates are preselected.
-5. Save without changing values; confirm the rental and linked invoice remain consistent.
-6. Open DH-210 separately and confirm Company (Larbi), October dates, 31 days and its payment history remain unchanged.
+4. Open Command Centre and reload Rentals.
+5. Confirm the workspace badge says "Live database".
+6. Edit DH-211 and confirm Agent Larbi / February details load.
+7. Open DH-210 separately and confirm Company (Larbi), October details and existing payments remain.
 
-The updated frontend and API JavaScript passed syntax checks.
+Both JavaScript files passed Node syntax validation. The package has not been deployed to Cloudflare.

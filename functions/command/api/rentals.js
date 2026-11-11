@@ -15,7 +15,7 @@ export async function onRequestPost({env,data,request}){
   if(!validDate(pickup)||!validDate(returned)||returned<pickup)throw Object.assign(new Error('Valid pickup_date and return_date are required'),{status:400});
   if(!['upcoming','active','completed','cancelled'].includes(status))throw Object.assign(new Error('Invalid rental status'),{status:400});
   const [customer,vehicle]=await Promise.all([env.DB.prepare('SELECT id,full_name FROM customers WHERE id=?').bind(customerId).first(),env.DB.prepare('SELECT id,name,daily_rate_minor,status FROM vehicles WHERE id=?').bind(vehicleId).first()]);
-  if(!customer)throw Object.assign(new Error('customer_not_found'),{status:404});if(!vehicle)throw Object.assign(new Error('vehicle_not_found'),{status:404});
+  if(!customer)throw Object.assign(new Error('customer_not_found'),{status:404});if(!vehicle)throw Object.assign(new Error('vehicle_not_found'),{status:404});if(['inactive','maintenance'].includes(String(vehicle.status||'').toLowerCase()))throw Object.assign(new Error('vehicle_not_available_for_rental'),{status:409});
   const conflict=await env.DB.prepare("SELECT id FROM rentals WHERE vehicle_id=? AND status IN ('upcoming','active') AND pickup_date<=? AND return_date>=? LIMIT 1").bind(vehicleId,returned,pickup).first();if(conflict)throw Object.assign(new Error('vehicle_date_conflict'),{status:409});
   const days=Math.round((Date.parse(returned+'T12:00:00Z')-Date.parse(pickup+'T12:00:00Z'))/86400000)+1;if(days<1)throw Object.assign(new Error('invalid_rental_period'),{status:400});
   const total=days*rate;if(!Number.isSafeInteger(total))throw Object.assign(new Error('invoice_total_out_of_range'),{status:400});
@@ -37,41 +37,46 @@ export async function onRequestPut({env,data,request}){
  if(!requireRole(data.staff,writeRoles))return json({error:'forbidden'},403);
  try{
   const b=await readJson(request),rentalId=String(b.rental_id||'').trim(),customerId=String(b.customer_id||''),vehicleId=String(b.vehicle_id||''),pickup=String(b.pickup_date||''),returned=String(b.return_date||''),status=String(b.status||'upcoming'),notes=String(b.notes||'').trim().slice(0,3000),rate=moneyMinor(b.daily_rate_minor,'daily_rate_minor');
-  if(!rentalId)throw Object.assign(new Error('rental_id is required'),{status:400});
-  if(!customerId||!vehicleId)throw Object.assign(new Error('customer_id and vehicle_id are required'),{status:400});
-  if(!validDate(pickup)||!validDate(returned)||returned<pickup)throw Object.assign(new Error('Valid pickup_date and return_date are required'),{status:400});
-  if(!['upcoming','active','completed','cancelled'].includes(status))throw Object.assign(new Error('Invalid rental status'),{status:400});
+  if(!rentalId)throw Object.assign(new Error('rental_id_required'),{status:400});
+  if(!customerId||!vehicleId)throw Object.assign(new Error('customer_id_and_vehicle_id_required'),{status:400});
+  if(!validDate(pickup)||!validDate(returned)||returned<pickup)throw Object.assign(new Error('invalid_rental_dates'),{status:400});
+  if(!['upcoming','active','completed','cancelled'].includes(status))throw Object.assign(new Error('invalid_rental_status'),{status:400});
   const [rental,customer,vehicle]=await Promise.all([
-   env.DB.prepare('SELECT id,customer_id,vehicle_id,pickup_date,return_date FROM rentals WHERE id=?').bind(rentalId).first(),
-   env.DB.prepare('SELECT id FROM customers WHERE id=?').bind(customerId).first(),
-   env.DB.prepare('SELECT id FROM vehicles WHERE id=?').bind(vehicleId).first()
+   env.DB.prepare('SELECT id FROM rentals WHERE id=?').bind(rentalId).first(),
+   env.DB.prepare('SELECT id FROM customers WHERE id=? AND archived_at IS NULL').bind(customerId).first(),
+   env.DB.prepare('SELECT id,name,status FROM vehicles WHERE id=?').bind(vehicleId).first()
   ]);
   if(!rental)throw Object.assign(new Error('rental_not_found'),{status:404});
   if(!customer)throw Object.assign(new Error('customer_not_found'),{status:404});
   if(!vehicle)throw Object.assign(new Error('vehicle_not_found'),{status:404});
+  if(['inactive','maintenance'].includes(String(vehicle.status||'').toLowerCase()))throw Object.assign(new Error('vehicle_not_available_for_rental'),{status:409});
   const conflict=await env.DB.prepare("SELECT id FROM rentals WHERE vehicle_id=? AND id<>? AND status IN ('upcoming','active') AND pickup_date<=? AND return_date>=? LIMIT 1").bind(vehicleId,rentalId,returned,pickup).first();
   if(conflict)throw Object.assign(new Error(`vehicle_date_conflict:${conflict.id}`),{status:409});
   const days=Math.round((Date.parse(returned+'T12:00:00Z')-Date.parse(pickup+'T12:00:00Z'))/86400000)+1;
   if(days<1)throw Object.assign(new Error('invalid_rental_period'),{status:400});
-  const subtotal=days*rate;
-  if(!Number.isSafeInteger(subtotal))throw Object.assign(new Error('invoice_total_out_of_range'),{status:400});
-  const invoice=await env.DB.prepare('SELECT id,discount_minor,total_minor FROM invoices WHERE rental_id=? ORDER BY created_at DESC LIMIT 1').bind(rentalId).first();
-  const statements=[
-   env.DB.prepare('UPDATE rentals SET customer_id=?,vehicle_id=?,pickup_date=?,return_date=?,daily_rate_minor=?,billable_days=?,status=?,notes=? WHERE id=?').bind(customerId,vehicleId,pickup,returned,rate,days,status,notes||null,rentalId)
-  ];
-  let invoiceNumber=null,total=subtotal;
+  const rentalLineTotal=days*rate;
+  if(!Number.isSafeInteger(rentalLineTotal))throw Object.assign(new Error('invoice_total_out_of_range'),{status:400});
+  const invoice=await env.DB.prepare('SELECT id,discount_minor FROM invoices WHERE rental_id=? ORDER BY created_at DESC LIMIT 1').bind(rentalId).first();
+  const statements=[env.DB.prepare("UPDATE rentals SET customer_id=?,vehicle_id=?,pickup_date=?,return_date=?,daily_rate_minor=?,billable_days=?,status=?,notes=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(customerId,vehicleId,pickup,returned,rate,days,status,notes||null,rentalId)];
+  let invoiceNumber=null,updatedTotal=null;
   if(invoice){
-   const discount=Number(invoice.discount_minor||0);
-   total=Math.max(0,subtotal-discount);
+   const line=await env.DB.prepare("SELECT id FROM invoice_items WHERE invoice_id=? AND (description LIKE 'Vehicle rental%' OR description LIKE 'Vehicle hire%') ORDER BY rowid LIMIT 1").bind(invoice.id).first();
+   const existingLines=await env.DB.prepare('SELECT COALESCE(SUM(line_total_minor),0) AS subtotal FROM invoice_items WHERE invoice_id=?').bind(invoice.id).first();
+   const oldLine= line ? await env.DB.prepare('SELECT line_total_minor FROM invoice_items WHERE id=?').bind(line.id).first() : null;
+   const subtotal=Math.max(0,Number(existingLines?.subtotal||0)-Number(oldLine?.line_total_minor||0)+rentalLineTotal);
+   const discount=Number(invoice.discount_minor||0),total=Math.max(0,subtotal-discount);
    const paidRow=await env.DB.prepare('SELECT COALESCE(SUM(amount_minor),0) AS paid FROM payments WHERE invoice_id=?').bind(invoice.id).first();
-   const paid=Number(paidRow?.paid||0),invoiceStatus=paid>=total?'paid':paid>0?'partially_paid':'issued';
-   const current=await env.DB.prepare('SELECT invoice_number FROM invoices WHERE id=?').bind(invoice.id).first();
-   invoiceNumber=current?.invoice_number||null;
-   statements.push(env.DB.prepare('UPDATE invoices SET customer_id=?,vehicle_id=?,due_on=?,subtotal_minor=?,total_minor=?,status=? WHERE id=?').bind(customerId,vehicleId,returned,subtotal,total,invoiceStatus,invoice.id));
-   statements.push(env.DB.prepare("UPDATE invoice_items SET description=?,quantity=?,unit_amount_minor=?,line_total_minor=? WHERE invoice_id=? AND id=(SELECT id FROM invoice_items WHERE invoice_id=? ORDER BY rowid LIMIT 1)").bind(`Vehicle rental — ${days} billable day(s)`,days,rate,subtotal,invoice.id,invoice.id));
+   const paid=Number(paidRow?.paid||0);
+   if(total<paid)throw Object.assign(new Error('invoice_total_below_amount_already_paid'),{status:409});
+   const invoiceRow=await env.DB.prepare('SELECT invoice_number FROM invoices WHERE id=?').bind(invoice.id).first();
+   invoiceNumber=invoiceRow?.invoice_number||null;updatedTotal=total;
+   if(line)statements.push(env.DB.prepare('UPDATE invoice_items SET description=?,quantity=?,unit_amount_minor=?,line_total_minor=? WHERE id=?').bind(`Vehicle rental — ${days} billable day(s)`,days,rate,rentalLineTotal,line.id));
+   else statements.push(env.DB.prepare('INSERT INTO invoice_items (id,invoice_id,description,quantity,unit_amount_minor,line_total_minor) VALUES (?,?,?,?,?,?)').bind(crypto.randomUUID(),invoice.id,`Vehicle rental — ${days} billable day(s)`,days,rate,rentalLineTotal));
+   const invoiceStatus=paid>=total?'paid':paid>0?'partially_paid':'issued';
+   statements.push(env.DB.prepare('UPDATE invoices SET customer_id=?,vehicle_id=?,due_on=?,subtotal_minor=?,total_minor=?,status=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(customerId,vehicleId,returned,subtotal,total,invoiceStatus,invoice.id));
   }
   await env.DB.batch(statements);
-  await audit(env.DB,data.staff,'rental.updated','rental',rentalId,{customer_id:customerId,vehicle_id:vehicleId,pickup_date:pickup,return_date:returned,billable_days:days,daily_rate_minor:rate,invoice_number:invoiceNumber,total_minor:total});
-  return json({data:{rental_id:rentalId,customer_id:customerId,vehicle_id:vehicleId,pickup_date:pickup,return_date:returned,billable_days:days,daily_rate_minor:rate,total_minor:total,invoice_number:invoiceNumber,updated:true}});
+  await audit(env.DB,data.staff,'rental.updated','rental',rentalId,{customer_id:customerId,vehicle_id:vehicleId,pickup_date:pickup,return_date:returned,billable_days:days,daily_rate_minor:rate,invoice_number:invoiceNumber,total_minor:updatedTotal});
+  return json({data:{rental_id:rentalId,customer_id:customerId,vehicle_id:vehicleId,pickup_date:pickup,return_date:returned,billable_days:days,daily_rate_minor:rate,invoice_number:invoiceNumber,total_minor:updatedTotal,updated:true}});
  }catch(e){return errorResponse(e)}
 }
