@@ -15,7 +15,7 @@ export async function onRequestPost({env,data,request}){
   if(!validDate(pickup)||!validDate(returned)||returned<pickup)throw Object.assign(new Error('Valid pickup_date and return_date are required'),{status:400});
   if(!['upcoming','active','completed','cancelled'].includes(status))throw Object.assign(new Error('Invalid rental status'),{status:400});
   const [customer,vehicle]=await Promise.all([env.DB.prepare('SELECT id,full_name FROM customers WHERE id=?').bind(customerId).first(),env.DB.prepare('SELECT id,name,daily_rate_minor,status FROM vehicles WHERE id=?').bind(vehicleId).first()]);
-  if(!customer)throw Object.assign(new Error('customer_not_found'),{status:404});if(!vehicle)throw Object.assign(new Error('vehicle_not_found'),{status:404});if(['inactive','maintenance'].includes(String(vehicle.status||'').toLowerCase()))throw Object.assign(new Error('vehicle_not_available_for_rental'),{status:409});
+  if(!customer)throw Object.assign(new Error('customer_not_found'),{status:404});if(!vehicle)throw Object.assign(new Error('vehicle_not_found'),{status:404});
   const conflict=await env.DB.prepare("SELECT id FROM rentals WHERE vehicle_id=? AND status IN ('upcoming','active') AND pickup_date<=? AND return_date>=? LIMIT 1").bind(vehicleId,returned,pickup).first();if(conflict)throw Object.assign(new Error('vehicle_date_conflict'),{status:409});
   const days=Math.round((Date.parse(returned+'T12:00:00Z')-Date.parse(pickup+'T12:00:00Z'))/86400000)+1;if(days<1)throw Object.assign(new Error('invalid_rental_period'),{status:400});
   const total=days*rate;if(!Number.isSafeInteger(total))throw Object.assign(new Error('invoice_total_out_of_range'),{status:400});
@@ -33,41 +33,45 @@ export async function onRequestPost({env,data,request}){
  }catch(e){return errorResponse(e)}
 }
 
-
-export async function onRequestDelete({env,data,request}){
+export async function onRequestPut({env,data,request}){
  if(!requireRole(data.staff,writeRoles))return json({error:'forbidden'},403);
- if(!env.DB)return json({error:'database_not_configured'},503);
  try{
-  const url=new URL(request.url),body=await readJson(request).catch(()=>({}));
-  const id=String(url.searchParams.get('id')||body.id||'').trim();
-  if(!id)return json({error:'rental_id_required'},400);
-  const rental=await env.DB.prepare(`SELECT id,customer_id,vehicle_id,status FROM rentals WHERE id=?`).bind(id).first();
-  if(!rental)return json({error:'rental_not_found'},404);
-  const linked=await env.DB.prepare(`SELECT id,invoice_number,status,total_minor FROM invoices WHERE rental_id=? ORDER BY created_at`).bind(id).all();
-  const invoices=linked.results||[];
-  if(invoices.length>1)return json({error:'multiple_invoices_linked_to_rental; manual_reconciliation_required'},409);
-  if(!invoices.length){
-   await env.DB.batch([
-    env.DB.prepare('DELETE FROM rentals WHERE id=?').bind(id),
-    env.DB.prepare(`INSERT INTO audit_log (id,actor_staff_id,action,entity_type,entity_id,before_json,after_json)
-      VALUES (?,?, 'rental.deleted', 'rental', ?, ?, ?)`).bind(crypto.randomUUID(),data.staff.id,id,JSON.stringify(rental),JSON.stringify({deleted:true,reason:'no linked invoice'}))
-   ]);
-   return json({ok:true,action:'deleted',rental_id:id});
-  }
-  const invoice=invoices[0];
-  const payment=await env.DB.prepare('SELECT COUNT(*) AS payment_count, COALESCE(SUM(amount_minor),0) AS paid_minor FROM payments WHERE invoice_id=?').bind(invoice.id).first();
-  if(Number(payment?.payment_count||0)>0){
-   return json({error:'rental_has_payments_refund_or_credit_workflow_required',rental_id:id,invoice_id:invoice.id,payment_count:Number(payment.payment_count),paid_minor:Number(payment.paid_minor||0)},409);
-  }
-  if(String(invoice.status).toLowerCase()==='void'&&String(rental.status).toLowerCase()==='cancelled'){
-   return json({ok:true,action:'already_cancelled',rental_id:id,invoice_id:invoice.id});
-  }
-  await env.DB.batch([
-   env.DB.prepare("UPDATE rentals SET status='cancelled',updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(id),
-   env.DB.prepare("UPDATE invoices SET status='void',updated_at=CURRENT_TIMESTAMP WHERE id=? AND status<>'void'").bind(invoice.id),
-   env.DB.prepare(`INSERT INTO audit_log (id,actor_staff_id,action,entity_type,entity_id,before_json,after_json)
-    VALUES (?,?, 'rental.cancelled_invoice.voided', 'rental', ?, ?, ?)`).bind(crypto.randomUUID(),data.staff.id,id,JSON.stringify({rental_status:rental.status,invoice_status:invoice.status}),JSON.stringify({rental_status:'cancelled',invoice_status:'void',invoice_id:invoice.id}))
+  const b=await readJson(request),rentalId=String(b.rental_id||'').trim(),customerId=String(b.customer_id||''),vehicleId=String(b.vehicle_id||''),pickup=String(b.pickup_date||''),returned=String(b.return_date||''),status=String(b.status||'upcoming'),notes=String(b.notes||'').trim().slice(0,3000),rate=moneyMinor(b.daily_rate_minor,'daily_rate_minor');
+  if(!rentalId)throw Object.assign(new Error('rental_id is required'),{status:400});
+  if(!customerId||!vehicleId)throw Object.assign(new Error('customer_id and vehicle_id are required'),{status:400});
+  if(!validDate(pickup)||!validDate(returned)||returned<pickup)throw Object.assign(new Error('Valid pickup_date and return_date are required'),{status:400});
+  if(!['upcoming','active','completed','cancelled'].includes(status))throw Object.assign(new Error('Invalid rental status'),{status:400});
+  const [rental,customer,vehicle]=await Promise.all([
+   env.DB.prepare('SELECT id,customer_id,vehicle_id,pickup_date,return_date FROM rentals WHERE id=?').bind(rentalId).first(),
+   env.DB.prepare('SELECT id FROM customers WHERE id=?').bind(customerId).first(),
+   env.DB.prepare('SELECT id FROM vehicles WHERE id=?').bind(vehicleId).first()
   ]);
-  return json({ok:true,action:'cancelled',rental_id:id,invoice_id:invoice.id,invoice_status:'void'});
+  if(!rental)throw Object.assign(new Error('rental_not_found'),{status:404});
+  if(!customer)throw Object.assign(new Error('customer_not_found'),{status:404});
+  if(!vehicle)throw Object.assign(new Error('vehicle_not_found'),{status:404});
+  const conflict=await env.DB.prepare("SELECT id FROM rentals WHERE vehicle_id=? AND id<>? AND status IN ('upcoming','active') AND pickup_date<=? AND return_date>=? LIMIT 1").bind(vehicleId,rentalId,returned,pickup).first();
+  if(conflict)throw Object.assign(new Error(`vehicle_date_conflict:${conflict.id}`),{status:409});
+  const days=Math.round((Date.parse(returned+'T12:00:00Z')-Date.parse(pickup+'T12:00:00Z'))/86400000)+1;
+  if(days<1)throw Object.assign(new Error('invalid_rental_period'),{status:400});
+  const subtotal=days*rate;
+  if(!Number.isSafeInteger(subtotal))throw Object.assign(new Error('invoice_total_out_of_range'),{status:400});
+  const invoice=await env.DB.prepare('SELECT id,discount_minor,total_minor FROM invoices WHERE rental_id=? ORDER BY created_at DESC LIMIT 1').bind(rentalId).first();
+  const statements=[
+   env.DB.prepare('UPDATE rentals SET customer_id=?,vehicle_id=?,pickup_date=?,return_date=?,daily_rate_minor=?,billable_days=?,status=?,notes=? WHERE id=?').bind(customerId,vehicleId,pickup,returned,rate,days,status,notes||null,rentalId)
+  ];
+  let invoiceNumber=null,total=subtotal;
+  if(invoice){
+   const discount=Number(invoice.discount_minor||0);
+   total=Math.max(0,subtotal-discount);
+   const paidRow=await env.DB.prepare('SELECT COALESCE(SUM(amount_minor),0) AS paid FROM payments WHERE invoice_id=?').bind(invoice.id).first();
+   const paid=Number(paidRow?.paid||0),invoiceStatus=paid>=total?'paid':paid>0?'partially_paid':'issued';
+   const current=await env.DB.prepare('SELECT invoice_number FROM invoices WHERE id=?').bind(invoice.id).first();
+   invoiceNumber=current?.invoice_number||null;
+   statements.push(env.DB.prepare('UPDATE invoices SET customer_id=?,vehicle_id=?,due_on=?,subtotal_minor=?,total_minor=?,status=? WHERE id=?').bind(customerId,vehicleId,returned,subtotal,total,invoiceStatus,invoice.id));
+   statements.push(env.DB.prepare("UPDATE invoice_items SET description=?,quantity=?,unit_amount_minor=?,line_total_minor=? WHERE invoice_id=? AND id=(SELECT id FROM invoice_items WHERE invoice_id=? ORDER BY rowid LIMIT 1)").bind(`Vehicle rental — ${days} billable day(s)`,days,rate,subtotal,invoice.id,invoice.id));
+  }
+  await env.DB.batch(statements);
+  await audit(env.DB,data.staff,'rental.updated','rental',rentalId,{customer_id:customerId,vehicle_id:vehicleId,pickup_date:pickup,return_date:returned,billable_days:days,daily_rate_minor:rate,invoice_number:invoiceNumber,total_minor:total});
+  return json({data:{rental_id:rentalId,customer_id:customerId,vehicle_id:vehicleId,pickup_date:pickup,return_date:returned,billable_days:days,daily_rate_minor:rate,total_minor:total,invoice_number:invoiceNumber,updated:true}});
  }catch(e){return errorResponse(e)}
 }
