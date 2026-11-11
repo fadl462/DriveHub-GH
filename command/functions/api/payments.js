@@ -69,3 +69,55 @@ export async function onRequestPost({ env, data, request }) {
     return errorResponse(error);
   }
 }
+
+
+// Remove a payment only for an authorised correction. The audit record is retained.
+export async function onRequestDelete({ env, data, request }) {
+  if (!requireRole(data.staff, writeRoles)) return json({ error: "forbidden" }, 403);
+  if (!env.DB) return json({ error: "database_not_configured" }, 503);
+  try {
+    const body = await readJson(request);
+    const receiptNumber = String(body.receipt_number || "").trim();
+    if (!receiptNumber || receiptNumber.length > 64) return json({ error: "receipt_number_required" }, 400);
+
+    const payment = await env.DB.prepare(`
+      SELECT p.id, p.receipt_number, p.invoice_id, p.customer_id, p.amount_minor,
+        p.currency, p.payment_method, p.reference, p.received_at, p.recorded_by,
+        i.invoice_number, i.total_minor, i.status AS invoice_status, i.due_on
+      FROM payments p JOIN invoices i ON i.id=p.invoice_id
+      WHERE p.receipt_number=?
+    `).bind(receiptNumber).first();
+    if (!payment) return json({ error: "payment_not_found" }, 404);
+    if (payment.invoice_status === "void") return json({ error: "cannot_remove_payment_from_void_invoice" }, 409);
+
+    const before = {
+      id: payment.id, receipt_number: payment.receipt_number, invoice_id: payment.invoice_id,
+      invoice_number: payment.invoice_number, customer_id: payment.customer_id,
+      amount_minor: payment.amount_minor, currency: payment.currency,
+      payment_method: payment.payment_method, reference: payment.reference,
+      received_at: payment.received_at, recorded_by: payment.recorded_by
+    };
+    const staffId = data.staff?.id;
+    const statements = [
+      env.DB.prepare("DELETE FROM payments WHERE id=? AND receipt_number=?")
+        .bind(payment.id, receiptNumber),
+      env.DB.prepare(`UPDATE invoices SET status = CASE
+        WHEN status='void' THEN 'void'
+        WHEN COALESCE((SELECT SUM(amount_minor) FROM payments WHERE invoice_id=?),0) >= total_minor THEN 'paid'
+        WHEN COALESCE((SELECT SUM(amount_minor) FROM payments WHERE invoice_id=?),0) > 0 THEN 'partially_paid'
+        WHEN due_on IS NOT NULL AND due_on < date('now') THEN 'overdue'
+        ELSE 'issued' END, updated_at=CURRENT_TIMESTAMP WHERE id=?`)
+        .bind(payment.invoice_id, payment.invoice_id, payment.invoice_id),
+      env.DB.prepare(`INSERT INTO audit_log
+        (id, actor_staff_id, action, entity_type, entity_id, before_json, after_json)
+        VALUES (?, ?, 'payment.removed', 'payment', ?, ?, ?)`)
+        .bind(crypto.randomUUID(), staffId, payment.id, JSON.stringify(before),
+          JSON.stringify({ receipt_number: receiptNumber, reason: "authorised correction" }))
+    ];
+    await env.DB.batch(statements);
+    return json({
+      ok: true, receipt_number: receiptNumber, invoice_id: payment.invoice_id,
+      message: "Payment removed and invoice balance recalculated."
+    });
+  } catch (error) { return errorResponse(error); }
+}

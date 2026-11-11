@@ -238,3 +238,9 @@ body:has(#view-fleet.active) #fleetAlerts{display:block}
 #outstandingInvoiceRows td small{display:block;margin-top:4px;color:#8a7d80;font-size:11px}
 @media(max-width:900px){.payment-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.payment-metric-grid{grid-template-columns:1fr}}
+
+/* Payment-history correction action */
+.payment-history-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.payment-delete-action{color:#b4233b;border-color:#e7b9c1;background:#fff}
+.payment-delete-action:hover{background:#fff1f2;border-color:#c8102e}
+.payment-delete-action:disabled{opacity:.55;cursor:wait}
