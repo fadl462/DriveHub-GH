@@ -1144,18 +1144,20 @@
 }
 
 
-/* Keep the V8 and Acura summary artwork at their source-image proportions so neither vehicle is cropped. */
+/* Show the full vehicle artwork in the order-slip image area for every fleet choice. */
 .ride-page .summary-car-art.summary-car-art--natural-frame {
   height: auto !important;
   aspect-ratio: auto;
   overflow: hidden;
 }
 .ride-page .summary-car-art.summary-car-art--natural-frame img {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover !important;
+  object-fit: fill !important;
   object-position: center center !important;
   padding: 0 !important;
+  margin: 0;
   transform: none !important;
 }
 .ride-page .summary-car-art.summary-car-art--natural-frame:hover img {
