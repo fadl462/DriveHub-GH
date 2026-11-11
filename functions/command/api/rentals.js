@@ -95,3 +95,30 @@ export async function onRequestPut({env,data,request}){
   return json({data:{rental_id:rentalId,customer_id:customerId,vehicle_id:vehicleId,pickup_date:pickup,return_date:returned,billable_days:days,daily_rate_minor:rate,invoice_number:invoiceNumber,total_minor:updatedTotal,updated:true}});
  }catch(e){return errorResponse(e)}
 }
+
+
+export async function onRequestDelete({env,data,request}){
+ if(!requireRole(data.staff,writeRoles))return json({error:'forbidden'},403);
+ try{
+  const url=new URL(request.url),rentalId=String(url.searchParams.get('id')||'').trim();
+  if(!rentalId)throw Object.assign(new Error('rental_id_required'),{status:400});
+  const rental=await env.DB.prepare('SELECT id,status FROM rentals WHERE id=?').bind(rentalId).first();
+  if(!rental)throw Object.assign(new Error('rental_not_found'),{status:404});
+  const invoice=await env.DB.prepare('SELECT id,invoice_number,status FROM invoices WHERE rental_id=? ORDER BY created_at DESC LIMIT 1').bind(rentalId).first();
+  let paid=0;
+  if(invoice){
+   const payment=await env.DB.prepare('SELECT COALESCE(SUM(amount_minor),0) AS paid FROM payments WHERE invoice_id=?').bind(invoice.id).first();
+   paid=Number(payment?.paid||0);
+   if(paid>0)throw Object.assign(new Error('rental_has_payments_cannot_delete: this rental has recorded payments. Cancel it through the rental status action; payment history is protected.'),{status:409});
+  }
+  await audit(env.DB,data.staff,'rental.deleted','rental',rentalId,{invoice_id:invoice?.id||null,invoice_number:invoice?.invoice_number||null,invoice_voided_or_removed:!!invoice});
+  const statements=[];
+  if(invoice){
+   statements.push(env.DB.prepare('DELETE FROM invoice_items WHERE invoice_id=?').bind(invoice.id));
+   statements.push(env.DB.prepare('DELETE FROM invoices WHERE id=?').bind(invoice.id));
+  }
+  statements.push(env.DB.prepare('DELETE FROM rentals WHERE id=?').bind(rentalId));
+  await env.DB.batch(statements);
+  return json({data:{rental_id:rentalId,deleted:true,invoice_deleted:!!invoice}});
+ }catch(e){return errorResponse(e)}
+}

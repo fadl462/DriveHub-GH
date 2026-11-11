@@ -401,9 +401,29 @@ function renderRentals(){
  if($('#rentalActiveMetric'))$('#rentalActiveMetric').textContent=count('Active');
  if($('#rentalCompletedMetric'))$('#rentalCompletedMetric').textContent=count('Completed');
  if($('#rentalCancelledMetric'))$('#rentalCancelledMetric').textContent=count('Cancelled');
- $('#rentalRows').innerHTML=rows.map(r=>`<tr><td><strong>${escapeHTML(r.id)}</strong></td><td>${escapeHTML(r.customer)}</td><td>${escapeHTML(r.vehicle)}${r.sourceType==='partner'?'<small>Partner-sourced · '+escapeHTML(r.partnerName||'supplier')+' · Cost '+money(r.supplierTotal||0)+'</small>':''}</td><td>${fmtDate(r.pickup)}</td><td>${fmtDate(r.returned)}</td><td><strong>${daysInclusive(r.pickup,r.returned)}</strong></td><td>${statusBadge(r.status)}</td><td><div class="row-actions"><button class="table-action" data-rental-edit="${escapeHTML(r.id)}" type="button">Edit</button>${r.status!=='Completed'&&r.status!=='Cancelled'?`<button class="table-action" data-rental-complete="${escapeHTML(r.id)}" type="button">Complete</button><button class="table-action rental-cancel-action" data-rental-cancel="${escapeHTML(r.id)}" type="button">Cancel</button>`:''}</div></td></tr>`).join('')||'<tr><td colspan="8">No rentals match this filter.</td></tr>';
+ $('#rentalRows').innerHTML=rows.map(r=>`<tr><td><strong>${escapeHTML(r.id)}</strong></td><td>${escapeHTML(r.customer)}</td><td>${escapeHTML(r.vehicle)}${r.sourceType==='partner'?'<small>Partner-sourced · '+escapeHTML(r.partnerName||'supplier')+' · Cost '+money(r.supplierTotal||0)+'</small>':''}</td><td>${fmtDate(r.pickup)}</td><td>${fmtDate(r.returned)}</td><td><strong>${daysInclusive(r.pickup,r.returned)}</strong></td><td>${statusBadge(r.status)}</td><td><div class="row-actions"><button class="table-action" data-rental-edit="${escapeHTML(r.id)}" type="button">Edit</button>${r.status!=='Completed'&&r.status!=='Cancelled'?`<button class="table-action" data-rental-complete="${escapeHTML(r.id)}" type="button">Complete</button><button class="table-action rental-cancel-action" data-rental-cancel="${escapeHTML(r.id)}" type="button">Cancel</button>`:''}${r.source==='d1'?`<button class="table-action rental-cancel-action" data-rental-delete="${escapeHTML(r.id)}" type="button">Delete</button>`:''}</div></td></tr>`).join('')||'<tr><td colspan="8">No rentals match this filter.</td></tr>';
 }
 $('#rentalRows').addEventListener('click',async e=>{
+ const del=e.target.closest('[data-rental-delete]');
+ if(del){
+  const r=state.rentals.find(x=>x.id===del.dataset.rentalDelete);
+  if(!r)return;
+  const hasInvoice=!!r.invoiceDbId;
+  const message=hasInvoice
+   ? `Delete rental ${r.id} and its unpaid invoice? This permanently removes the rental, invoice and invoice line items. Rentals with recorded payments cannot be deleted.`
+   : `Permanently delete rental ${r.id}? This cannot be undone.`;
+  if(!confirm(message))return;
+  del.disabled=true;
+  try{
+   const response=await fetch(`/command/api/rentals?id=${encodeURIComponent(r.id)}`,{method:'DELETE',headers:{Accept:'application/json'},credentials:'same-origin'});
+   const payload=await response.json().catch(()=>({}));
+   if(!response.ok)throw new Error(payload.error||`Delete failed (${response.status})`);
+   await loadD1RentalsInvoices({quiet:true});
+   renderOverview();renderFleet();
+   toast(payload.data?.deleted?'Rental and its unpaid invoice deleted.':'Rental deleted.');
+  }catch(error){toast(error.message||'Unable to delete rental.');del.disabled=false}
+  return;
+ }
  const cancel=e.target.closest('[data-rental-cancel]');
  if(cancel){const r=state.rentals.find(x=>x.id===cancel.dataset.rentalCancel);if(r&&confirm(`Cancel rental ${r.id}? This updates the live database.`))await updateD1RentalStatus(r,'cancelled');return}
  const complete=e.target.closest('[data-rental-complete]');
