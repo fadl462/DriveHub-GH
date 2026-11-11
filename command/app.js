@@ -47,6 +47,18 @@ const initial = {
 let state;
 try { state = JSON.parse(localStorage.getItem('dh-command-demo') || 'null') || structuredClone(initial); } catch { state = JSON.parse(JSON.stringify(initial)); }
 if (!Array.isArray(state.auditLog)) state.auditLog = [];
+// Preserve user-created browser-only rentals for explicit recovery before D1 becomes authoritative.
+// The built-in demo seed rows are excluded; only records added after the original demo seed qualify.
+const rentalRecoveryKey='dh-command-local-rental-recovery';
+const seededRentalIds=new Set(initial.rentals.map(r=>r.id));
+let localRentalRecovery=[];
+try {
+ const savedRecovery=JSON.parse(localStorage.getItem(rentalRecoveryKey)||'[]');
+ const fromCurrentState=(Array.isArray(state.rentals)?state.rentals:[]).filter(r=>r?.id&&!seededRentalIds.has(r.id)&&r.source!=='d1'&&r.sourceType!=='partner');
+ const merged=new Map([...(Array.isArray(savedRecovery)?savedRecovery:[]),...fromCurrentState].map(r=>[String(r.id),r]));
+ localRentalRecovery=[...merged.values()];
+ localStorage.setItem(rentalRecoveryKey,JSON.stringify(localRentalRecovery));
+} catch { localRentalRecovery=[]; }
 let reviewFilter='Pending', invoiceFilter='All', rentalFilter='All', currentView='overview';
 let rentalPartners=[], sourcedVehicles=[], supplierPayments=[], partnersReady=false;
 function save(){try{localStorage.setItem('dh-command-demo',JSON.stringify(state));return true}catch(e){toast('Could not save in this browser. Storage may be full or disabled.');return false}}
@@ -61,22 +73,28 @@ function mergeD1Customers(rows){
  // D1 is authoritative for persisted customers; retain only browser-only preview records.
  state.customers=[...d1Customers,...local.filter(c=>!c.id&&!c.archived&&!d1Names.has(String(c.name||'').trim().toLowerCase()))];
  d1CustomersReady=true;
- renderCustomers();
+ renderCustomers();renderLocalRentalRecovery();
 }
 async function loadD1Customers(){
+ d1CustomersReady=false;
  try{
-  const response=await fetch('/command/api/customers?limit=100',{headers:{Accept:'application/json'},credentials:'same-origin'});
+  const response=await fetch('/command/api/customers?limit=100',{headers:{Accept:'application/json'},credentials:'same-origin',cache:'no-store'});
   if(!response.ok) throw new Error(`Customer API returned ${response.status}`);
   const payload=await response.json();
-  mergeD1Customers(payload.data||[]);
+  if(!Array.isArray(payload.data)) throw new Error('Customer API returned an unexpected response.');
+  mergeD1Customers(payload.data);
+  return true;
  }catch(error){
-  console.warn('D1 customer sync unavailable; keeping existing browser records.',error);
+  d1CustomersReady=false;
+  console.warn('D1 customer sync unavailable; existing browser records are not valid for live rentals.',error);
+  return false;
  }
 }
 
 // Live D1 fleet integration. Keep the existing local fleet as a fallback if the API is unavailable.
 let d1VehiclesReady = false;
 async function loadD1Vehicles({quiet=false}={}) {
+ d1VehiclesReady=false;
  try {
   const response = await fetch('/command/api/vehicles?limit=200', {headers:{Accept:'application/json'}, credentials:'same-origin'});
   const payload = await response.json().catch(()=>({}));
@@ -93,7 +111,7 @@ async function loadD1Vehicles({quiet=false}={}) {
   state.fleet = vehicles;
   d1VehiclesReady = true;
   renderFleet();
-  renderOverview();
+  renderOverview();renderLocalRentalRecovery();
   return true;
  } catch(error) {
   if (!quiet) toast(`Could not load live fleet data: ${error.message}. Existing fleet preview retained.`);
@@ -110,7 +128,7 @@ const rentalStatusLabel=s=>({upcoming:'Upcoming',active:'Active',completed:'Comp
 const invoiceStatusLabel=s=>({draft:'Draft',issued:'Issued',partially_paid:'Partially paid',paid:'Paid',overdue:'Overdue',void:'Void'})[String(s||'').toLowerCase()]||s||'Issued';
 function normalizeD1Rental(r){
  const vehicleLabel=[r.vehicle_name,r.registration_number].filter(Boolean).join(' · ');
- return {id:r.id,customerId:r.customer_id,vehicleId:r.vehicle_id,customer:r.customer_name||'',vehicle:vehicleLabel||r.vehicle_name||'',vehicleName:r.vehicle_name||'',registrationNumber:r.registration_number||'',pickup:r.pickup_date,returned:r.return_date,rate:Number(r.daily_rate_minor||0)/100,dailyRateMinor:Number(r.daily_rate_minor||0),status:rentalStatusLabel(r.status),sourceType:'owned',invoiceId:r.invoice_number||'',invoiceDbId:r.invoice_id||'',invoiceTotal:Number(r.invoice_total_minor||0)/100,paid:Number(r.paid_minor||0)/100,notes:r.notes||'',source:'d1'};
+ return {id:r.id,customerId:r.customer_id,vehicleId:r.vehicle_id,customer:r.customer_name||`Unlinked customer (${r.customer_id||'missing ID'})`,vehicle:vehicleLabel||r.vehicle_name||`Unlinked vehicle (${r.vehicle_id||'missing ID'})`,vehicleName:r.vehicle_name||'',registrationNumber:r.registration_number||'',pickup:r.pickup_date,returned:r.return_date,rate:Number(r.daily_rate_minor||0)/100,dailyRateMinor:Number(r.daily_rate_minor||0),status:rentalStatusLabel(r.status),sourceType:'owned',invoiceId:r.invoice_number||'',invoiceDbId:r.invoice_id||'',invoiceTotal:Number(r.invoice_total_minor||0)/100,paid:Number(r.paid_minor||0)/100,notes:r.notes||'',source:'d1',linked:!!(r.customer_id&&r.vehicle_id&&r.customer_name&&r.vehicle_name)};
 }
 function normalizeD1Invoice(i){
  return {id:i.invoice_number||i.id,dbId:i.id,customerId:i.customer_id,customer:i.customer_name||'',vehicleId:i.vehicle_id||'',vehicle:i.vehicle_name||'',issued:i.issued_on||'',due:i.due_on||'',total:Number(i.total_minor||0)/100,paid:Number(i.paid_minor||0)/100,status:invoiceStatusLabel(i.status),rentalId:i.rental_id||'',source:'d1'};
@@ -130,7 +148,7 @@ async function loadD1RentalsInvoices({quiet=false}={}){
   state.invoices=iPayload.data.map(normalizeD1Invoice);
   d1RentalsReady=true;d1InvoicesReady=true;
   renderRentals();renderInvoices();renderOverview();
-  updateWorkspaceMode();
+  updateWorkspaceMode();renderLocalRentalRecovery();
   return true;
  }catch(error){
   d1RentalsReady=false;d1InvoicesReady=false;
@@ -140,10 +158,63 @@ async function loadD1RentalsInvoices({quiet=false}={}){
   return false;
  }
 }
+async function updateD1RentalStatus(r,status){
+ if(!d1RentalsReady||!d1InvoicesReady||!r?.id||!r.customerId||!r.vehicleId){toast('This rental is not fully linked to live customer and vehicle records. No changes were made.');return false}
+ try{
+  const response=await fetch('/command/api/rentals',{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({rental_id:r.id,customer_id:r.customerId,vehicle_id:r.vehicleId,pickup_date:r.pickup,return_date:r.returned,daily_rate_minor:Number(r.dailyRateMinor??Math.round(Number(r.rate||0)*100)),status,notes:r.notes||null})});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(payload.message||payload.error||`Rental API returned ${response.status}`);
+  await loadD1RentalsInvoices({quiet:true});
+  toast(`Rental ${r.id} marked ${status}. The live database and linked invoice are up to date.`);
+  return true;
+ }catch(error){toast(`Rental status was not changed: ${error.message}`);return false}
+}
 function updateWorkspaceMode(){
  const pill=$('#workspaceMode')||$('#workspaceModePill')||$('#environmentBadge');
  if(pill){pill.textContent=d1RentalsReady&&d1InvoicesReady?'Live database':'Workspace preview';pill.classList.toggle('is-live',d1RentalsReady&&d1InvoicesReady);pill.classList.toggle('is-preview',!(d1RentalsReady&&d1InvoicesReady));}
 }
+function renderLocalRentalRecovery(){
+ const panel=$('#localRentalRecovery');if(!panel)return;
+ const dbIds=new Set(state.rentals.filter(r=>r.source==='d1').map(r=>String(r.id)));
+ localRentalRecovery=localRentalRecovery.filter(r=>r?.id&&!dbIds.has(String(r.id)));
+ try{localStorage.setItem(rentalRecoveryKey,JSON.stringify(localRentalRecovery));}catch{}
+ if(!localRentalRecovery.length){panel.hidden=true;panel.innerHTML='';return}
+ panel.hidden=false;
+ const cards=localRentalRecovery.map(r=>{
+  const customerMatches=d1Customers.filter(c=>c.name.trim().toLowerCase()===String(r.customer||'').trim().toLowerCase());
+  const vehicleKey=String(r.vehicle||'').trim().toLowerCase();
+  const vehicleMatches=state.fleet.filter(v=>{
+   const name=String(v.name||'').trim().toLowerCase(),plate=String(v.plate||'').trim().toLowerCase();
+   return vehicleKey===name||(vehicleKey.startsWith(name+' ·'))||(plate&&vehicleKey.includes(plate));
+  });
+  const customer=customerMatches.length===1?customerMatches[0]:null;
+  const vehicle=vehicleMatches.length===1?vehicleMatches[0]:null;
+  const canRecover=!!(d1RentalsReady&&d1InvoicesReady&&customer?.id&&vehicle?.id&&r.pickup&&r.returned&&r.returned>=r.pickup&&Number.isFinite(Number(r.rate))&&Number(r.rate)>0);
+  const issue=!customerMatches.length?'Customer is not in the live customer directory.':customerMatches.length>1?'More than one customer has this name; select the correct customer before recovery.':!vehicleMatches.length?'Vehicle is not in the live fleet.':vehicleMatches.length>1?'More than one vehicle matches this description.':'';
+  return `<div class="local-recovery-item"><div><strong>${escapeHTML(r.id)}</strong> · ${escapeHTML(r.customer||'Unknown customer')} · ${escapeHTML(r.vehicle||'Unknown vehicle')}<small>${fmtDate(r.pickup)} to ${fmtDate(r.returned)} · ${Number(r.rate||0).toLocaleString('en-GH')} GH₵/day · ${escapeHTML(r.status||'Upcoming')}</small>${issue?`<small class="recovery-issue">${escapeHTML(issue)}</small>`:'<small>This record can be restored to D1; an invoice will be generated automatically.</small>'}</div><button class="btn btn-primary" type="button" data-recover-local-rental="${escapeHTML(r.id)}" ${canRecover?'':'disabled'}>Recover to live database</button></div>`;
+ }).join('');
+ panel.innerHTML=`<strong>Unreconciled browser rental records</strong><p>These records were saved in this browser but were not found in the live database. They are kept separately so they are not mistaken for live bookings.</p>${cards}`;
+}
+async function recoverLocalRental(id){
+ const r=localRentalRecovery.find(x=>String(x.id)===String(id));if(!r)return;
+ const customerMatches=d1Customers.filter(c=>c.name.trim().toLowerCase()===String(r.customer||'').trim().toLowerCase());
+ const vehicleKey=String(r.vehicle||'').trim().toLowerCase();
+ const vehicleMatches=state.fleet.filter(v=>{const name=String(v.name||'').trim().toLowerCase(),plate=String(v.plate||'').trim().toLowerCase();return vehicleKey===name||vehicleKey.startsWith(name+' ·')||(plate&&vehicleKey.includes(plate))});
+ if(customerMatches.length!==1||vehicleMatches.length!==1){toast('This rental cannot be recovered safely yet. Resolve its customer or vehicle match first.');return}
+ const customer=customerMatches[0],vehicle=vehicleMatches[0],button=$(`[data-recover-local-rental="${CSS.escape(String(id))}"]`);
+ if(!d1RentalsReady||!d1InvoicesReady||!customer.id||!vehicle.id){toast('Live customer, vehicle, rental and invoice data must all be connected before recovery.');return}
+ if(!r.pickup||!r.returned||r.returned<r.pickup||!(Number(r.rate)>0)){toast('The saved browser record is missing valid dates or a daily rate. It has not been changed.');return}
+ if(!confirm(`Recover ${r.id} for ${r.customer} to the live database? This will create its linked invoice. No existing payment records will be changed.`))return;
+ if(button)button.disabled=true;
+ try{
+  const response=await fetch('/command/api/rentals',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({rental_id:r.id,customer_id:customer.id,vehicle_id:vehicle.id,pickup_date:r.pickup,return_date:r.returned,daily_rate_minor:Math.round(Number(r.rate)*100),status:String(r.status||'upcoming').toLowerCase(),notes:r.notes||null})});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(payload.message||payload.error||`Rental API returned ${response.status}`);
+  await loadD1RentalsInvoices({quiet:true});
+  toast(`Recovered ${r.id}${payload.data?.invoice_number?` with invoice ${payload.data.invoice_number}`:' to the live database'}.`);
+ }catch(error){if(button)button.disabled=false;toast(`Recovery failed: ${error.message}. The browser copy has been retained.`)}
+}
+$('#localRentalRecovery')?.addEventListener('click',e=>{const b=e.target.closest('[data-recover-local-rental]');if(b)recoverLocalRental(b.dataset.recoverLocalRental);});
 // Live review records: D1 is the source of truth; never mix browser demo reviews into this list.
 let d1ReviewsReady = false;
 let d1ReviewsError = '';
@@ -332,13 +403,13 @@ function renderRentals(){
  if($('#rentalCancelledMetric'))$('#rentalCancelledMetric').textContent=count('Cancelled');
  $('#rentalRows').innerHTML=rows.map(r=>`<tr><td><strong>${escapeHTML(r.id)}</strong></td><td>${escapeHTML(r.customer)}</td><td>${escapeHTML(r.vehicle)}${r.sourceType==='partner'?'<small>Partner-sourced · '+escapeHTML(r.partnerName||'supplier')+' · Cost '+money(r.supplierTotal||0)+'</small>':''}</td><td>${fmtDate(r.pickup)}</td><td>${fmtDate(r.returned)}</td><td><strong>${daysInclusive(r.pickup,r.returned)}</strong></td><td>${statusBadge(r.status)}</td><td><div class="row-actions"><button class="table-action" data-rental-edit="${escapeHTML(r.id)}" type="button">Edit</button>${r.status!=='Completed'&&r.status!=='Cancelled'?`<button class="table-action" data-rental-complete="${escapeHTML(r.id)}" type="button">Complete</button><button class="table-action rental-cancel-action" data-rental-cancel="${escapeHTML(r.id)}" type="button">Cancel</button>`:''}</div></td></tr>`).join('')||'<tr><td colspan="8">No rentals match this filter.</td></tr>';
 }
-$('#rentalRows').addEventListener('click',e=>{
+$('#rentalRows').addEventListener('click',async e=>{
  const cancel=e.target.closest('[data-rental-cancel]');
- if(cancel){const r=state.rentals.find(x=>x.id===cancel.dataset.rentalCancel);if(r&&confirm(`Cancel rental ${r.id}? This will release the vehicle dates in this browser preview.`)){r.status='Cancelled';recordAudit('Rental cancelled','rentals',`${r.id} · ${r.vehicle} · ${r.pickup} to ${r.returned}`);save();renderOverview();renderRentals();renderFleet();toast('Rental cancelled in this browser preview.')}return}
+ if(cancel){const r=state.rentals.find(x=>x.id===cancel.dataset.rentalCancel);if(r&&confirm(`Cancel rental ${r.id}? This updates the live database.`))await updateD1RentalStatus(r,'cancelled');return}
  const complete=e.target.closest('[data-rental-complete]');
- if(complete){const r=state.rentals.find(x=>x.id===complete.dataset.rentalComplete);if(r&&confirm(`Mark rental ${r.id} as completed?`)){r.status='Completed';recordAudit('Rental completed','rentals',`${r.id} · ${r.vehicle}`);save();renderOverview();renderRentals();renderFleet();toast('Rental marked completed in this browser preview.')}return}
+ if(complete){const r=state.rentals.find(x=>x.id===complete.dataset.rentalComplete);if(r&&confirm(`Mark rental ${r.id} as completed? This updates the live database.`))await updateD1RentalStatus(r,'completed');return}
  const edit=e.target.closest('[data-rental-edit]');
- if(edit){const r=state.rentals.find(x=>x.id===edit.dataset.rentalEdit);if(!r)return;if(!d1RentalsReady){toast('Live rental data is unavailable. Refresh and sign in again before editing; preview records cannot be saved to D1.');return}if(!r.customerId||!r.vehicleId){toast(`Rental ${r.id} is missing its live customer or vehicle link. It must be reconciled in D1 before editing.`);return}openAction('rentalEdit',r);return}
+ if(edit){const r=state.rentals.find(x=>x.id===edit.dataset.rentalEdit);if(!r)return;if(!d1RentalsReady){toast('Live rental data is unavailable. Refresh and sign in again before editing.');return}if(!r.customerId||!r.vehicleId){toast(`Rental ${r.id} is missing its live customer or vehicle link. It must be reconciled in D1 before editing.`);return}openAction('rentalEdit',r);return}
 });
 
 function daysBetweenISO(from,to){
@@ -463,13 +534,13 @@ function fmtDate(s){if(!s)return '—';return new Date(s+'T12:00:00').toLocaleDa
 function downloadCSV(name,rows){const csv=rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
 $('#exportBtn').onclick=()=>downloadCSV('drivehub-command-overview-demo.csv',[['Metric','Value'],['Revenue recorded','24850'],['Active rentals',state.rentals.filter(r=>r.status==='Active').length],['Outstanding invoices',state.invoices.reduce((s,i)=>s+Math.max(0,i.total-i.paid),0)],['Pending reviews',state.reviews.filter(r=>r.status==='Pending').length]]);
 $('#exportPayments').onclick=()=>downloadCSV('drivehub-demo-payments.csv',[['Receipt','Customer','Invoice','Date','Method','Amount'],...state.payments.map(p=>[p.id,p.customer,p.invoice,p.date,p.method,p.amount])]);
-async function openAction(type, existingRecord=null){if(type==='rental'||type==='rentalEdit'||type==='invoice'||type==='payment'){await Promise.all([loadD1Customers(),loadD1Vehicles({quiet:true})]);}if(['partner','sourcedVehicle','supplierPayment'].includes(type))await loadPartnerData({quiet:true});const dialog=$('#actionDialog'),fields=$('#dialogFields');$('#actionForm').dataset.type=type;const field=(label,name,kind='text',opts='',full=false,required=true)=>`<div class="field ${full?'full':''}"><label for="f-${name}">${label}${required?' *':''}</label>${kind==='select'?`<select id="f-${name}" name="${name}" ${required?'required':''}>${opts}</select>`:kind==='textarea'?`<textarea id="f-${name}" name="${name}" ${required?'required':''}></textarea>`:`<input id="f-${name}" name="${name}" type="${kind}" ${required?'required':''}>`}</div>`;let title='',html='';
-const vehicleOptions=state.fleet.filter(v=>!['Inactive','In maintenance'].includes(v.status)).map(v=>{const label=`${v.name}${v.plate&&v.plate!=='Registration not entered'?' · '+v.plate:''}`;return `<option value="${escapeHTML(label)}">${escapeHTML(label)}</option>`}).join('');const customerOptions=state.customers.map(c=>`<option>${escapeHTML(c.name)}</option>`).join('');const invoiceOptions=state.invoices.map(i=>`<option>${i.id}</option>`).join('');const partnerOptions=rentalPartners.filter(p=>p.status==='active').map(p=>`<option value="${escapeHTML(p.id)}">${escapeHTML(p.company_name)}</option>`).join('');
+async function openAction(type, existingRecord=null){if(type==='rental'||type==='rentalEdit'){await Promise.all([loadD1Customers(),loadD1Vehicles({quiet:true}),loadD1RentalsInvoices({quiet:true})]);if(!d1CustomersReady||!d1VehiclesReady||!d1RentalsReady||!d1InvoicesReady){toast('A live customer, vehicle, rental and invoice connection is required. The rental form has not been opened.');return}if(type==='rentalEdit'&&existingRecord?.id)existingRecord=state.rentals.find(r=>r.id===existingRecord.id)||existingRecord;}else if(type==='invoice'||type==='payment'){await Promise.all([loadD1Customers(),loadD1Vehicles({quiet:true})]);}if(['partner','sourcedVehicle','supplierPayment'].includes(type))await loadPartnerData({quiet:true});const dialog=$('#actionDialog'),fields=$('#dialogFields');$('#actionForm').dataset.type=type;const field=(label,name,kind='text',opts='',full=false,required=true)=>`<div class="field ${full?'full':''}"><label for="f-${name}">${label}${required?' *':''}</label>${kind==='select'?`<select id="f-${name}" name="${name}" ${required?'required':''}>${opts}</select>`:kind==='textarea'?`<textarea id="f-${name}" name="${name}" ${required?'required':''}></textarea>`:`<input id="f-${name}" name="${name}" type="${kind}" ${required?'required':''}>`}</div>`;let title='',html='';
+const vehicleOptions=state.fleet.filter(v=>!['Inactive','In maintenance'].includes(v.status)).map(v=>{const label=`${v.name}${v.plate&&v.plate!=='Registration not entered'?' · '+v.plate:''}`;return `<option value="${escapeHTML(label)}">${escapeHTML(label)}</option>`}).join('');const customerOptions=state.customers.map(c=>`<option>${escapeHTML(c.name)}</option>`).join('');const rentalCustomerOptions='<option value="">Select a customer</option>'+d1Customers.map(c=>`<option value="${escapeHTML(c.id)}">${escapeHTML(c.name)}${c.phone?' · '+escapeHTML(c.phone):c.email?' · '+escapeHTML(c.email):''}</option>`).join('');const rentalVehicleOptions='<option value="">Select a vehicle</option>'+state.fleet.filter(v=>v.id&&!['Inactive','In maintenance'].includes(v.status)).map(v=>{const label=`${v.name}${v.plate&&v.plate!=='Registration not entered'?' · '+v.plate:''}`;return `<option value="${escapeHTML(v.id)}">${escapeHTML(label)}</option>`}).join('');const invoiceOptions=state.invoices.map(i=>`<option>${i.id}</option>`).join('');const partnerOptions=rentalPartners.filter(p=>p.status==='active').map(p=>`<option value="${escapeHTML(p.id)}">${escapeHTML(p.company_name)}</option>`).join('');
 if(type==='vehicle'){title=existingRecord?'Edit vehicle':'Add vehicle to fleet';html=field('Vehicle name / model','name')+field('Registration number','plate')+field('Daily rate (GH₵)','rate','number')+field('Availability status','status','select','<option value="available">Available</option><option value="reserved">Reserved</option><option value="rented">Rented</option><option value="maintenance">In maintenance</option><option value="inactive">Inactive</option>')+field('Service due date','serviceDueOn','date','',false,false)+field('Notes','notes','textarea','',true,false)}
 if(type==='customer'){title=existingRecord?'Edit customer':'Add customer';html=field('Full name','name')+field('Email address','email','email','',false,false)+field('Phone number','phone','tel','',false,false)+field('Customer notes','notes','textarea','',true,false)}
 if(type==='invoice'){title='Create invoice';html=field('Customer','customer','select',customerOptions)+field('Vehicle','vehicle','select',vehicleOptions)+field('Pickup date','pickup','date')+field('Return date','returned','date')+field('Daily rate (GH₵)','rate','number')+field('Due date','due','date')+field('Notes','notes','textarea','',true,false)}
 if(type==='payment'){title='Record payment';html=field('Customer','customer','select',customerOptions)+field('Invoice','invoice','select',invoiceOptions)+field('Payment date','date','date')+field('Amount received (GH₵)','amount','number')+field('Payment method','method','select','<option>Mobile Money</option><option>Bank transfer</option><option>Cash</option>')+field('Payment reference','reference','text','',true,false)}
-if(type==='rental'){title='Add rental';html=field('Customer','customer','select',customerOptions)+field('Vehicle','vehicle','select',vehicleOptions)+field('Customer daily rate (GH₵)','rate','number')+field('Pickup date','pickup','date')+field('Return date','returned','date')+field('Rental status','status','select','<option>Upcoming</option><option>Active</option><option>Completed</option>')}
+if(type==='rental'){title='Add rental';html=field('Customer','customer_id','select',rentalCustomerOptions)+field('Vehicle','vehicle_id','select',rentalVehicleOptions)+field('Customer daily rate (GH₵)','rate','number')+field('Pickup date','pickup','date')+field('Return date','returned','date')+field('Rental status','status','select','<option value="upcoming">Upcoming</option><option value="active">Active</option><option value="completed">Completed</option>')+field('Notes','notes','textarea','',true,false)}
 if(type==='rentalEdit'&&existingRecord){
  title=`Edit rental ${existingRecord.id}`;
  const cOpts=state.customers.filter(c=>c.id).map(c=>`<option value="${escapeHTML(c.id)}" ${String(c.id)===String(existingRecord.customerId)?'selected':''}>${escapeHTML(c.name)}</option>`).join('');
@@ -560,7 +631,30 @@ $('#actionForm').addEventListener('submit',async e=>{if(e.submitter?.value==='ca
  }catch(error){toast(`Rental was not updated: ${error.message}. No preview changes were saved.`);return}
  finally{button.disabled=false}
 }
-if(type==='rental'){if(!data.pickup||!data.returned||new Date(data.returned)<new Date(data.pickup)){toast('Enter valid rental dates. Return date must be on or after pickup date.');return}const conflict=state.rentals.find(r=>r.vehicle===data.vehicle&&!['Completed','Cancelled'].includes(r.status)&&data.pickup<=r.returned&&data.returned>=r.pickup);if(conflict){toast(`Vehicle conflict: ${data.vehicle} overlaps rental ${conflict.id} (${conflict.pickup} to ${conflict.returned}).`);return}const maintenanceConflict=state.maintenance.find(m=>m.vehicle===data.vehicle&&!['Completed','Cancelled'].includes(m.status||'Scheduled')&&maintenanceOverlaps(m,data.pickup,data.returned));if(maintenanceConflict){toast(`Vehicle unavailable: ${maintenanceConflict.serviceType||'maintenance'} is scheduled ${fmtDate(maintenanceStart(maintenanceConflict))}${maintenanceEnd(maintenanceConflict)!==maintenanceStart(maintenanceConflict)?' to '+fmtDate(maintenanceEnd(maintenanceConflict)):''} during this rental.`);return}if(!Number(data.rate)||Number(data.rate)<0){toast('Enter a valid daily rate.');return}const sourced=false;const vehicleName=data.vehicle;const partnerConflict=state.rentals.find(r=>r.vehicle===vehicleName&&!['Completed','Cancelled'].includes(r.status)&&data.pickup<=r.returned&&data.returned>=r.pickup);if(partnerConflict){toast(`Vehicle conflict: overlaps rental ${partnerConflict.id}.`);return}const bookingId=`DH-${208+state.rentals.length+1}`;if(sourced){const button=$('#dialogSubmit');button.disabled=true;try{const response=await fetch('/command/api/partner-rentals',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({booking_reference:bookingId,customer_name:data.customer,partner_id:partner.id,vehicle_name:vehicleName,registration_number:data.partnerPlate||null,pickup_date:data.pickup,return_date:data.returned,billable_days:daysInclusive(data.pickup,data.returned),customer_daily_rate_minor:Math.round(Number(data.rate)*100),supplier_daily_rate_minor:Math.round(Number(data.supplierRate)*100),status:String(data.status||'Upcoming').toLowerCase(),notes:data.notes||null})});const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||`Partner rental API returned ${response.status}`)}catch(error){toast(`Partner rental was not saved to the database: ${error.message}. Check migration 0003 and staff permissions.`);return}finally{button.disabled=false}}state.rentals.unshift({id:bookingId,customer:data.customer,vehicle:vehicleName,pickup:data.pickup,returned:data.returned,rate:Number(data.rate),status:data.status||'Upcoming',sourceType:sourced?'partner':'owned',partnerId:sourced?partner.id:null,partnerName:sourced?partner.company_name:null,supplierRate:sourced?Number(data.supplierRate):0,supplierTotal:sourced?Number(data.supplierRate)*daysInclusive(data.pickup,data.returned):0,estimatedMargin:sourced?(Number(data.rate)-Number(data.supplierRate))*daysInclusive(data.pickup,data.returned):null});recordAudit('Rental created','rentals',`${data.customer} · ${vehicleName} · ${data.pickup} to ${data.returned} · ${sourced?'partner sourced':'owned fleet'}`);toast('Rental added. '+daysInclusive(data.pickup,data.returned)+' billable days.');nav('rentals')}else if(type==='maintenance'){
+if(type==='rental'){
+ if(!d1RentalsReady||!d1InvoicesReady||!d1CustomersReady||!d1VehiclesReady){toast('Live database connections are not ready. No browser-only rental was created.');return}
+ const customer=d1Customers.find(c=>String(c.id)===String(data.customer_id));
+ const vehicle=state.fleet.find(v=>String(v.id)===String(data.vehicle_id));
+ const rate=Number(data.rate);
+ if(!customer||!vehicle){toast('Select a valid customer and vehicle from the live records.');return}
+ if(!data.pickup||!data.returned||data.returned<data.pickup){toast('Enter valid rental dates. Return date must be on or after pickup date.');return}
+ if(!Number.isFinite(rate)||rate<=0){toast('Enter a valid positive daily rate.');return}
+ const maintenanceConflict=state.maintenance.find(m=>m.vehicle===vehicle.name&&!['Completed','Cancelled'].includes(m.status||'Scheduled')&&maintenanceOverlaps(m,data.pickup,data.returned));
+ if(maintenanceConflict){toast(`Vehicle unavailable: ${maintenanceConflict.serviceType||'maintenance'} is scheduled ${fmtDate(maintenanceStart(maintenanceConflict))}${maintenanceEnd(maintenanceConflict)!==maintenanceStart(maintenanceConflict)?' to '+fmtDate(maintenanceEnd(maintenanceConflict)):''} during this rental.`);return}
+ const button=$('#dialogSubmit');button.disabled=true;
+ try{
+  const response=await fetch('/command/api/rentals',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({customer_id:customer.id,vehicle_id:vehicle.id,pickup_date:data.pickup,return_date:data.returned,daily_rate_minor:Math.round(rate*100),status:String(data.status||'upcoming').toLowerCase(),notes:data.notes||null})});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(payload.message||payload.error||`Rental API returned ${response.status}`);
+  $('#actionDialog').close();
+  await loadD1RentalsInvoices({quiet:true});
+  renderFleet();renderOverview();
+  recordAudit('Rental created with invoice','rentals',`${payload.data?.rental_id||'New rental'} · ${customer.name} · ${vehicle.name} · ${data.pickup} to ${data.returned} · ${payload.data?.invoice_number||'Invoice generated'}`);
+  toast(`Rental ${payload.data?.rental_id||'saved'} and invoice ${payload.data?.invoice_number||'generated'} created in the live database. Total: ${money(Number(payload.data?.total_minor||0)/100)}.`);
+  nav('rentals');return;
+ }catch(error){toast(`Rental was not saved: ${error.message}. No local preview record was created.`);return}
+ finally{button.disabled=false}
+}else if(type==='maintenance'){
  if(!data.startDate||!data.endDate||data.endDate<data.startDate){toast('Enter a valid service window. End date must be on or after start date.');return}
  const serviceStatus=data.status||'Scheduled';
  if(!['Completed','Cancelled'].includes(serviceStatus)){
