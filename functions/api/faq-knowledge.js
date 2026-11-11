@@ -354,12 +354,12 @@ export const FAQ_KNOWLEDGE = [
   {
     "category": "Reviews and reputation",
     "question": "What is your overall review score?",
-    "answer": "The Experience page currently shows a published rating of 5.0/5.0 from 9 reviews. You can browse the full published reviews on that page."
+    "answer": "The Experience page displays the current published rating and customer reviews. Please check the page for the latest information: https://drivehub-gh.pages.dev/experience."
   },
   {
     "category": "Reviews and reputation",
     "question": "Are your customers happy with your service?",
-    "answer": "The current published snapshot on The Experience page shows 5.0/5.0 from 9 reviews. You can read the published customer feedback on the page."
+    "answer": "The Experience page displays the current published rating and customer feedback. Please check the page for the latest information: https://drivehub-gh.pages.dev/experience."
   },
   {
     "category": "Reviews and reputation",
@@ -379,7 +379,7 @@ export const FAQ_KNOWLEDGE = [
   {
     "category": "Reviews and reputation",
     "question": "How many reviews do you have?",
-    "answer": "The current website snapshot shows 9 reviews. This is a published snapshot and may not update instantly."
+    "answer": "The Experience page displays the current published review count and customer feedback. Please check the page for the latest information: https://drivehub-gh.pages.dev/experience."
   },
   {
     "category": "Reviews and reputation",

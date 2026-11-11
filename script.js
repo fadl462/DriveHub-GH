@@ -146,7 +146,7 @@ const bookingForm=document.getElementById('bookingForm');bookingForm?.addEventLi
   displayText.split(/\n{2,}/).filter(Boolean).forEach(part=>{
    const p=document.createElement('p');
    // Render explicit URLs as real, safe, clickable links; never inject model text as HTML.
-   const urlPattern=/(https?:\/\/[^\s<>]+|\/find-your-ride(?:\?[^\s<>]*)?|\/experience|\/leave-a-review|\/fleet)(?![^\s<>])/g;
+   const urlPattern=/(https?:\/\/[^\s<>]+|\/(?:find-your-ride|experience|leave-a-review|fleet|how-it-works|faqs)(?:\?[^\s<>]*)?)(?![^\s<>])/g;
    let cursor=0,match;
    while((match=urlPattern.exec(part))){
     if(match.index>cursor)p.appendChild(document.createTextNode(part.slice(cursor,match.index)));
