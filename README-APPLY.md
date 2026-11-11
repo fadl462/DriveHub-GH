@@ -1,10 +1,12 @@
-# DriveHub GH — Hero Vertical Spacing Fix
+# DriveHub GH — Order Slip Vehicle Image Fix
 
 Replace the repository-root `styles.css` with the `styles.css` in this ZIP.
 
-This desktop-only adjustment:
-- Keeps the hero content aligned with the site's left content grid (5.4% inset).
-- Reduces the hero content's top padding from the previous 82–124px range to 68–100px, lifting the headline, supporting line and both CTA buttons by roughly 20–30px on common desktop widths.
-- Leaves mobile/tablet spacing unchanged.
+## Change
+- The vehicle image area now follows an 8:5 aspect ratio, matching the supplied fleet image assets.
+- The image uses `object-fit: contain`, so the complete car is visible without being cut off.
+- The image uses the full width and height of the upper order-summary panel, with a matching neutral background rather than blank dark side bars.
+- The hover zoom is disabled in this panel so it cannot crop the vehicle again.
+- The responsive layout keeps the same image proportions on smaller screens.
 
-Commit and push the replacement `styles.css` to the Cloudflare Pages deployment branch, then verify the two hero buttons have comfortable clearance above the bottom edge of the hero.
+Only `styles.css` is included. Keep the file at the repository root, commit and push to the branch deployed by Cloudflare Pages, then verify the selected Outlander and at least one other vehicle on Find Your Ride.

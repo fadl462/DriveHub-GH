@@ -1142,3 +1142,32 @@
     padding-top: clamp(68px, 7vw, 100px) !important;
   }
 }
+
+
+/* Find Your Ride: fill the complete summary image panel without cropping the vehicle. */
+.ride-page .summary-car-art {
+  height: auto !important;
+  aspect-ratio: 8 / 5;
+  min-height: 0;
+  background: #eee5da !important;
+}
+.ride-page .summary-car-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important;
+  object-position: center center !important;
+  padding: 0 !important;
+  margin: 0;
+  background: #eee5da;
+  transform: none !important;
+}
+.ride-page .summary-car-art:hover img {
+  transform: none !important;
+}
+@media (max-width: 760px) {
+  .ride-page .summary-car-art {
+    height: auto !important;
+    aspect-ratio: 8 / 5;
+  }
+}
