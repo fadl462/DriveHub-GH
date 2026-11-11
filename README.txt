@@ -1,15 +1,27 @@
-DriveHub GH — Payment Removal HTTP 405 Fix
+DriveHub GH — Consolidated Rental Editing + Payment Removal Fix
 
-Replace these files at the project root (preserve the folder paths):
+This package intentionally combines the rental edit-form changes with the payment-history removal fix. It avoids replacing the rental-edit-capable command/app.js with the older app.js from the payment-removal patch.
+
+Replace these files in the project, preserving paths:
 - command/app.js
 - command/styles.css
 - functions/command/api/payments.js
 
-Important routing correction:
-The live Command Centre endpoint is /command/api/payments. In Cloudflare Pages, that route is supplied by functions/command/api/payments.js. The previous removal package placed the API under command/functions/api/payments.js, which does not implement the live /command/api/payments route. The live route therefore had no onRequestDelete handler and returned HTTP 405.
+Included behaviour:
+- Restores the full rental edit form (customer, vehicle, daily rate, pickup/return dates, status and notes).
+- Keeps the rental edit handler and linked invoice recalculation logic from the rental-edit package.
+- Keeps payment-history Remove action and its API DELETE endpoint.
+- After payment removal, reloads D1 financial records so invoice balance/status and outstanding invoice list refresh.
+- API removal is restricted to Admin/Finance and writes an audit record.
 
-This package keeps the existing GET and POST handlers from the latest supplied project source, adds an admin/finance-only DELETE handler to the correct Pages Functions route, and includes the payment-history Remove UI. The delete operation removes only the selected payment, recalculates the invoice status from remaining payments, and writes an audit before-image. It does not issue a refund.
+Deployment:
+1. Back up the current three files.
+2. Replace the files above with these package versions.
+3. Commit/push to GitHub or upload to Cloudflare Pages.
+4. Wait for the deployment to complete, then hard-refresh the Command Centre.
+5. Test editing a rental and confirm the daily rate/date edits recalculate the linked invoice correctly. Also test removing a payment only when authorised.
 
-Deploy the three files to the DriveHub GH Cloudflare Pages project using the same root structure, then test with one incorrect payment. After successful removal, refresh Payments & receipts: the invoice should appear under Outstanding invoices with its recalculated balance, and the receipt should disappear from payment history.
-
-This is a code package only. It has not been deployed or executed against live D1. Do not upload the API file under command/functions; that is the wrong route for /command/api.
+Important:
+- This is a code package, not a deployment. It has not been deployed or tested against the live D1 instance here.
+- Rental edits update the browser-preview rental/invoice state in the current UI implementation; do not assume this makes the underlying D1 rental record editable unless the API-backed rental workflow is enabled.
+- Do not restore an older command/app.js over this consolidated version.
