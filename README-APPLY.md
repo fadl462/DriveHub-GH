@@ -1,12 +1,15 @@
-# DriveHub GH — Order Slip Vehicle Image Fix
+# DriveHub GH — V8 and Acura Summary Image Framing
 
-Replace the repository-root `styles.css` with the `styles.css` in this ZIP.
+Replace these two files at their existing repository-root paths:
+- `script.js`
+- `styles.css`
 
-## Change
-- The vehicle image area now follows an 8:5 aspect ratio, matching the supplied fleet image assets.
-- The image uses `object-fit: contain`, so the complete car is visible without being cut off.
-- The image uses the full width and height of the upper order-summary panel, with a matching neutral background rather than blank dark side bars.
-- The hover zoom is disabled in this panel so it cannot crop the vehicle again.
-- The responsive layout keeps the same image proportions on smaller screens.
+## What this fixes
+The V8 (`1200 × 800`) and Acura MDX (`900 × 610`) source images have different aspect ratios from the other five fleet images. The summary panel was forcing them into the same fixed-height crop, cutting off parts of those vehicles.
 
-Only `styles.css` is included. Keep the file at the repository root, commit and push to the branch deployed by Cloudflare Pages, then verify the selected Outlander and at least one other vehicle on Find Your Ride.
+When either of these two vehicles is selected, the page now reads the loaded image's natural dimensions and sizes the upper image panel to that exact ratio. The image then fills the panel without cropping. Selecting any of the other vehicles resets the panel to its normal layout.
+
+The fix is limited to the Find Your Ride journey summary and does not change the fleet cards or the other five vehicles.
+
+## Apply
+Upload/replace `script.js` and `styles.css` in the repository root, commit and push to the Cloudflare Pages deployment branch, then test Toyota Land Cruiser V8 and Acura MDX. Also switch back to an Outlander or Prado to confirm the normal summary layout resets correctly.
