@@ -60,6 +60,11 @@ try {
  localStorage.setItem(rentalRecoveryKey,JSON.stringify(localRentalRecovery));
 } catch { localRentalRecovery=[]; }
 let reviewFilter='Pending', invoiceFilter='All', rentalFilter='All', currentView='overview';
+// Completed historical rentals hidden from operational Rentals, Invoices and Payments views.
+const operationallyArchivedRentalIds=new Set(['DH-216','DH-210']);
+function isOperationallyArchivedRentalId(id){return operationallyArchivedRentalIds.has(String(id||'').trim().toUpperCase())}
+function visibleOperationalInvoices(){return state.invoices.filter(i=>!isOperationallyArchivedRentalId(i.rentalId))}
+function visibleOperationalPayments(){const archivedInvoiceIds=new Set(state.invoices.filter(i=>isOperationallyArchivedRentalId(i.rentalId)).map(i=>String(i.dbId||i.id)));return state.payments.filter(p=>!archivedInvoiceIds.has(String(p.invoiceId||'')))}
 let rentalPartners=[], sourcedVehicles=[], supplierPayments=[], partnersReady=false;
 function save(){try{localStorage.setItem('dh-command-demo',JSON.stringify(state));return true}catch(e){toast('Could not save in this browser. Storage may be full or disabled.');return false}}
 // D1 customer integration: keep local demo records intact while adding database records.
@@ -368,13 +373,14 @@ function renderReviews(){const counts={Pending:state.reviews.filter(r=>r.status=
 $('#reviewFilters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;reviewFilter=b.dataset.filter;$$('#reviewFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderReviews()});$('#reviewSearch').addEventListener('input',renderReviews);
 function renderInvoices(){
  refreshInvoiceStatuses();
- const total=state.invoices.reduce((s,i)=>s+Number(i.total||0),0);
- const paid=state.invoices.reduce((s,i)=>s+Number(i.paid||0),0);
- const balance=state.invoices.reduce((s,i)=>s+invoiceBalance(i),0);
+ const operationalInvoices=visibleOperationalInvoices();
+ const total=operationalInvoices.reduce((s,i)=>s+Number(i.total||0),0);
+ const paid=operationalInvoices.reduce((s,i)=>s+Number(i.paid||0),0);
+ const balance=operationalInvoices.reduce((s,i)=>s+invoiceBalance(i),0);
  if($('#invoiceTotalMetric'))$('#invoiceTotalMetric').textContent=money(total);
  if($('#invoicePaidMetric'))$('#invoicePaidMetric').textContent=money(paid);
  if($('#invoiceBalanceMetric'))$('#invoiceBalanceMetric').textContent=money(balance);
- let rows=state.invoices.filter(i=>invoiceFilter==='All'||effectiveInvoiceStatus(i)===invoiceFilter);
+ let rows=operationalInvoices.filter(i=>invoiceFilter==='All'||effectiveInvoiceStatus(i)===invoiceFilter);
  $('#invoiceRows').innerHTML=rows.map(i=>`<tr><td><strong>${escapeHTML(i.id)}</strong><small>${escapeHTML(i.vehicle)}</small></td><td>${escapeHTML(i.customer)}</td><td>${fmtDate(i.issued)}</td><td>${fmtDate(i.due)}</td><td><strong>${money(i.total)}</strong></td><td>${money(invoiceBalance(i))}</td><td>${statusBadge(effectiveInvoiceStatus(i))}</td><td><button class="table-action" type="button" data-invoice-print="${escapeHTML(i.id)}">Print invoice</button></td></tr>`).join('')||'<tr><td colspan="8">No invoices match this filter.</td></tr>';
 }
 $('#invoiceRows').addEventListener('click',e=>{const b=e.target.closest('[data-invoice-print]');if(!b)return;const inv=state.invoices.find(i=>i.id===b.dataset.invoicePrint);if(inv)printInvoice(inv)});
@@ -386,19 +392,21 @@ function printInvoice(i){
 
 $('#invoiceFilters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;invoiceFilter=b.dataset.filter;$$('#invoiceFilters button').forEach(x=>x.classList.toggle('selected',x===b));renderInvoices()});
 function renderPayments(){
- const total=state.payments.reduce((s,p)=>s+Number(p.amount||0),0);
- const outstanding=state.invoices.filter(i=>String(i.status||'').toLowerCase()!=='void').reduce((s,i)=>s+invoiceBalance(i),0);
+ const operationalPayments=visibleOperationalPayments();
+ const operationalInvoices=visibleOperationalInvoices();
+ const total=operationalPayments.reduce((s,p)=>s+Number(p.amount||0),0);
+ const outstanding=operationalInvoices.filter(i=>String(i.status||'').toLowerCase()!=='void').reduce((s,i)=>s+invoiceBalance(i),0);
  if($('#paymentsReceivedMetric'))$('#paymentsReceivedMetric').textContent=money(total);
  if($('#paymentsOutstandingMetric'))$('#paymentsOutstandingMetric').textContent=money(outstanding);
- if($('#paymentMethodsMetric'))$('#paymentMethodsMetric').textContent=new Set(state.payments.map(p=>p.method).filter(Boolean)).size;
- $('#paymentCount').textContent=state.payments.length;
- const due=state.invoices.filter(i=>String(i.status||'').toLowerCase()!=='void'&&invoiceBalance(i)>0);
+ if($('#paymentMethodsMetric'))$('#paymentMethodsMetric').textContent=new Set(operationalPayments.map(p=>p.method).filter(Boolean)).size;
+ $('#paymentCount').textContent=operationalPayments.length;
+ const due=operationalInvoices.filter(i=>String(i.status||'').toLowerCase()!=='void'&&invoiceBalance(i)>0);
  if($('#outstandingInvoiceCount'))$('#outstandingInvoiceCount').textContent=`${due.length} outstanding`;
  $('#outstandingInvoiceRows').innerHTML=due.map(i=>{
   const balance=invoiceBalance(i),paid=Number(i.paid||0);
   return `<tr><td><strong>${escapeHTML(i.invoiceNumber||i.id)}</strong><small>${escapeHTML(i.vehicle||'Rental invoice')}</small></td><td>${escapeHTML(i.customer)}</td><td>${fmtDate(i.due)}</td><td><strong>${money(i.total)}</strong></td><td>${money(paid)}</td><td><strong class="balance-due">${money(balance)}</strong><small>${paid>0?'Partly paid':'Unpaid'}</small></td><td><div class="row-actions payment-row-actions"><button class="table-action" type="button" data-payment-partial="${escapeHTML(i.dbId||i.id)}">Part payment</button><button class="table-action payment-full-action" type="button" data-payment-full="${escapeHTML(i.dbId||i.id)}">Mark fully paid</button></div></td></tr>`;
  }).join('')||'<tr><td colspan="7"><div class="empty-state">No outstanding invoices. All rental invoices are fully paid.</div></td></tr>';
- $('#paymentRows').innerHTML=state.payments.map(p=>`<tr><td><strong>${escapeHTML(p.id)}</strong></td><td>${escapeHTML(p.customer)}</td><td>${escapeHTML(p.invoice)}</td><td>${fmtDate(p.date)}</td><td>${escapeHTML(p.method)}</td><td><strong>${money(p.amount)}</strong></td><td><button class="table-action" type="button" data-receipt-print="${escapeHTML(p.id)}">Download / Print PDF</button></td></tr>`).join('')||'<tr><td colspan="7">No payments recorded yet.</td></tr>';
+ $('#paymentRows').innerHTML=operationalPayments.map(p=>`<tr><td><strong>${escapeHTML(p.id)}</strong></td><td>${escapeHTML(p.customer)}</td><td>${escapeHTML(p.invoice)}</td><td>${fmtDate(p.date)}</td><td>${escapeHTML(p.method)}</td><td><strong>${money(p.amount)}</strong></td><td><button class="table-action" type="button" data-receipt-print="${escapeHTML(p.id)}">Download / Print PDF</button></td></tr>`).join('')||'<tr><td colspan="7">No payments recorded yet.</td></tr>';
 }
 $('#outstandingInvoiceRows').addEventListener('click',async e=>{
  const full=e.target.closest('[data-payment-full]'),partial=e.target.closest('[data-payment-partial]');
@@ -439,14 +447,23 @@ function printReceipt(p){
 
 function renderRentals(){
  const q=($('#rentalSearch')?.value||'').toLowerCase();
- const rows=state.rentals.filter(r=>(rentalFilter==='All'||r.status===rentalFilter)&&[r.id,r.customer,r.vehicle].join(' ').toLowerCase().includes(q));
- const count=status=>state.rentals.filter(r=>r.status===status).length;
+ const operationalRentals=state.rentals.filter(r=>!isOperationallyArchivedRentalId(r.id));
+ const rows=operationalRentals.filter(r=>(rentalFilter==='All'||r.status===rentalFilter)&&[r.id,r.customer,r.vehicle].join(' ').toLowerCase().includes(q));
+ const count=status=>operationalRentals.filter(r=>r.status===status).length;
  if($('#rentalUpcomingMetric'))$('#rentalUpcomingMetric').textContent=count('Upcoming');
  if($('#rentalActiveMetric'))$('#rentalActiveMetric').textContent=count('Active');
  if($('#rentalCompletedMetric'))$('#rentalCompletedMetric').textContent=count('Completed');
  if($('#rentalCancelledMetric'))$('#rentalCancelledMetric').textContent=count('Cancelled');
  $('#rentalRows').innerHTML=rows.map(r=>`<tr><td><strong>${escapeHTML(r.id)}</strong></td><td>${escapeHTML(r.customer)}</td><td>${escapeHTML(r.vehicle)}${r.sourceType==='partner'?'<small>Partner-sourced · '+escapeHTML(r.partnerName||'supplier')+' · Cost '+money(r.supplierTotal||0)+'</small>':''}</td><td>${fmtDate(r.pickup)}</td><td>${fmtDate(r.returned)}</td><td><strong>${daysInclusive(r.pickup,r.returned)}</strong></td><td>${statusBadge(r.status)}</td><td><div class="row-actions"><button class="table-action" data-rental-edit="${escapeHTML(r.id)}" type="button">Edit</button>${r.status!=='Completed'&&r.status!=='Cancelled'?`<button class="table-action" data-rental-complete="${escapeHTML(r.id)}" type="button">Complete</button><button class="table-action rental-cancel-action" data-rental-cancel="${escapeHTML(r.id)}" type="button">Cancel</button>`:''}${r.source==='d1'?`<button class="table-action rental-cancel-action" data-rental-delete="${escapeHTML(r.id)}" type="button">Delete</button>`:''}</div></td></tr>`).join('')||'<tr><td colspan="8">No rentals match this filter.</td></tr>';
 }
+$('#rentalFilters').addEventListener('click',e=>{
+ const b=e.target.closest('button[data-filter]');
+ if(!b)return;
+ rentalFilter=b.dataset.filter;
+ $$('#rentalFilters button').forEach(x=>x.classList.toggle('selected',x===b));
+ renderRentals();
+});
+$('#rentalSearch').addEventListener('input',renderRentals);
 $('#rentalRows').addEventListener('click',async e=>{
  const del=e.target.closest('[data-rental-delete]');
  if(del){
