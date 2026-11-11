@@ -40,7 +40,7 @@
       <section class="page-content">
         <div class="page-heading">
           <div><p class="eyebrow" id="eyebrow">YOUR BUSINESS, AT A GLANCE</p><h1 id="pageTitle">Good evening. <em>Let's move.</em></h1><p class="subheading" id="pageSubtitle">A clear view of today's activity across DriveHub GH.</p></div>
-          <div class="heading-actions"><button class="btn btn-light" id="exportBtn">↓ Export overview</button></div>
+          <div class="heading-actions"><button class="btn btn-light" id="exportBtn">↓ Export overview</button><button class="btn btn-primary" id="quickAddBtn">＋ Quick action</button></div>
         </div>
 
 
@@ -52,7 +52,7 @@
             <article class="metric-card"><div class="metric-top"><span>Fleet utilisation</span><span class="metric-icon green">◇</span></div><strong id="utilisationMetric">67%</strong><div class="metric-foot"><span class="trend">4 of 6 vehicles</span><span> currently assigned</span></div><div class="metric-bottomline greenline"><span style="width:67%"></span></div></article>
           </div>
           <div class="content-grid">
-            <article class="panel revenue-panel"><div class="panel-heading"><div><h2>Revenue overview</h2><p>Recorded rental income across the last 7 months</p></div><select id="revenueRange" aria-label="Revenue period"><option value="7">Last 7 months</option><option value="6">Last 6 months</option><option value="3">Last 3 months</option></select></div><div class="chart-legend"><span><i></i> Revenue (GH₵)</span></div><div class="chart" id="revenueChart" aria-label="Revenue chart"></div><div class="chart-axis"><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span></div></article>
+            <article class="panel revenue-panel"><div class="panel-heading"><div><h2>Revenue overview</h2><p>Monthly revenue comparison for the selected year</p></div><select id="revenueYear" aria-label="Select revenue year"></select></div><div class="chart-legend"><span><i></i> Revenue (GH₵)</span></div><div class="chart" id="revenueChart" aria-label="Revenue chart"></div><div class="chart-axis" aria-hidden="true"></div></article>
             <article class="panel"><div class="panel-heading"><div><h2>Needs attention</h2><p>Items that may need a follow-up</p></div><span class="round-icon">↗</span></div><div class="attention-list" id="attentionList"></div><button class="text-link" data-goto="reviews">Review all action items <span>→</span></button></article>
           </div>
           <article class="panel table-panel"><div class="panel-heading"><div><h2>Recent rentals</h2><p>Latest activity across your fleet</p></div><button class="btn btn-light btn-small" data-goto="rentals">View rentals →</button></div><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Vehicle</th><th>Rental period</th><th>Amount</th><th>Status</th></tr></thead><tbody id="recentRentals"></tbody></table></div></article>

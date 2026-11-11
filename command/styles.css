@@ -260,3 +260,19 @@ body:has(#view-fleet.active) #fleetAlerts{display:block}
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Annual revenue chart: twelve-month comparison with persistent data labels */
+.revenue-panel .chart{height:205px;gap:clamp(3px,1vw,10px);padding:24px 7px 0;overflow:visible}
+.revenue-panel .bar-wrap{min-width:0}
+.revenue-panel .bar{width:min(25px,76%);min-width:5px}
+.revenue-panel .bar-value{position:absolute;bottom:calc(var(--bar-height,0%) + 5px);left:50%;transform:translateX(-50%);white-space:nowrap;font-size:8px;line-height:1.1;font-weight:700;color:#8f2638;z-index:2}
+.revenue-panel .chart-axis{gap:clamp(3px,1vw,10px);padding:9px 7px 0}
+.revenue-panel .chart-axis span{flex:1;min-width:0;text-align:center;font-size:9px}
+@media(max-width:640px){
+ .revenue-panel .chart{height:190px;gap:2px;padding-left:2px;padding-right:2px}
+ .revenue-panel .bar{min-width:4px}
+ .revenue-panel .bar-value{font-size:7px;letter-spacing:-.2px}
+ .revenue-panel .chart-axis{padding-left:2px;padding-right:2px}
+ .revenue-panel .chart-axis span{font-size:8px}
+}

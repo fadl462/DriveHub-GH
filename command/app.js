@@ -304,7 +304,7 @@ function rentalIsCurrent(r){const today=localISODate();return r.status!=='Comple
 function refreshInvoiceStatuses(){state.invoices.forEach(i=>{i.status=effectiveInvoiceStatus(i)})}
 function renderKpis(){
  refreshInvoiceStatuses();
- const revenue=visibleOperationalPayments().reduce((sum,p)=>sum+Number(p.amount||0),0);
+ const revenue=state.payments.reduce((sum,p)=>sum+Number(p.amount||0),0);
  const active=state.rentals.filter(r=>rentalIsCurrent(r)||r.status==='Active').length;
  const outstanding=state.invoices.reduce((sum,i)=>sum+invoiceBalance(i),0);
  const overdue=state.invoices.filter(i=>effectiveInvoiceStatus(i)==='Overdue').length;
@@ -342,17 +342,48 @@ document.addEventListener('click',e=>{
   if(b.type==='submit')return; // action handlers can add more specific events later
   recordAudit('Clicked action',currentView,label.slice(0,120));
 },true);
-function renderChart(){
- const count=Number($('#revenueRange').value||7), now=new Date();
- const months=[];
- for(let i=count-1;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,label:d.toLocaleDateString('en-GB',{month:'short'}) ,value:0})}
- visibleOperationalPayments().forEach(p=>{const key=String(p.date||'').slice(0,7),m=months.find(x=>x.key===key);if(m)m.value+=Number(p.amount||0)});
- const max=Math.max(1,...months.map(m=>m.value));
- $('#revenueChart').innerHTML=months.map(m=>`<div class="bar-wrap"><div class="bar" style="height:${Math.max(4,m.value/max*100)}%" data-value="${money(m.value)}" title="${m.label}: ${money(m.value)}"></div></div>`).join('');
- $('.chart-axis').innerHTML=months.map(m=>`<span>${m.label}</span>`).join('');
- const subtitle=$('.revenue-panel .panel-heading p');if(subtitle)subtitle.textContent=`Recorded payments across the last ${count} month${count===1?'':'s'}`;
+function populateRevenueYears(){
+ const select=$('#revenueYear');if(!select)return;
+ const currentYear=new Date().getFullYear();
+ const paymentYears=state.payments.map(p=>Number(String(p.date||'').slice(0,4))).filter(y=>Number.isInteger(y)&&y>=2000&&y<=9999);
+ const firstYear=Math.min(currentYear-5,...paymentYears);
+ const lastYear=Math.max(currentYear+10,...paymentYears);
+ const selected=Number(select.value)||currentYear;
+ select.innerHTML=Array.from({length:lastYear-firstYear+1},(_,i)=>firstYear+i)
+  .map(y=>`<option value="${y}">${y}</option>`).join('');
+ select.value=String(selected>=firstYear&&selected<=lastYear?selected:currentYear);
 }
-$('#revenueRange').addEventListener('change',renderChart);
+function renderChart(){
+ const select=$('#revenueYear');if(!select)return;
+ if(!select.options.length)populateRevenueYears();
+ const year=Number(select.value)||new Date().getFullYear();
+ const months=Array.from({length:12},(_,i)=>({
+  key:`${year}-${String(i+1).padStart(2,'0')}`,
+  label:new Date(year,i,1).toLocaleDateString('en-GB',{month:'short'}),
+  value:0
+ }));
+ state.payments.forEach(p=>{
+  const date=String(p.date||'');
+  const key=date.slice(0,7);
+  const month=months.find(m=>m.key===key);
+  if(month)month.value+=Number(p.amount||0);
+ });
+ const max=Math.max(0,...months.map(m=>m.value));
+ const annualTotal=months.reduce((sum,m)=>sum+m.value,0);
+ const compact=value=>`GH₵${new Intl.NumberFormat('en-GH',{notation:'compact',maximumFractionDigits:1}).format(value)}`;
+ $('#revenueChart').innerHTML=months.map(m=>{
+  const height=max>0?(m.value/max*100):0;
+  return `<div class="bar-wrap" style="--bar-height:${height}%">
+   <span class="bar-value">${compact(m.value)}</span>
+   <div class="bar" style="height:${height}%" data-value="${money(m.value)}" title="${m.label} ${year}: ${money(m.value)}"></div>
+  </div>`;
+ }).join('');
+ $('.chart-axis').innerHTML=months.map(m=>`<span>${m.label}</span>`).join('');
+ const subtitle=$('.revenue-panel .panel-heading p');
+ if(subtitle)subtitle.textContent=`${year} · Jan–Dec monthly comparison · Annual total ${money(annualTotal)}`;
+}
+$('#revenueYear').addEventListener('change',renderChart);
+
 function renderAttention(){const pending=state.reviews.filter(r=>r.status==='Pending').length;const overdue=state.invoices.filter(i=>effectiveInvoiceStatus(i)==='Overdue').length;const available=state.fleet.filter(v=>v.status==='Available').length;const list=[{icon:'✳',red:true,title:`${pending} reviews awaiting approval`,desc:'Read feedback and approve or reject publication.',goto:'reviews'},{icon:'!',title:`${overdue} overdue invoices`,desc:'Follow up on unpaid rental balances.',goto:'invoices'},{icon:'◇',title:`${available} vehicles currently available`,desc:'Check upcoming bookings and fleet utilisation.',goto:'fleet'}];$('#attentionList').innerHTML=list.map(x=>`<div class="attention-item"><span class="attention-symbol ${x.red?'red':''}">${x.icon}</span><div><strong>${x.title}</strong><p>${x.desc}</p><button class="text-link" data-goto="${x.goto}">Open →</button></div></div>`).join('');$$('#attentionList [data-goto]').forEach(b=>b.onclick=()=>nav(b.dataset.goto));$('#pendingBadge').textContent=pending;$('#pendingCount').textContent=pending;$('#reviewPendingSummary').textContent=pending}
 function renderRecent(){const rows=state.rentals.slice(0,4);$('#recentRentals').innerHTML=rows.map(r=>`<tr><td><div class="customer-cell">${avatar(r.customer)}<div><strong>${escapeHTML(r.customer)}</strong><small>${r.id}</small></div></div></td><td>${escapeHTML(r.vehicle)}${r.sourceType==='partner'?'<small>Partner-sourced · '+escapeHTML(r.partnerName||'supplier')+' · Cost '+money(r.supplierTotal||0)+'</small>':''}</td><td>${fmtDate(r.pickup)} – ${fmtDate(r.returned)}<small>${daysInclusive(r.pickup,r.returned)} billable days</small></td><td><strong>${money(r.rate*daysInclusive(r.pickup,r.returned))}</strong></td><td>${statusBadge(r.status)}</td></tr>`).join('')}
 function renderCustomerImprovements(){
@@ -635,7 +666,7 @@ if(type==='supplierPayment'){title='Record supplier payment';html=field('Supplie
 if(type==='maintenance'){title='Schedule vehicle maintenance';const serviceTypes='<option value="Routine service">Routine service</option><option value="Oil and filter">Oil and filter</option><option value="Tyres and brakes">Tyres and brakes</option><option value="Inspection">Inspection</option><option value="Repair">Repair</option><option value="Other">Other</option>';const serviceStatuses='<option value="Scheduled">Scheduled</option><option value="In progress">In progress</option><option value="Completed">Completed</option><option value="Cancelled">Cancelled</option>';html=field('Vehicle','vehicle','select',vehicleOptions)+field('Service type','serviceType','select',serviceTypes)+field('Start date','startDate','date')+field('End date','endDate','date')+field('Status','status','select',serviceStatuses)+field('Service notes','note','textarea','',true)}
 if(type==='review'){title='Add review record';html=field('Customer name','name')+field('Email','email','email','',false,false)+field('Vehicle','vehicle','select',vehicleOptions)+field('Rating','rating','select','<option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option>')+field('What went well','good','textarea','',true)+field('What could improve','improve','textarea','',true,false)}
 $('#dialogTitle').textContent=title;fields.innerHTML=html;if(type==='rentalEdit'&&existingRecord){const vals={pickup:existingRecord.pickup,returned:existingRecord.returned,rate:existingRecord.rate,status:String(existingRecord.status||'Upcoming').toLowerCase(),notes:existingRecord.notes||''};Object.entries(vals).forEach(([name,value])=>{const el=fields.querySelector(`[name="${name}"]`);if(el)el.value=value});}$('#actionForm').dataset.rentalId=type==='rentalEdit'?(existingRecord?.id||''):'';$('#actionForm').dataset.vehicleId=existingRecord?.id||'';$('#actionForm').dataset.vehiclePreviewIndex='';$('#actionForm').dataset.customerId=type==='customer'?(existingRecord?.id||''):'';$('#actionForm').dataset.customerPreviewIndex='';$('#dialogSubmit').textContent=type==='payment'||type==='supplierPayment'?'Record payment':type==='partner'?'Save partner':type==='sourcedVehicle'?'Save sourced vehicle':type==='review'?'Add review':type==='vehicle'?(existingRecord?'Update vehicle':'Add vehicle'):type==='customer'?(existingRecord?'Update customer':'Add customer'):type==='rentalEdit'?'Save rental changes':'Save record';if(type==='customer'&&existingRecord){const values={name:existingRecord.name||'',email:existingRecord.email||'',phone:existingRecord.phone||'',notes:existingRecord.notes||''};Object.entries(values).forEach(([k,v])=>{const el=fields.querySelector(`[name="${k}"]`);if(el)el.value=v})}if(type==='vehicle'&&existingRecord){const values={name:existingRecord.name,plate:existingRecord.plate==='Registration not entered'?'':existingRecord.plate,rate:existingRecord.rate,status:String(existingRecord.status||'Available').toLowerCase().replace('in maintenance','maintenance'),serviceDueOn:existingRecord.serviceDueOn||'',notes:existingRecord.notes||''};Object.entries(values).forEach(([k,v])=>{const el=fields.querySelector(`[name="${k}"]`);if(el)el.value=v})}dialog.showModal();const sourceSelect=$('#dialogFields [name=sourceType]');if(sourceSelect){const sync=()=>{const partner=sourceSelect.value==='partner';['partnerId','partnerVehicle','partnerPlate','supplierRate'].forEach(n=>{const el=$(`#dialogFields [name=\"${n}\"]`);if(el){el.closest('.field').style.display=partner?'flex':'none';el.required=partner&&n!=='partnerPlate'}});const own=$('#dialogFields [name=vehicle]');if(own){own.closest('.field').style.display=partner?'none':'flex';own.required=!partner}};sourceSelect.addEventListener('change',sync);sync()}}
-$('#addVehicleBtn').onclick=()=>openAction('vehicle');$('#addPartnerBtn')?.addEventListener('click',()=>openAction('partner'));$('#addSourcedVehicleBtn')?.addEventListener('click',()=>openAction('sourcedVehicle'));$('#recordSupplierPaymentBtn')?.addEventListener('click',()=>openAction('supplierPayment'));$('#addCustomerBtn').onclick=()=>openAction('customer');$('#closeProfileDialog').onclick=()=>$('#profileDialog').close();$('#newInvoiceBtn').onclick=()=>openAction('invoice');$('#recordPaymentBtn').onclick=()=>openAction('payment');$('#newRentalBtn').onclick=()=>openAction('rental');$('#addMaintenanceBtn').onclick=()=>openAction('maintenance');$('#notificationsBtn').onclick=()=>{nav('overview');toast('Notifications: review approvals and overdue invoices are highlighted under Needs attention.')};
+$('#addVehicleBtn').onclick=()=>openAction('vehicle');$('#addPartnerBtn')?.addEventListener('click',()=>openAction('partner'));$('#addSourcedVehicleBtn')?.addEventListener('click',()=>openAction('sourcedVehicle'));$('#recordSupplierPaymentBtn')?.addEventListener('click',()=>openAction('supplierPayment'));$('#addCustomerBtn').onclick=()=>openAction('customer');$('#closeProfileDialog').onclick=()=>$('#profileDialog').close();$('#quickAddBtn').onclick=()=>openAction('rental');$('#newInvoiceBtn').onclick=()=>openAction('invoice');$('#recordPaymentBtn').onclick=()=>openAction('payment');$('#newRentalBtn').onclick=()=>openAction('rental');$('#addMaintenanceBtn').onclick=()=>openAction('maintenance');$('#notificationsBtn').onclick=()=>{nav('overview');toast('Notifications: review approvals and overdue invoices are highlighted under Needs attention.')};
 // Allow users to dismiss an action dialog even when required fields are still empty.
 $('#actionForm').querySelectorAll('[value="cancel"]').forEach(button=>button.addEventListener('click',e=>{e.preventDefault();$('#actionDialog').close();}));
 async function loadPartnerData({quiet=false}={}){
