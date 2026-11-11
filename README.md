@@ -1,32 +1,30 @@
-# DriveHub GH — Outstanding Payments & Receipt Workflow
+# DriveHub GH public-site regression repair
 
-## Updated files
-- `command/index.html`
-- `command/app.js`
-- `command/styles.css`
+This is a **patch package**, not a full website ZIP. It applies targeted changes to the current repository source while preserving the rest of the project.
 
-## What this adds
-- Payments & receipts now includes an Outstanding invoices table sourced from invoices.
-- Each unpaid or partly paid invoice shows invoice number, customer, due date, invoice total, amount paid and remaining balance.
-- **Part payment** opens the payment form with the invoice/customer selected and the amount left blank.
-- **Mark fully paid** opens the same payment form with the exact remaining balance prefilled. Staff still select/confirm payment method and date; the system does not assume money was received.
-- Each successful payment is recorded as its own transaction in D1, using the existing conditional payment API. Overpayments are rejected by both frontend and backend.
-- After successful payment, invoice balance/status reloads from D1.
-- Each payment gets its own receipt number and a print dialog suitable for saving as PDF.
-- Payment history remains visible, with a PDF print option for each transaction.
-- A new outstanding-balance metric is included.
+## Changes
+1. Moves the homepage “Share your experience” invitation below the hero, so it no longer collides with or gets clipped by the hero section.
+2. Changes the selected-vehicle image in Find Your Ride to `object-fit: contain`, so the complete vehicle is visible in the journey summary.
+3. Removes the AI Partner's hard-coded 5.0/5.0 from 9 reviews statement. It now directs visitors to the live Experience page for the current rating and count.
+4. Adds How It Works and AI Partner URLs to the AI Partner's verified page knowledge.
+5. Makes the AI Partner more deliberate about providing the relevant supporting page URL, and extends clickable local-link rendering to How It Works and AI Partner.
+6. Updates the FAQ answer about review count so it does not repeat a stale number.
 
-## D1 integration
-The frontend loads `/command/api/invoices` and `/command/api/payments` and records payments through `POST /command/api/payments`.
-This uses the existing backend endpoints in `functions/command/api/` and requires:
-- Cloudflare Pages Functions deployed from `functions/command/api/invoices.js` and `payments.js`
-- D1 binding `DB` correctly configured
-- Existing invoice/payment tables and migration `command/migrations/0002_invoice_items.sql` (plus any previously applied schema/ledger migrations)
+## Apply
+1. Download and extract this ZIP.
+2. Copy `apply_patch.py` into the root of the current `DriveHub-GH` repository (the folder containing `index.html`, `styles.css`, and `script.js`).
+3. Run:
+   `python apply_patch.py`
+4. Review the changed files and the generated `.before-drivehub-fix` backups.
+5. Commit and push to the repository's deployment branch. Cloudflare Pages will deploy according to its configured build/deployment settings.
 
-If the D1 financial API is unavailable, the UI explicitly falls back to the browser preview state; preview entries are not production accounting records. Check the browser console and Cloudflare Pages Functions logs if the live ledger cannot be loaded.
+The patcher stops if the expected current source snippets are missing. It does not silently overwrite a mismatched version.
 
-## Install
-Replace the three files at their exact paths. No new migration is required for this frontend update.
+## Verification after deployment
+- Homepage: the review invitation appears in a separate strip between the hero and booking form, with no overlap.
+- Find Your Ride: select Prado, Outlander, RAV4, Santa Fe, CR-V, V8 and Acura; the complete vehicle should remain visible in the right-hand journey summary.
+- AI Partner: ask “How many reviews do you have?”, “Where can I read reviews?”, “How do I book?”, “How does the process work?”, and “Show me the fleet”. Confirm the assistant does not invent a review count and provides the appropriate working page link.
+- Check mobile layout and ensure the booking form and chat remain usable.
 
-## Validation
-`node --check command/app.js` should pass. Live D1 authentication, staff roles, and payment writes must be tested in the deployed Cloudflare environment. The PDF action opens the browser print dialog; choose **Save as PDF**.
+## Important
+This package has **not** been deployed. The GitHub integration allowed source inspection but rejected repository writes with HTTP 403, so no live files were changed from this chat.
