@@ -1,7 +1,7 @@
-# Remove the homepage review invitation
+# DriveHub GH — Homepage Hero Text Alignment
 
-Replace the repository-root `index.html` with the `index.html` in this ZIP.
+Replace the repository-root `styles.css` with the `styles.css` in this ZIP.
 
-This removes only the small “Share your experience / Your feedback helps future guests choose with confidence” invitation directly beneath the homepage hero. It does not remove the customer review section, the Experience page, or the separate Leave a Review page.
+The desktop homepage hero content now uses the same 5.4% left content inset as the site header. This aligns the eyebrow, headline, supporting text and hero buttons with the site's main left grid. Existing mobile/tablet spacing is preserved.
 
-Upload `index.html` to the repository root, commit and push to the branch deployed by Cloudflare Pages, then wait for deployment before checking the homepage.
+Commit and push the replacement `styles.css` to the branch deployed by Cloudflare Pages, then check the homepage after deployment.
