@@ -1,17 +1,16 @@
-# DriveHub GH — Full Vehicle Images on the Order Slip
+# DriveHub GH — Remove Footer Tagline
 
-Replace these two files at their existing repository-root paths:
-- `script.js`
-- `styles.css`
+This package contains the actual updated HTML pages.
 
-## What this changes
-The order-slip preview now reads the actual dimensions of whichever fleet image is selected and adjusts the upper image panel to that image's natural aspect ratio. The image fills the panel without being cropped. This applies to all seven vehicles, not only the V8 and Acura.
+Replace the matching files at the repository root:
+- `index.html`
+- `fleet.html`
+- `find-your-ride.html`
+- `how-it-works.html`
+- `faqs.html`
+- `experience.html`
+- `leave-a-review.html`
 
-When the selection is cleared, the panel returns to its default empty state. The image labels and dark overlay remain in place. The fleet selection cards are not changed.
+The footer phrase “MADE FOR THE ROAD AHEAD.” has been removed from all seven public pages. The copyright notice and “Back to top” link remain in place. No other footer content or page functionality has been changed.
 
-## Apply and test
-1. Replace the root `script.js` and `styles.css` with these files.
-2. Commit and push to the Cloudflare Pages deployment branch.
-3. After deployment, select each vehicle on Find Your Ride and confirm the full car is visible in the order-slip image area.
-
-The modified JavaScript passed `node --check`.
+Commit and push these files to the branch deployed by Cloudflare Pages, then refresh the site after deployment.
