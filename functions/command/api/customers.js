@@ -3,6 +3,13 @@ import { json, readJson, requireRole, audit, errorResponse } from "./_utils.js";
 const canRead = ["admin", "operations", "finance", "review_moderator", "read_only"];
 const canWrite = ["admin", "operations"];
 
+function normalisePhone(value) {
+  let digits = String(value || "").replace(/\\D/g, "");
+  // Treat Ghana +233 and local 0-prefixed forms as the same number.
+  if (digits.startsWith("233") && digits.length === 12) digits = `0${digits.slice(3)}`;
+  return digits;
+}
+
 function cleanCustomer(body) {
   const fullName = String(body.full_name || "").trim();
   const email = body.email == null || body.email === "" ? null : String(body.email).trim().toLowerCase();
@@ -35,6 +42,11 @@ export async function onRequestPost({ env, data, request }) {
     const body = await readJson(request);
     const customer = cleanCustomer(body);
     if (customer.error) return json({ error: customer.error }, 400);
+    if (customer.phone) {
+      const existing = await env.DB.prepare("SELECT id, full_name, phone FROM customers WHERE archived_at IS NULL AND phone IS NOT NULL AND phone <> ''").all();
+      const duplicatePhone = (existing.results || []).find(row => normalisePhone(row.phone) === normalisePhone(customer.phone));
+      if (duplicatePhone) return json({ error: "phone_already_used", message: `This phone number is already assigned to ${duplicatePhone.full_name}. Each customer must have a unique phone number.` }, 409);
+    }
     const id = `CUS-${crypto.randomUUID()}`;
     await env.DB.prepare("INSERT INTO customers (id, full_name, email, phone, notes) VALUES (?, ?, ?, ?, ?)")
       .bind(id, customer.fullName, customer.email, customer.phone, customer.notes).run();

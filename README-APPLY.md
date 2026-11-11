@@ -1,16 +1,22 @@
-# DriveHub GH — Remove Footer Tagline
+# DriveHub GH — Customer uniqueness rules
 
-This package contains the actual updated HTML pages.
+Replace these files at their existing paths:
+- `command/app.js`
+- `functions/command/api/customers.js`
 
-Replace the matching files at the repository root:
-- `index.html`
-- `fleet.html`
-- `find-your-ride.html`
-- `how-it-works.html`
-- `faqs.html`
-- `experience.html`
-- `leave-a-review.html`
+## Behaviour after this update
+- Different customers may have the same full name.
+- A phone number can belong to only one active customer.
+- Phone comparisons ignore spaces, punctuation and formatting; Ghana `+233` and local `0` formats are treated as equivalent.
+- Existing email duplicate checking remains in the Command Centre form.
+- Saving a new customer no longer silently replaces an existing customer with the same name.
+- The API checks phone uniqueness too, so browser-side validation cannot be bypassed.
 
-The footer phrase “MADE FOR THE ROAD AHEAD.” has been removed from all seven public pages. The copyright notice and “Back to top” link remain in place. No other footer content or page functionality has been changed.
+No existing customer records are deleted, merged, or changed.
 
-Commit and push these files to the branch deployed by Cloudflare Pages, then refresh the site after deployment.
+## Deploy and test
+1. Replace the two files at the paths above.
+2. Commit and push to the Cloudflare Pages deployment branch.
+3. Test adding a different person with an existing customer's name but a different phone number — it should save.
+4. Test reusing an existing customer's phone number — it should be rejected and identify the existing customer.
+5. Confirm a customer edit updates that record rather than creating another one.

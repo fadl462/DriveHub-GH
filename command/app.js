@@ -595,7 +595,7 @@ $('#actionForm').addEventListener('submit',async e=>{if(e.submitter?.value==='ca
 }else if(type==='customer'){
  const name=data.name.trim(),email=data.email.trim().toLowerCase(),phone=data.phone.trim();
  if(!name||(!email&&!phone)){toast('Enter a customer name and at least an email address or phone number.');return}
- const customerId=$('#actionForm').dataset.customerId||'';const customerPreviewIndex=$('#actionForm').dataset.customerPreviewIndex||'';const oldCustomer=state.customers.find((c,i)=>customerId?String(c.id||'')===customerId:String(i)===customerPreviewIndex);const oldCustomerName=oldCustomer?.name||'';const duplicate=state.customers.some((c,i)=>String(c.id||'')!==customerId&&String(i)!==customerPreviewIndex&&((c.name||'').trim().toLowerCase()===name.toLowerCase()||(email&&c.email&&c.email.trim().toLowerCase()===email)||(phone&&c.phone&&c.phone.replace(/\s+/g,'')===phone.replace(/\s+/g,''))));
+ const customerId=$('#actionForm').dataset.customerId||'';const customerPreviewIndex=$('#actionForm').dataset.customerPreviewIndex||'';const oldCustomer=state.customers.find((c,i)=>customerId?String(c.id||'')===customerId:String(i)===customerPreviewIndex);const oldCustomerName=oldCustomer?.name||'';const normalisePhone=value=>{let digits=String(value||'').replace(/\D/g,'');if(digits.startsWith('233')&&digits.length===12)digits=`0${digits.slice(3)}`;return digits};const enteredPhone=normalisePhone(phone);const duplicate=state.customers.some((c,i)=>String(c.id||'')!==customerId&&String(i)!==customerPreviewIndex&&((email&&c.email&&c.email.trim().toLowerCase()===email)||(enteredPhone&&normalisePhone(c.phone)===enteredPhone)));
  if(duplicate){toast('A customer with the same name, email or phone already exists.');return}
  if(customerPreviewIndex!==''&&!customerId){const i=Number(customerPreviewIndex);if(!state.customers[i]){toast('This preview customer could not be found. Refresh the customer list and try again.');return}state.customers[i]={...state.customers[i],name,email,phone,notes:(data.notes||'').trim()};save();renderCustomers();renderOverview();$('#actionDialog').close();toast('Customer preview updated in this browser.');return;}
  const submitCustomer=async()=>{
@@ -606,8 +606,8 @@ $('#actionForm').addEventListener('submit',async e=>{if(e.submitter?.value==='ca
    if(!response.ok) throw new Error(payload.error||`Customer API returned ${response.status}`);
    const created=normalizeD1Customer(payload.data||{id:customerId,full_name:name,email,phone,notes:(data.notes||'').trim()});
    if(oldCustomerName&&oldCustomerName!==name){state.rentals=state.rentals.map(r=>r.customer===oldCustomerName?{...r,customer:name}:r);state.invoices=state.invoices.map(i=>i.customer===oldCustomerName?{...i,customer:name}:i);state.payments=state.payments.map(p=>p.customer===oldCustomerName?{...p,customer:name}:p);}
-   state.customers=[created,...state.customers.filter(c=>customerId?String(c.id||'')!==customerId:String(c.name||'').trim().toLowerCase()!==name.toLowerCase())];
-   d1Customers=[created,...d1Customers.filter(c=>customerId?String(c.id||'')!==customerId:String(c.name||'').trim().toLowerCase()!==name.toLowerCase())];
+   state.customers=[created,...state.customers.filter(c=>String(c.id||'')!==String(created.id||customerId||''))];
+   d1Customers=[created,...d1Customers.filter(c=>String(c.id||'')!==String(created.id||customerId||''))];
    save();renderCustomers();renderOverview();$('#actionDialog').close();nav('customers');toast(customerId?'Customer updated in the connected database.':'Customer saved to the connected database.');
   }catch(error){toast(`Customer was not saved to D1: ${error.message}. Check Cloudflare Access and the customer API; no local-only copy was created.`)}finally{button.disabled=false}
  };
