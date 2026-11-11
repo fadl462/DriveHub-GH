@@ -1,21 +1,15 @@
-DriveHub GH — Payment History Removal
+DriveHub GH — Payment Removal HTTP 405 Fix
 
-Files to replace:
+Replace these files at the project root (preserve the folder paths):
 - command/app.js
 - command/styles.css
-- command/functions/api/payments.js
+- functions/command/api/payments.js
 
-What this adds:
-- A Remove action beside each payment receipt in Payment history & receipts.
-- Admin/Finance-only DELETE API endpoint keyed by receipt number.
-- Explicit confirmation warning before deletion.
-- Invoice paid/partial/issued/overdue status recalculation after removal.
-- Audit log entry preserving the removed payment details.
-- Existing receipt PDF/print action remains handled by the existing print handler.
+Important routing correction:
+The live Command Centre endpoint is /command/api/payments. In Cloudflare Pages, that route is supplied by functions/command/api/payments.js. The previous removal package placed the API under command/functions/api/payments.js, which does not implement the live /command/api/payments route. The live route therefore had no onRequestDelete handler and returned HTTP 405.
 
-Important:
-- This permanently removes the selected payment row from payments and makes its receipt unavailable from the live payment history. It does not issue a refund.
-- The audit_log retains a before-image of the deleted payment for accountability.
-- Use only to correct an erroneous payment entry, such as a duplicate/wrong payment replaced by a correctly recorded rental/invoice.
-- This is a code package only. It has not been deployed or executed against the live D1 database.
-- The deployment must include the Pages Function route for /command/api/payments and the existing authentication middleware.
+This package keeps the existing GET and POST handlers from the latest supplied project source, adds an admin/finance-only DELETE handler to the correct Pages Functions route, and includes the payment-history Remove UI. The delete operation removes only the selected payment, recalculates the invoice status from remaining payments, and writes an audit before-image. It does not issue a refund.
+
+Deploy the three files to the DriveHub GH Cloudflare Pages project using the same root structure, then test with one incorrect payment. After successful removal, refresh Payments & receipts: the invoice should appear under Outstanding invoices with its recalculated balance, and the receipt should disappear from payment history.
+
+This is a code package only. It has not been deployed or executed against live D1. Do not upload the API file under command/functions; that is the wrong route for /command/api.
