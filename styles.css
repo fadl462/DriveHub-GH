@@ -1135,9 +1135,10 @@
 .concierge-page .trip-field select::-ms-expand{display:none}
 
 
-/* Homepage hero alignment: align hero copy with the site header's left content edge. */
+/* Homepage hero: align content with the site grid and lift it slightly from the lower edge. */
 @media (min-width: 721px) {
   .home-page .hero.home-hero .hero-content {
-    padding-left: 5.4%;
+    padding-left: 5.4% !important;
+    padding-top: clamp(68px, 7vw, 100px) !important;
   }
 }
