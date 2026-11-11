@@ -244,3 +244,19 @@ body:has(#view-fleet.active) #fleetAlerts{display:block}
 .payment-delete-action{color:#b4233b;border-color:#e7b9c1;background:#fff}
 .payment-delete-action:hover{background:#fff1f2;border-color:#c8102e}
 .payment-delete-action:disabled{opacity:.55;cursor:wait}
+
+
+/* Payments page: keep all four summary cards on one row on desktop. */
+.metric-grid.compact.payment-metric-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+@media (max-width: 900px) {
+  .metric-grid.compact.payment-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .metric-grid.compact.payment-metric-grid {
+    grid-template-columns: 1fr;
+  }
+}
