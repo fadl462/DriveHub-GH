@@ -16,7 +16,7 @@ export async function onRequestPost({env,data,request}){
   if(!invoiceId||!customerId)throw Object.assign(new Error("invoice_id and customer_id are required"),{status:400});
   if(!Number.isSafeInteger(amount)||amount<=0)throw Object.assign(new Error("amount_minor must be a positive integer"),{status:400});
   if(!["cash","bank_transfer","mobile_money","card","other"].includes(method))throw Object.assign(new Error("invalid_payment_method"),{status:400});
-  if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(received))throw Object.assign(new Error("received_at must use YYYY-MM-DD"),{status:400});
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(received))throw Object.assign(new Error("received_at must use YYYY-MM-DD"),{status:400});
   const inv=await env.DB.prepare("SELECT id,invoice_number,customer_id,total_minor,status FROM invoices WHERE id=?").bind(invoiceId).first();
   if(!inv)throw Object.assign(new Error("invoice_not_found"),{status:404});
   if(inv.customer_id!==customerId)throw Object.assign(new Error("payment_customer_mismatch"),{status:400});
