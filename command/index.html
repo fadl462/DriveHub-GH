@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#bd1730">
   <title>DriveHub Command — Operations</title>
-  <link rel="stylesheet" href="styles.css?v=20261109-fleet-customers-cleanup-2">
+  <link rel="stylesheet" href="styles.css?v=20261112-live-only-1">
 </head>
 <body>
   <div class="app-shell">
@@ -28,15 +28,23 @@
       <div class="sidebar-bottom">
         <div class="support-card"><span class="support-icon">✦</span><strong>Keep every journey moving.</strong><p>One clear view of your rental business.</p></div>
         <button class="nav-item" data-view="settings"><span>⚙</span> Settings</button>
-        <div class="profile"><div class="avatar">DH</div><div><strong>DriveHub Admin</strong><small>Demo workspace</small></div><span class="profile-dots">•••</span></div>
+        <div class="profile"><div class="avatar">DH</div><div><strong>DriveHub Admin</strong><small>Live operations</small></div><span class="profile-dots">•••</span></div>
       </div>
     </aside>
     <main class="main">
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" aria-label="Toggle navigation">☰</button>
         <div class="crumb">DriveHub GH <span>/</span> <strong id="crumbCurrent">Overview</strong></div>
-        <div class="top-actions"><span class="status-pill is-preview" id="workspaceMode"><i></i> Workspace preview</span><button class="icon-button" aria-label="Notifications" id="notificationsBtn">♧<em></em></button><div class="avatar top-avatar">DH</div></div>
+        <div class="top-actions"><span class="status-pill is-preview" id="workspaceMode" role="status" aria-live="polite"><i></i> Connecting to live database…</span><button class="icon-button" aria-label="Notifications" id="notificationsBtn">♧<em></em></button><div class="avatar top-avatar">DH</div></div>
       </header>
+      <section class="live-connection-gate" id="liveConnectionGate" role="status" aria-live="polite">
+        <div class="live-connection-card">
+          <span class="live-connection-icon">↻</span>
+          <h1 id="liveConnectionHeading">Connecting to DriveHub live database…</h1>
+          <p id="liveConnectionDetail">Loading live customers, fleet, rentals, invoices, payments and reviews.</p>
+          <button class="btn btn-primary" id="retryLiveConnection" type="button" hidden>Retry connection</button>
+        </div>
+      </section>
       <section class="page-content">
         <div class="page-heading">
           <div><p class="eyebrow" id="eyebrow">YOUR BUSINESS, AT A GLANCE</p><h1 id="pageTitle">Good evening. <em>Let's move.</em></h1><p class="subheading" id="pageSubtitle">A clear view of today's activity across DriveHub GH.</p></div>
@@ -140,6 +148,6 @@
   <div id="profileContent"></div>
 </dialog>
 <dialog id="actionDialog" class="action-dialog"><form method="dialog" id="actionForm"><div class="dialog-head"><div><p class="eyebrow">DRIVEHUB COMMAND</p><h2 id="dialogTitle">Quick action</h2></div><button class="close-dialog" value="cancel" aria-label="Close">×</button></div><div id="dialogFields" class="dialog-fields"></div><div class="dialog-actions"><button class="btn btn-light" value="cancel">Cancel</button><button class="btn btn-primary" id="dialogSubmit" value="default">Save record</button></div></form></dialog>
-  <script src="app.js?v=20261112-rental-reference-1"></script>
+  <script src="app.js?v=20261112-live-only-1"></script>
 </body>
 </html>
