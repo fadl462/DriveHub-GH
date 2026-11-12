@@ -596,8 +596,15 @@ function printReceipt(p){
   const win=window.open('','_blank','width=900,height=900');
   if(!win){toast('Allow pop-ups to download or print the receipt.');return}
   const inv=state.invoices.find(i=>String(i.dbId||i.id)===String(p.invoiceId||p.invoice)||String(i.invoiceNumber||i.id)===String(p.invoice));
-  // Resolve the rental reference through the linked D1 rental when the payment/invoice row omits it.
-  const linkedRental=inv?.rentalId?state.rentals.find(r=>String(r.id)===String(inv.rentalId)):null;
+  // Resolve the rental reference from every available relationship. Historical invoice/payment
+  // rows may omit rental_reference or rental_id, while the rental row still links to the invoice.
+  const invoiceDbId=inv?.dbId||inv?.id||p.invoiceId;
+  const invoiceNumber=inv?.invoiceNumber||inv?.id||p.invoice;
+  const linkedRental=state.rentals.find(r=>
+    (inv?.rentalId&&String(r.id)===String(inv.rentalId))||
+    (invoiceDbId&&String(r.invoiceDbId||'')===String(invoiceDbId))||
+    (invoiceNumber&&String(r.invoiceId||'')===String(invoiceNumber))
+  );
   const receiptRentalReference=p.rentalReference||inv?.rentalReference||linkedRental?.rentalReference||'—';
   const transactionReference=p.methodCode==='cash'?'Cash payment':(p.reference||'Not provided');
   const total=Number(inv?.total??p.amount??0);

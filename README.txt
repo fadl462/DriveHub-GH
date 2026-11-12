@@ -1,15 +1,7 @@
-DriveHub GH — Receipt Improvements (Updated Files Only)
+DriveHub GH — Receipt Rental Reference Fix
 
-Updated file:
-  command/app.js
+Replace command/app.js with the file in this package.
 
-Changes:
-1. Receipt booking/rental reference now resolves from the linked D1 rental record when it is absent from the payment and invoice payloads.
-2. Cash receipts display "Cash payment" as the transaction reference instead of "Not provided".
-3. The existing Authorised By signature image reference remains unchanged:
-   /command/fadl-signature.png
+The receipt now resolves the booking/rental reference through the direct payment reference, invoice reference, linked rental ID, and the rental row's invoice ID/number relationship. This addresses older records where the invoice/payment row omits rental_reference but the rental record still contains it.
 
-No D1 schema, payment, invoice, receipt-number, or existing financial records were changed.
-
-Deployment:
-Replace only command/app.js in the existing DriveHub GH project, then deploy the Pages project. Keep the existing command/fadl-signature.png asset in place.
+No D1 data, payment records, invoice totals, receipt numbers, or signature assets are changed. Keep command/fadl-signature.png as it is.
