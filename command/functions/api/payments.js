@@ -14,11 +14,16 @@ export async function onRequestGet({ env, data, request }) {
     const limit = Math.min(200, Math.max(1, Number.parseInt(url.searchParams.get("limit") || "100", 10) || 100));
     const rows = await env.DB.prepare(`
       SELECT p.id, p.receipt_number, p.invoice_id, i.invoice_number, p.customer_id,
-        c.full_name AS customer_name, p.amount_minor, p.currency, p.payment_method, p.reference, p.received_at, p.created_at
-      FROM payments p JOIN invoices i ON i.id=p.invoice_id JOIN customers c ON c.id=p.customer_id
+        c.full_name AS customer_name, r.rental_reference,
+        p.amount_minor, p.currency, p.payment_method, p.reference, p.received_at, p.created_at
+      FROM payments p
+      JOIN invoices i ON i.id=p.invoice_id
+      JOIN customers c ON c.id=p.customer_id
+      LEFT JOIN rentals r ON r.id=i.rental_id
       WHERE (? = '' OR p.invoice_id = ?) ORDER BY p.received_at DESC, p.created_at DESC LIMIT ?
     `).bind(invoiceId, invoiceId, limit).all();
-    return json({ payments: rows.results || [] });
+    const dataRows = rows.results || [];
+    return json({ data: dataRows, payments: dataRows, limit });
   } catch (error) { return errorResponse(error); }
 }
 

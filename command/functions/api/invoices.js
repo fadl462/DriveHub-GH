@@ -16,7 +16,8 @@ export async function onRequestGet({ env, data, request }) {
     if (id) {
       const invoice = await env.DB.prepare(`
         SELECT i.*, c.full_name AS customer_name, c.email AS customer_email, c.phone AS customer_phone,
-          r.pickup_date, r.return_date, v.name AS vehicle_name, v.registration_number,
+          r.pickup_date, r.return_date, r.rental_reference,
+          v.name AS vehicle_name, v.registration_number,
           COALESCE((SELECT SUM(p.amount_minor) FROM payments p WHERE p.invoice_id=i.id),0) AS paid_minor
         FROM invoices i JOIN customers c ON c.id=i.customer_id
         LEFT JOIN rentals r ON r.id=i.rental_id LEFT JOIN vehicles v ON v.id=r.vehicle_id
@@ -32,16 +33,19 @@ export async function onRequestGet({ env, data, request }) {
     const limit = Math.min(200, Math.max(1, Number.parseInt(url.searchParams.get("limit") || "100", 10) || 100));
     const rows = await env.DB.prepare(`
       SELECT i.id, i.invoice_number, i.customer_id, c.full_name AS customer_name, i.rental_id,
+        r.rental_reference,
         i.issued_on, i.due_on, i.currency, i.subtotal_minor, i.discount_minor, i.total_minor, i.status,
         i.created_at, i.updated_at,
         COALESCE(SUM(p.amount_minor),0) AS paid_minor,
         MAX(0, i.total_minor-COALESCE(SUM(p.amount_minor),0)) AS balance_minor
       FROM invoices i JOIN customers c ON c.id=i.customer_id
+      LEFT JOIN rentals r ON r.id=i.rental_id
       LEFT JOIN payments p ON p.invoice_id=i.id
       WHERE (? = '' OR i.status = ?)
-      GROUP BY i.id ORDER BY i.issued_on DESC, i.created_at DESC LIMIT ?
+      GROUP BY i.id, r.rental_reference ORDER BY i.issued_on DESC, i.created_at DESC LIMIT ?
     `).bind(status, status, limit).all();
-    return json({ invoices: rows.results || [] });
+    const dataRows = rows.results || [];
+    return json({ data: dataRows, invoices: dataRows, limit });
   } catch (error) { return errorResponse(error); }
 }
 

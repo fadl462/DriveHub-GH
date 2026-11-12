@@ -32,8 +32,9 @@ export async function onRequestGet({ env, data, request }) {
     const limit = Math.min(200, Math.max(1, Number.parseInt(url.searchParams.get("limit") || "100", 10) || 100));
     const result = await env.DB.prepare(`
       SELECT r.id, r.customer_id, c.full_name AS customer_name, r.vehicle_id,
-             v.name AS vehicle_name, v.registration_number, r.pickup_date, r.return_date,
-             r.daily_rate_minor, r.billable_days, r.status, r.notes, r.created_at, r.updated_at
+             v.name AS vehicle_name, v.registration_number, r.rental_reference,
+             r.pickup_date, r.return_date, r.daily_rate_minor, r.billable_days,
+             r.status, r.notes, r.created_at, r.updated_at
       FROM rentals r
       JOIN customers c ON c.id = r.customer_id
       JOIN vehicles v ON v.id = r.vehicle_id
