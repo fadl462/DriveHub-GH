@@ -1,16 +1,17 @@
-DriveHub GH — Signature alignment adjustment
+DriveHub GH — Authorised By label restoration
 
-Files:
-- command/app.js (replace existing)
-- command/fadl-signature.png (include/retain at this exact path)
+Replace:
+- command/app.js
 
-Invoice:
-- Customer Signature line remains on the left.
-- Your handwritten signature is aligned on the same row at the right.
-- The "Authorised By" label and typed personal name have been removed.
+Retain/add:
+- command/fadl-signature.png
 
-Receipt:
-- The handwritten signature remains.
-- The typed personal name and authorisation text have been removed.
+Invoice signature row:
+- Customer Signature: __________________________ on the left.
+- Authorised By: __________________ followed by the handwritten signature on the right.
+- No typed personal name is included.
 
-Upload the files to the repository, commit and push, then test one invoice and one receipt after Cloudflare Pages deploys.
+Payment receipt:
+- Adds the same Authorised By: __________________ label before the handwritten signature.
+
+After replacing the files, commit and push to GitHub, wait for Cloudflare Pages deployment, then print-test one invoice and one receipt.
