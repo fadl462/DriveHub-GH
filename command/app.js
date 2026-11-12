@@ -60,6 +60,7 @@ try {
  localStorage.setItem(rentalRecoveryKey,JSON.stringify(localRentalRecovery));
 } catch { localRentalRecovery=[]; }
 let reviewFilter='Pending', invoiceFilter='All', rentalFilter='All', currentView='overview';
+let improvementArchiveOpen=false;
 // Completed historical rentals hidden from operational Rentals, Invoices and Payments views.
 const operationallyArchivedRentalIds=new Set(['DH-216','DH-210']);
 function isOperationallyArchivedRentalId(id){return operationallyArchivedRentalIds.has(String(id||'').trim().toUpperCase())}
@@ -396,14 +397,37 @@ $('#revenueYear').addEventListener('change',renderChart);
 function renderAttention(){const pending=state.reviews.filter(r=>r.status==='Pending').length;const overdue=state.invoices.filter(i=>effectiveInvoiceStatus(i)==='Overdue').length;const available=state.fleet.filter(v=>v.status==='Available').length;const list=[{icon:'✳',red:true,title:`${pending} reviews awaiting approval`,desc:'Read feedback and approve or reject publication.',goto:'reviews'},{icon:'!',title:`${overdue} overdue invoices`,desc:'Follow up on unpaid rental balances.',goto:'invoices'},{icon:'◇',title:`${available} vehicles currently available`,desc:'Check upcoming bookings and fleet utilisation.',goto:'fleet'}];$('#attentionList').innerHTML=list.map(x=>`<div class="attention-item"><span class="attention-symbol ${x.red?'red':''}">${x.icon}</span><div><strong>${x.title}</strong><p>${x.desc}</p><button class="text-link" data-goto="${x.goto}">Open →</button></div></div>`).join('');$$('#attentionList [data-goto]').forEach(b=>b.onclick=()=>nav(b.dataset.goto));$('#pendingBadge').textContent=pending;$('#pendingCount').textContent=pending;$('#reviewPendingSummary').textContent=pending}
 function renderRecent(){const rows=state.rentals.slice(0,4);$('#recentRentals').innerHTML=rows.map(r=>`<tr><td><div class="customer-cell">${avatar(r.customer)}<div><strong>${escapeHTML(r.customer)}</strong><small>${r.id}</small></div></div></td><td>${escapeHTML(r.vehicle)}${r.sourceType==='partner'?'<small>Partner-sourced · '+escapeHTML(r.partnerName||'supplier')+' · Cost '+money(r.supplierTotal||0)+'</small>':''}</td><td>${fmtDate(r.pickup)} – ${fmtDate(r.returned)}<small>${daysInclusive(r.pickup,r.returned)} billable days</small></td><td><strong>${money(r.rate*daysInclusive(r.pickup,r.returned))}</strong></td><td>${statusBadge(r.status)}</td></tr>`).join('')}
 function renderCustomerImprovements(){
- const host=$('#improvementFeedbackList'); if(!host)return;
- const items=state.reviews.filter(r=>String(r.improve||'').trim() && String(r.improvementStatus||'new').toLowerCase()!=='resolved').sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+ const host=$('#improvementFeedbackList'),archiveHost=$('#improvementArchiveList');
+ if(!host)return;
+ const withFeedback=state.reviews.filter(r=>String(r.improve||'').trim());
+ const isResolved=r=>String(r.improvementStatus||'new').toLowerCase()==='resolved';
+ const items=withFeedback.filter(r=>!isResolved(r)).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+ const archived=withFeedback.filter(isResolved).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
  const fresh=items.filter(r=>(r.improvementStatus||'new')==='new').length;
  const count=$('#improvementNewCount'); if(count)count.textContent=`${fresh} new`;
- if(!items.length){host.innerHTML='<div class="empty-state"><strong>No customer improvement feedback yet</strong><p>Suggestions submitted through the public review form will appear here.</p></div>';return;}
- host.innerHTML=items.slice(0,8).map(r=>`<article class="review-card" style="margin:10px 0;padding:16px"><div class="review-card-head"><div class="review-person"><div><strong>${escapeHTML(r.name)}</strong><small>${escapeHTML(r.date||'Date unavailable')} · ${r.rating}/5 rating</small></div></div><span class="status-pill">${escapeHTML((r.improvementStatus||'new').replace('_',' '))}</span></div><p class="review-text" style="margin-top:12px">${escapeHTML(r.improve)}</p><div class="review-actions" style="align-items:center;gap:8px;flex-wrap:wrap"><label style="font-size:12px">Status <select data-improvement-status="${escapeHTML(r.id)}"><option value="new" ${(r.improvementStatus||'new')==='new'?'selected':''}>New</option><option value="under_review">Under review</option><option value="action_planned">Action planned</option><option value="resolved">Resolved</option></select></label><button class="btn btn-neutral" data-improvement-notes="${escapeHTML(r.id)}">${r.managementNotes?'Edit management note':'Add management note'}</button></div>${r.managementNotes?`<p class="review-text"><strong>Internal management note</strong><br>${escapeHTML(r.managementNotes)}</p>`:''}</article>`).join('');
- host.querySelectorAll('[data-improvement-status]').forEach(sel=>{const r=items.find(x=>x.id===sel.dataset.improvementStatus); if(r)sel.querySelector('option[value="under_review"]').selected=(r.improvementStatus||'new')==='under_review'; sel.addEventListener('change',async()=>{try{await updateImprovement(r.id,{improvementStatus:sel.value});toast('Improvement status saved.')}catch(e){toast(`Could not save status: ${e.message}`);sel.value=r.improvementStatus||'new';}})});
- host.querySelectorAll('[data-improvement-notes]').forEach(btn=>btn.addEventListener('click',async()=>{const r=items.find(x=>x.id===btn.dataset.improvementNotes);if(!r)return;const note=prompt('Internal management note (private; never shown publicly):',r.managementNotes||'');if(note===null)return;try{await updateImprovement(r.id,{managementNotes:note});toast('Internal note saved.')}catch(e){toast(`Could not save note: ${e.message}`)}}));
+ const archiveCount=$('#improvementArchiveCount');if(archiveCount)archiveCount.textContent=String(archived.length);
+ const archiveSection=$('#improvementArchiveSection');if(archiveSection)archiveSection.hidden=!improvementArchiveOpen;
+ const archiveToggle=$('#toggleImprovementArchive');
+ if(archiveToggle){archiveToggle.innerHTML=`${improvementArchiveOpen?'Hide archive':'View archive'} <span id="improvementArchiveCount">${archived.length}</span>`;archiveToggle.onclick=()=>{improvementArchiveOpen=!improvementArchiveOpen;renderCustomerImprovements()};}
+ const renderCards=(rows,emptyMessage)=>rows.map(r=>`<article class="review-card" style="margin:10px 0;padding:16px"><div class="review-card-head"><div class="review-person"><div><strong>${escapeHTML(r.name)}</strong><small>${escapeHTML(r.date||'Date unavailable')} · ${r.rating}/5 rating</small></div></div><span class="status-pill">${escapeHTML((r.improvementStatus||'new').replace('_',' '))}</span></div><p class="review-text" style="margin-top:12px">${escapeHTML(r.improve)}</p><div class="review-actions" style="align-items:center;gap:8px;flex-wrap:wrap"><label style="font-size:12px">Status <select data-improvement-status="${escapeHTML(r.id)}"><option value="new" ${(r.improvementStatus||'new')==='new'?'selected':''}>New</option><option value="under_review" ${(r.improvementStatus||'new')==='under_review'?'selected':''}>Under review</option><option value="action_planned" ${(r.improvementStatus||'new')==='action_planned'?'selected':''}>Action planned</option><option value="resolved" ${isResolved(r)?'selected':''}>Resolved</option></select></label><button class="btn btn-neutral" data-improvement-notes="${escapeHTML(r.id)}">${r.managementNotes?'Edit management note':'Add management note'}</button></div>${r.managementNotes?`<p class="review-text"><strong>Internal management note</strong><br>${escapeHTML(r.managementNotes)}</p>`:''}</article>`).join('')||`<div class="empty-state"><strong>${emptyMessage}</strong></div>`;
+ host.innerHTML=renderCards(items,'No active customer improvement feedback.');
+ if(archiveHost)archiveHost.innerHTML=renderCards(archived,'No resolved feedback in the archive yet.');
+ [host,archiveHost].filter(Boolean).forEach(container=>{
+  container.querySelectorAll('[data-improvement-status]').forEach(sel=>{
+   const r=withFeedback.find(x=>x.id===sel.dataset.improvementStatus);if(!r)return;
+   sel.addEventListener('change',async()=>{
+    const previous=r.improvementStatus||'new';sel.disabled=true;
+    try{await updateImprovement(r.id,{improvementStatus:sel.value});toast(sel.value==='resolved'?'Feedback moved to the archive.':previous==='resolved'?'Feedback restored to active items.':'Improvement status saved.');}
+    catch(e){toast(`Could not save status: ${e.message}`);sel.value=previous;sel.disabled=false;}
+   });
+  });
+  container.querySelectorAll('[data-improvement-notes]').forEach(btn=>btn.addEventListener('click',async()=>{
+   const r=withFeedback.find(x=>x.id===btn.dataset.improvementNotes);if(!r)return;
+   const note=prompt('Internal management note (private; never shown publicly):',r.managementNotes||'');if(note===null)return;
+   try{await updateImprovement(r.id,{managementNotes:note});toast('Internal note saved.');}
+   catch(e){toast(`Could not save note: ${e.message}`);}
+  }));
+ });
 }
 async function updateImprovement(id, patch){const response=await fetch('/command/api/reviews',{method:'PATCH',headers:{'content-type':'application/json','accept':'application/json'},credentials:'same-origin',body:JSON.stringify({id,...patch})});const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||`Update failed (${response.status})`);await loadD1Reviews({quiet:true});}
 function renderOverview(){renderKpis();renderChart();renderAttention();renderRecent();renderCustomerImprovements()}

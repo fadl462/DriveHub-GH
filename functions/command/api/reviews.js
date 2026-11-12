@@ -70,7 +70,7 @@ export async function onRequestGet({ env }) {
 
 export async function onRequestPatch({ request, env, data }) {
   const staff = data?.staff;
-  if (!requireRole(staff, ["admin", "review_moderator"])) return json({ error: "forbidden" }, 403);
+  if (!requireRole(staff, ["admin", "review_moderator", "operations"])) return json({ error: "forbidden" }, 403);
   try {
     const body = await readJson(request);
     const id = String(body.id || "").trim();

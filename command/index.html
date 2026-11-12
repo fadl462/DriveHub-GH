@@ -57,8 +57,9 @@
           </div>
           <article class="panel table-panel"><div class="panel-heading"><div><h2>Recent rentals</h2><p>Latest activity across your fleet</p></div><button class="btn btn-light btn-small" data-goto="rentals">View rentals →</button></div><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Vehicle</th><th>Rental period</th><th>Amount</th><th>Status</th></tr></thead><tbody id="recentRentals"></tbody></table></div></article>
           <article class="panel" id="customerImprovementPanel" style="margin-bottom:20px;border:1px solid #e8c6c8">
-            <div class="panel-heading"><div><h2>Customer improvement feedback</h2><p>Private feedback from customers — management use only</p></div><span class="round-icon" id="improvementNewCount">0 new</span></div>
+            <div class="panel-heading"><div><h2>Customer improvement feedback</h2><p>Private feedback from customers — management use only</p></div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="round-icon" id="improvementNewCount">0 new</span><button class="btn btn-light btn-small" id="toggleImprovementArchive" type="button">View archive <span id="improvementArchiveCount">0</span></button></div></div>
             <div id="improvementFeedbackList"><div class="empty-state">Loading live customer feedback…</div></div>
+            <section id="improvementArchiveSection" hidden style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line,#eadfdb)"><div class="panel-heading"><div><h3 style="margin:0">Resolved feedback archive</h3><p>Resolved items are retained here and can be restored if follow-up is needed.</p></div></div><div id="improvementArchiveList"></div></section>
           </article>
 
         </section>
