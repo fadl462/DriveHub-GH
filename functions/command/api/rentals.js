@@ -123,7 +123,6 @@ export async function onRequestDelete({env,data,request}){
  try{
   const url=new URL(request.url),rentalId=String(url.searchParams.get('id')||'').trim();
   if(!rentalId)throw Object.assign(new Error('rental_id_required'),{status:400});
-  if(rentalReference!==null&&rentalReference!==''&&!validRentalReference(rentalReference))throw Object.assign(new Error('invalid_rental_reference_format'),{status:400});
   const rental=await env.DB.prepare('SELECT id,status FROM rentals WHERE id=?').bind(rentalId).first();
   if(!rental)throw Object.assign(new Error('rental_not_found'),{status:404});
   const invoice=await env.DB.prepare('SELECT id,invoice_number,status FROM invoices WHERE rental_id=? ORDER BY created_at DESC LIMIT 1').bind(rentalId).first();
