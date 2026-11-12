@@ -276,3 +276,51 @@ body:has(#view-fleet.active) #fleetAlerts{display:block}
  .revenue-panel .chart-axis{padding-left:2px;padding-right:2px}
  .revenue-panel .chart-axis span{font-size:8px}
 }
+
+
+/* Rentals table — compact desktop layout so every operational column is visible */
+#view-rentals .table-wrap{overflow-x:auto}
+#view-rentals .rental-table{width:100%;min-width:0;table-layout:fixed;white-space:normal}
+#view-rentals .rental-table th,
+#view-rentals .rental-table td{box-sizing:border-box;padding-left:9px;padding-right:9px}
+#view-rentals .rental-table th:nth-child(1),
+#view-rentals .rental-table td:nth-child(1){width:15%}
+#view-rentals .rental-table th:nth-child(2),
+#view-rentals .rental-table td:nth-child(2){width:14%}
+#view-rentals .rental-table th:nth-child(3),
+#view-rentals .rental-table td:nth-child(3){width:19%}
+#view-rentals .rental-table th:nth-child(4),
+#view-rentals .rental-table td:nth-child(4),
+#view-rentals .rental-table th:nth-child(5),
+#view-rentals .rental-table td:nth-child(5){width:10%}
+#view-rentals .rental-table th:nth-child(6),
+#view-rentals .rental-table td:nth-child(6){width:8%}
+#view-rentals .rental-table th:nth-child(7),
+#view-rentals .rental-table td:nth-child(7){width:9%}
+#view-rentals .rental-table th:nth-child(8),
+#view-rentals .rental-table td:nth-child(8){width:15%}
+#view-rentals .rental-table td:nth-child(-n+3){overflow:hidden}
+#view-rentals .rental-booking-label,
+#view-rentals .rental-customer-label,
+#view-rentals .rental-vehicle-label{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#view-rentals .rental-table td:nth-child(4),
+#view-rentals .rental-table td:nth-child(5),
+#view-rentals .rental-table td:nth-child(6),
+#view-rentals .rental-table td:nth-child(7){white-space:nowrap}
+#view-rentals .rental-table .row-actions{gap:4px}
+#view-rentals .rental-table .table-action{padding:5px 7px;font-size:10px}
+@media(max-width:1050px) and (min-width:761px){
+ #view-rentals .rental-table th,
+ #view-rentals .rental-table td{padding-left:6px;padding-right:6px}
+ #view-rentals .rental-table th:nth-child(1),
+ #view-rentals .rental-table td:nth-child(1){width:13%}
+ #view-rentals .rental-table th:nth-child(2),
+ #view-rentals .rental-table td:nth-child(2){width:13%}
+ #view-rentals .rental-table th:nth-child(3),
+ #view-rentals .rental-table td:nth-child(3){width:17%}
+ #view-rentals .rental-table th:nth-child(8),
+ #view-rentals .rental-table td:nth-child(8){width:17%}
+}
+@media(max-width:760px){
+ #view-rentals .rental-table{min-width:900px;table-layout:fixed}
+}
