@@ -1,10 +1,10 @@
 import { json, readJson, requireRole, audit, errorResponse } from './_utils.js';
 export async function onRequestGet({env,data}){
- if(!requireRole(data.staff,['admin','operations','finance','read_only']))return json({error:'forbidden'},403);
+ if(!requireRole(data.staff,['super_admin','operations_manager','finance_officer','read_only']))return json({error:'forbidden'},403);
  const rows=await env.DB.prepare('SELECT sp.*,p.company_name AS partner_name FROM supplier_payments sp JOIN rental_partners p ON p.id=sp.partner_id ORDER BY sp.paid_on DESC,sp.created_at DESC LIMIT 500').all();return json({data:rows.results||[]});
 }
 export async function onRequestPost({env,data,request}){
- if(!requireRole(data.staff,['admin','finance']))return json({error:'forbidden'},403);
+ if(!requireRole(data.staff,['super_admin','finance_officer']))return json({error:'forbidden'},403);
  try{const b=await readJson(request),partner=String(b.partner_id||''),amount=Number(b.amount_minor),date=String(b.paid_on||''),method=String(b.payment_method||'').trim(),ref=String(b.payment_reference||'').trim()||null,notes=String(b.notes||'').trim()||null;
  if(!partner||!Number.isSafeInteger(amount)||amount<=0||!/^\d{4}-\d{2}-\d{2}$/.test(date)||method.length<2)return json({error:'Partner, positive amount, payment date and method are required'},400);
  const exists=await env.DB.prepare('SELECT id FROM rental_partners WHERE id=?').bind(partner).first();if(!exists)return json({error:'partner_not_found'},404);

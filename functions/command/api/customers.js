@@ -1,7 +1,7 @@
 import { json, readJson, requireRole, audit, errorResponse } from "./_utils.js";
 
-const canRead = ["admin", "operations", "finance", "review_moderator", "read_only"];
-const canWrite = ["admin", "operations"];
+const canRead = ["super_admin", "operations_manager", "rental_officer", "finance_officer", "read_only"];
+const canWrite = ["super_admin", "operations_manager", "rental_officer"];
 
 function normalisePhone(value) {
   let digits = String(value || "").replace(/\\D/g, "");
@@ -79,7 +79,7 @@ export async function onRequestPut({ env, data, request }) {
 }
 
 export async function onRequestDelete({ env, data, request }) {
-  if (!requireRole(data.staff, canWrite)) return json({ error: "forbidden" }, 403);
+  if (!requireRole(data.staff, ["super_admin"])) return json({ error: "forbidden" }, 403);
   try {
     const id = new URL(request.url).searchParams.get("id") || "";
     if (!id) return json({ error: "customer_id_required" }, 400);

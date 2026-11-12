@@ -39,7 +39,8 @@ async function ensurePendingTestimonials(db) {
   await db.prepare(IMPORT_PENDING_TESTIMONIALS_SQL).run();
 }
 
-export async function onRequestGet({ env }) {
+export async function onRequestGet({ env, data }) {
+  if (!requireRole(data?.staff, ["super_admin", "review_moderator"])) return json({ error: "forbidden" }, 403);
   try {
     await ensurePendingTestimonials(env.DB);
   } catch (importError) {
@@ -70,7 +71,7 @@ export async function onRequestGet({ env }) {
 
 export async function onRequestPatch({ request, env, data }) {
   const staff = data?.staff;
-  if (!requireRole(staff, ["admin", "review_moderator", "operations"])) return json({ error: "forbidden" }, 403);
+  if (!requireRole(staff, ["super_admin", "review_moderator"])) return json({ error: "forbidden" }, 403);
   try {
     const body = await readJson(request);
     const id = String(body.id || "").trim();
@@ -80,7 +81,7 @@ export async function onRequestPatch({ request, env, data }) {
 
     // Improvement workflow is separate from public review approval/publication.
     if (Object.prototype.hasOwnProperty.call(body, "improvementStatus") || Object.prototype.hasOwnProperty.call(body, "managementNotes")) {
-      if (!requireRole(staff, ["admin", "review_moderator", "operations"])) return json({ error: "forbidden" }, 403);
+      if (!requireRole(staff, ["super_admin", "review_moderator"])) return json({ error: "forbidden" }, 403);
       const allowed = ["new", "under_review", "action_planned", "resolved"];
       const improvementStatus = body.improvementStatus == null ? null : String(body.improvementStatus).toLowerCase();
       const managementNotes = body.managementNotes == null ? null : String(body.managementNotes).slice(0, 3000);
@@ -109,7 +110,7 @@ export async function onRequestPatch({ request, env, data }) {
 
 export async function onRequestDelete({ request, env, data }) {
   const staff = data?.staff;
-  if (!requireRole(staff, ["admin", "review_moderator"])) return json({ error: "forbidden" }, 403);
+  if (!requireRole(staff, ["super_admin", "review_moderator"])) return json({ error: "forbidden" }, 403);
   try {
     const body = await readJson(request);
     const id = String(body.id || "").trim();

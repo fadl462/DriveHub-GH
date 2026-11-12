@@ -155,22 +155,24 @@ function normalizeD1Invoice(i){
 function normalizeD1Payment(p){
  return {id:p.receipt_number||p.id,dbId:p.id,invoiceId:p.invoice_id,rentalReference:p.rental_reference||'',customerId:p.customer_id,customer:p.customer_name||'Customer',invoice:p.invoice_number||p.invoice_id,date:p.received_at||'',method:({mobile_money:'Mobile Money',bank_transfer:'Bank transfer',cash:'Cash',card:'Card',other:'Other'})[p.payment_method]||p.payment_method,methodCode:p.payment_method,amount:Number(p.amount_minor||0)/100,reference:p.reference||'',source:'d1'};
 }
-async function loadD1RentalsInvoices({quiet=false}={}){
+async function loadD1RentalsInvoices({quiet=false,includePayments=true}={}){
  try{
-  const [rResponse,iResponse,pResponse]=await Promise.all([
+  const requests=[
    fetch('/command/api/rentals?limit=500',{headers:{Accept:'application/json'},credentials:'same-origin',cache:'no-store'}),
-   fetch('/command/api/invoices?limit=500',{headers:{Accept:'application/json'},credentials:'same-origin',cache:'no-store'}),
-   fetch('/command/api/payments?limit=500',{headers:{Accept:'application/json'},credentials:'same-origin',cache:'no-store'})
-  ]);
-  const [rPayload,iPayload,pPayload]=await Promise.all([rResponse.json().catch(()=>({})),iResponse.json().catch(()=>({})),pResponse.json().catch(()=>({}))]);
+   fetch('/command/api/invoices?limit=500',{headers:{Accept:'application/json'},credentials:'same-origin',cache:'no-store'})
+  ];
+  if(includePayments)requests.push(fetch('/command/api/payments?limit=500',{headers:{Accept:'application/json'},credentials:'same-origin',cache:'no-store'}));
+  const responses=await Promise.all(requests);
+  const [rResponse,iResponse,pResponse]=responses;
+  const [rPayload,iPayload,pPayload]=await Promise.all(responses.map(r=>r.json().catch(()=>({}))));
   if(!rResponse.ok)throw new Error(rPayload.error||`Rentals API returned ${rResponse.status}`);
   if(!iResponse.ok)throw new Error(iPayload.error||`Invoices API returned ${iResponse.status}`);
-  if(!pResponse.ok)throw new Error(pPayload.error||`Payments API returned ${pResponse.status}`);
-  if(!Array.isArray(rPayload.data)||!Array.isArray(iPayload.data)||!Array.isArray(pPayload.data))throw new Error('The live rentals, invoices or payments API returned an unexpected response.');
+  if(includePayments&& !pResponse.ok)throw new Error(pPayload.error||`Payments API returned ${pResponse.status}`);
+  if(!Array.isArray(rPayload.data)||!Array.isArray(iPayload.data)||(includePayments&&!Array.isArray(pPayload.data)))throw new Error('The live rentals, invoices or payments API returned an unexpected response.');
   state.rentals=rPayload.data.map(normalizeD1Rental);
   nextRentalReference=rPayload.next_rental_reference||nextRentalReference;
   state.invoices=iPayload.data.map(normalizeD1Invoice);
-  state.payments=pPayload.data.map(normalizeD1Payment);
+  state.payments=includePayments?pPayload.data.map(normalizeD1Payment):[];
   d1RentalsReady=true;d1InvoicesReady=true;d1FinancialReady=true;
   renderRentals();renderInvoices();renderPayments();renderOverview();
   updateWorkspaceMode();renderLocalRentalRecovery();
@@ -207,28 +209,30 @@ function updateWorkspaceMode(){
 }
 async function initializeLiveWorkspace(){
  if(liveWorkspaceLoading)return;
+ if(!currentStaffProfile)await loadCurrentStaffProfile();
+ const role=currentStaffProfile?.role||'read_only';
  liveWorkspaceLoading=true;liveWorkspaceReady=false;liveWorkspaceFailed=false;
- // Suppress seeded or browser-cached business records before requesting authoritative D1 data.
  state.rentals=[];state.invoices=[];state.payments=[];state.customers=[];state.fleet=[];state.reviews=[];state.maintenance=[];
  updateWorkspaceMode();
- const results=await Promise.all([
-  loadD1Customers(),
-  loadD1Vehicles({quiet:true}),
-  loadD1RentalsInvoices({quiet:true}),
-  loadD1Reviews({quiet:true})
- ]);
+ const isReviewOnly=role==='review_moderator';
+ const needsReviews=['super_admin','review_moderator'].includes(role);
+ const needsCore=!isReviewOnly;
+ const results=[];
+ if(needsCore){
+  const tasks=[loadD1Customers(),loadD1Vehicles({quiet:true}),loadD1RentalsInvoices({quiet:true,includePayments:role!=='rental_officer'})];
+  results.push(...await Promise.all(tasks));
+ }else{
+  d1CustomersReady=d1VehiclesReady=d1RentalsReady=d1InvoicesReady=d1FinancialReady=true;
+ }
+ if(needsReviews)results.push(await loadD1Reviews({quiet:true}));
+ else{d1ReviewsReady=true;state.reviews=[];}
  liveWorkspaceReady=results.every(Boolean)&&d1CustomersReady&&d1VehiclesReady&&d1RentalsReady&&d1InvoicesReady&&d1FinancialReady&&d1ReviewsReady;
  liveWorkspaceFailed=!liveWorkspaceReady;
  liveWorkspaceLoading=false;
- if(liveWorkspaceReady){
-  renderOverview();renderReviews();renderInvoices();renderPayments();renderRentals();renderFleet();renderCustomers();
-  renderAudit();renderLocalRentalRecovery();
- }else{
-  state.rentals=[];state.invoices=[];state.payments=[];state.customers=[];state.fleet=[];state.reviews=[];state.maintenance=[];
-  renderOverview();renderReviews();renderInvoices();renderPayments();renderRentals();renderFleet();renderCustomers();
- }
+ renderOverview();renderReviews();renderInvoices();renderPayments();renderRentals();renderFleet();renderCustomers();if(['super_admin','operations_manager','finance_officer','read_only'].includes(role))await loadD1Audit();else{state.auditLog=[];renderAudit()}renderLocalRentalRecovery();
  updateWorkspaceMode();
 }
+
 function renderLocalRentalRecovery(){
  const panel=$('#localRentalRecovery');if(panel){panel.hidden=true;panel.innerHTML='';}return;
  /* Legacy browser-only recovery UI intentionally disabled in live-only mode. */
@@ -370,7 +374,19 @@ function renderKpis(){
 }
 
 function getTimeGreeting(){const hour=new Date().getHours();return hour<12?'Good morning':hour<17?'Good afternoon':'Good evening'}
-function nav(view){currentView=view;try{if(location.hash!==`#${view}`)history.replaceState(null,'',`#${view}`)}catch{};$$('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$$('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${view}`));const titles={overview:'Overview',reviews:'Reviews & reputation',invoices:'Invoices',payments:'Payments & receipts',rentals:'Rental operations',fleet:'Fleet management',customers:'Customers',reports:'Reports & insights',audit:'Audit trail',settings:'Settings'};$('#crumbCurrent').textContent=titles[view]||view; if(view==='audit') renderAudit();$('#pageTitle').innerHTML=view==='overview'?`${getTimeGreeting()}. <em>Let\'s move.</em>`:titles[view];$('#eyebrow').textContent=view==='overview'?'YOUR BUSINESS, AT A GLANCE':'DRIVEHUB GH · '+titles[view].toUpperCase();$('#pageSubtitle').textContent=({overview:"A clear view of today's activity across DriveHub GH.",reviews:'Listen, respond and decide what gets published.',invoices:'Keep every rental charge and balance accounted for.',payments:'Track recorded payments and issue receipts.',rentals:'Know what is booked, active and due back.',fleet:'Make every vehicle work harder and stay road-ready.',customers:'Understand your customers and their rental history.',reports:'Turn day-to-day activity into clear business decisions.',settings:'Manage company preferences and production readiness.'})[view];$('#sidebar').classList.remove('open');if(view==='reviews')renderReviews();if(view==='invoices')renderInvoices();if(view==='payments')renderPayments();if(view==='rentals')renderRentals();if(view==='fleet')renderFleet();if(view==='customers')renderCustomers();}
+function nav(view){
+ if(currentStaffProfile){
+  const viewAccess={
+   super_admin:['overview','reviews','invoices','payments','rentals','fleet','customers','audit','reports','settings'],
+   operations_manager:['overview','invoices','payments','rentals','fleet','customers','audit','reports'],
+   rental_officer:['overview','invoices','rentals','fleet','customers'],
+   finance_officer:['overview','invoices','payments','customers','reports','audit'],
+   review_moderator:['overview','reviews'],
+   read_only:['overview','invoices','payments','rentals','fleet','customers','audit','reports']
+  };
+  if(!(viewAccess[currentStaffProfile.role]||['overview']).includes(view))view='overview';
+ }
+ currentView=view;if(view==='settings'&&window.loadStaffDirectory)window.loadStaffDirectory();try{if(location.hash!==`#${view}`)history.replaceState(null,'',`#${view}`)}catch{};$$('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$$('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${view}`));const titles={overview:'Overview',reviews:'Reviews & reputation',invoices:'Invoices',payments:'Payments & receipts',rentals:'Rental operations',fleet:'Fleet management',customers:'Customers',reports:'Reports & insights',audit:'Audit trail',settings:'Settings'};$('#crumbCurrent').textContent=titles[view]||view; if(view==='audit') renderAudit();$('#pageTitle').innerHTML=view==='overview'?`${getTimeGreeting()}. <em>Let\'s move.</em>`:titles[view];$('#eyebrow').textContent=view==='overview'?'YOUR BUSINESS, AT A GLANCE':'DRIVEHUB GH · '+titles[view].toUpperCase();$('#pageSubtitle').textContent=({overview:"A clear view of today's activity across DriveHub GH.",reviews:'Listen, respond and decide what gets published.',invoices:'Keep every rental charge and balance accounted for.',payments:'Track recorded payments and issue receipts.',rentals:'Know what is booked, active and due back.',fleet:'Make every vehicle work harder and stay road-ready.',customers:'Understand your customers and their rental history.',reports:'Turn day-to-day activity into clear business decisions.',settings:'Manage company preferences and production readiness.'})[view];$('#sidebar').classList.remove('open');if(view==='reviews')renderReviews();if(view==='invoices')renderInvoices();if(view==='payments')renderPayments();if(view==='rentals')renderRentals();if(view==='fleet')renderFleet();if(view==='customers')renderCustomers();}
 $$('.nav-item[data-view]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.view)));
 $$('[data-goto]').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.goto)));
 $('#mobileMenu').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
@@ -970,6 +986,137 @@ $$('[data-report]').forEach(b=>b.onclick=()=>generateReport(b.dataset.report));
 $('#clearReportDates')?.addEventListener('click',()=>{$('#reportStartDate').value='';$('#reportEndDate').value='';toast('Report date filters cleared.')});
 
 $('#saveSettings').onclick=()=>{localStorage.setItem('dh-command-settings',JSON.stringify({name:$('#businessName').value,email:$('#businessEmail').value,phone:$('#businessPhone').value}));toast('Preferences saved in this browser preview.')};
+
+
+// Authenticated staff identity and staff access management.
+const STAFF_ROLE_LABELS={
+ super_admin:'Super Admin',
+ operations_manager:'Operations Manager',
+ rental_officer:'Rental Officer',
+ finance_officer:'Finance Officer',
+ review_moderator:'Review Moderator',
+ read_only:'Read-only / Auditor'
+};
+let currentStaffProfile=null;
+const staffEscape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const staffInitials=name=>String(name||'DH').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'DH';
+async function loadCurrentStaffProfile(){
+ try{
+  const response=await fetch('/command/api/me',{headers:{Accept:'application/json'},credentials:'same-origin',cache:'no-store'});
+  if(!response.ok)throw new Error(`Identity request returned ${response.status}`);
+  const payload=await response.json();currentStaffProfile=payload.staff;
+  const name=currentStaffProfile.display_name||currentStaffProfile.email||'Staff member';
+  const role=STAFF_ROLE_LABELS[currentStaffProfile.role]||'Staff';
+  const avatar=staffInitials(name);
+  ['accountName','accountDropdownName'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=name});
+  const roleEl=document.getElementById('accountRole');if(roleEl)roleEl.textContent=role;
+  const emailEl=document.getElementById('accountDropdownEmail');if(emailEl)emailEl.textContent=currentStaffProfile.email||'';
+  const avatarEl=document.getElementById('accountAvatar');if(avatarEl)avatarEl.textContent=avatar;
+  const panel=document.getElementById('staffManagementPanel');if(panel)panel.hidden=currentStaffProfile.role!=='super_admin';
+  document.body.dataset.staffRole=currentStaffProfile.role;
+  const visibleViews={
+   super_admin:['overview','reviews','invoices','payments','rentals','fleet','customers','audit','reports','settings'],
+   operations_manager:['overview','invoices','payments','rentals','fleet','customers','audit','reports'],
+   rental_officer:['overview','invoices','rentals','fleet','customers'],
+   finance_officer:['overview','invoices','payments','customers','reports','audit'],
+   review_moderator:['overview','reviews'],
+   read_only:['overview','invoices','payments','rentals','fleet','customers','audit','reports']
+  }[currentStaffProfile.role]||['overview'];
+  document.querySelectorAll('.nav-item[data-view]').forEach(item=>{item.hidden=!visibleViews.includes(item.dataset.view)});
+  if(!visibleViews.includes(currentView))nav('overview');else if(currentView==='settings')loadStaffDirectory();
+ }catch(error){console.warn('Could not load authenticated staff profile.',error)}
+}
+function staffRoleSelect(selected,id){
+ return `<select class="staff-role-select" data-staff-role="${staffEscape(id)}" aria-label="Change staff role">${Object.entries(STAFF_ROLE_LABELS).filter(([role])=>role!=='super_admin').map(([role,label])=>`<option value="${role}" ${role===selected?'selected':''}>${label}</option>`).join('')}</select>`;
+}
+function renderStaffRows(payload){
+ const directory=document.getElementById('staffDirectory'),invitations=document.getElementById('staffInvitations');
+ if(!directory||!invitations)return;
+ const rows=payload.data||[];
+ directory.innerHTML=rows.length?`<div class="table-wrap"><table class="staff-table"><thead><tr><th>Staff member</th><th>Role</th><th>Status</th><th>Added</th><th>Access</th></tr></thead><tbody>${rows.map(row=>{
+  const isOwner=row.role==='super_admin';
+  const active=Number(row.active)===1;
+  return `<tr><td><strong>${staffEscape(row.display_name)}</strong><small>${staffEscape(row.email)}</small></td><td>${isOwner?'<span class="owner-role">Super Admin</span>':staffRoleSelect(row.role,row.id)}</td><td><span class="staff-status ${active?'active':'suspended'}">${active?'Active':'Suspended'}</span></td><td>${row.created_at?staffEscape(new Date(row.created_at.replace(' ','T')+'Z').toLocaleDateString()):'—'}</td><td>${isOwner?'<span class="muted">Protected</span>':`<button class="btn btn-light btn-small" data-staff-action="${active?'suspend':'reactivate'}" data-staff-id="${staffEscape(row.id)}">${active?'Suspend':'Reactivate'}</button>`}</td></tr>`;
+ }).join('')}</tbody></table></div>`:'<div class="empty-state">No staff accounts found.</div>';
+ const pending=payload.invitations||[];
+ invitations.innerHTML=pending.length?`<div class="table-wrap"><table class="staff-table"><thead><tr><th>Invitee</th><th>Role</th><th>Expires</th><th>Status</th></tr></thead><tbody>${pending.map(row=>`<tr><td><strong>${staffEscape(row.display_name)}</strong><small>${staffEscape(row.email)}</small></td><td>${staffEscape(STAFF_ROLE_LABELS[row.role]||row.role)}</td><td>${staffEscape(row.expires_at||'—')}</td><td><span class="staff-status pending">Awaiting first PIN login</span></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty-state">No pending invitations.</div>';
+}
+async function loadStaffDirectory(){
+ const panel=document.getElementById('staffManagementPanel');
+ if(!panel||!currentStaffProfile||currentStaffProfile.role!=='super_admin')return;
+ const directory=document.getElementById('staffDirectory');
+ if(directory)directory.innerHTML='<div class="empty-state">Loading staff accounts…</div>';
+ try{
+  const response=await fetch('/command/api/staff',{headers:{Accept:'application/json'},credentials:'same-origin',cache:'no-store'});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(payload.error||`Staff API returned ${response.status}`);
+  renderStaffRows(payload);
+ }catch(error){if(directory)directory.innerHTML=`<div class="empty-state staff-error">${staffEscape(error.message||'Unable to load staff directory.')}</div>`}
+}
+
+async function loadD1Audit(){
+ try{
+  const response=await fetch('/command/api/audit?limit=500',{headers:{Accept:'application/json'},credentials:'same-origin',cache:'no-store'});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(payload.error||`Audit API returned ${response.status}`);
+  state.auditLog=(payload.data||[]).map(row=>({
+   id:row.id,at:row.created_at||'',area:row.entity_type||'system',action:row.action||'Activity',
+   record:row.entity_id||'',actor:row.actor_name||row.actor_email||'System',
+   details:row.after_json||row.before_json||''
+  }));
+  renderAudit();return true;
+ }catch(error){console.warn('Live audit trail unavailable.',error);return false}
+}
+window.loadStaffDirectory=loadStaffDirectory;
+document.getElementById('accountMenuBtn')?.addEventListener('click',()=>{
+ const menu=document.getElementById('accountMenu'),button=document.getElementById('accountMenuBtn'),dropdown=document.getElementById('accountDropdown');
+ const open=button.getAttribute('aria-expanded')==='true';button.setAttribute('aria-expanded',String(!open));dropdown.hidden=open;menu.classList.toggle('open',!open);
+});
+document.addEventListener('click',event=>{
+ const menu=document.getElementById('accountMenu');if(menu&&!menu.contains(event.target)){document.getElementById('accountDropdown').hidden=true;document.getElementById('accountMenuBtn').setAttribute('aria-expanded','false');menu.classList.remove('open')}
+});
+document.getElementById('accountProfileBtn')?.addEventListener('click',()=>{
+ const profile=currentStaffProfile;if(!profile)return;
+ toast(`${profile.display_name} · ${profile.email} · ${STAFF_ROLE_LABELS[profile.role]||profile.role}`);
+});
+document.getElementById('refreshStaffBtn')?.addEventListener('click',loadStaffDirectory);
+document.getElementById('staffInviteForm')?.addEventListener('submit',async event=>{
+ event.preventDefault();
+ const form=event.currentTarget,button=document.getElementById('sendStaffInvite');
+ const body={display_name:document.getElementById('staffInviteName').value.trim(),email:document.getElementById('staffInviteEmail').value.trim(),role:document.getElementById('staffInviteRole').value};
+ button.disabled=true;button.textContent='Creating invitation…';
+ try{
+  const response=await fetch('/command/api/staff',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},credentials:'same-origin',body:JSON.stringify(body)});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(payload.error||'Invitation could not be created.');
+  form.reset();toast('Invitation created. Add the email to the Cloudflare Access allow policy.');
+  await loadStaffDirectory();
+ }catch(error){toast(error.message||'Invitation failed.')}
+ finally{button.disabled=false;button.textContent='＋ Create invitation'}
+});
+document.getElementById('staffDirectory')?.addEventListener('click',async event=>{
+ const button=event.target.closest('[data-staff-action]');if(!button)return;
+ const action=button.dataset.staffAction,id=button.dataset.staffId;
+ if(!window.confirm(`${action==='suspend'?'Suspend':'Reactivate'} this staff account?`))return;
+ button.disabled=true;
+ try{
+  const response=await fetch('/command/api/staff',{method:'PATCH',headers:{'Content-Type':'application/json',Accept:'application/json'},credentials:'same-origin',body:JSON.stringify({id,action})});
+  const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||'Access update failed.');
+  toast(`Staff account ${action==='suspend'?'suspended':'reactivated'}.`);await loadStaffDirectory();
+ }catch(error){toast(error.message||'Access update failed.')}
+});
+document.getElementById('staffDirectory')?.addEventListener('change',async event=>{
+ const select=event.target.closest('[data-staff-role]');if(!select)return;
+ const id=select.dataset.staffRole,role=select.value;
+ if(!window.confirm(`Change this staff member's role to ${STAFF_ROLE_LABELS[role]}?`)){await loadStaffDirectory();return}
+ select.disabled=true;
+ try{
+  const response=await fetch('/command/api/staff',{method:'PATCH',headers:{'Content-Type':'application/json',Accept:'application/json'},credentials:'same-origin',body:JSON.stringify({id,action:'change_role',role})});
+  const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||'Role update failed.');
+  toast('Staff role updated.');await loadStaffDirectory();
+ }catch(error){toast(error.message||'Role update failed.');await loadStaffDirectory()}
+});
+loadCurrentStaffProfile();
 
 // End the Cloudflare Access session (not just the local Command Centre view).
 $('#logoutBtn')?.addEventListener('click',()=>{

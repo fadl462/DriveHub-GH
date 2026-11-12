@@ -351,3 +351,44 @@ body.live-workspace-ready .live-connection-gate{display:none!important}
 .status-pill.is-live{color:#287958;background:#f1faf5;border-color:#d7ebdf}
 .status-pill.is-live i{background:#39a36e}
 @media(max-width:760px){.live-connection-gate{min-height:calc(100vh - 58px);padding:18px}.live-connection-card{padding:25px 18px}}
+
+/* Stage 18 — authenticated account menu and staff administration */
+.account-menu{position:relative;display:flex;align-items:center}
+.account-trigger{display:flex;align-items:center;gap:9px;border:1px solid transparent;border-radius:12px;background:#fff;padding:5px 8px 5px 5px;color:var(--ink);text-align:left}
+.account-trigger:hover,.account-menu.open .account-trigger{border-color:var(--line);background:#fffaf8}
+.account-identity{display:flex;flex-direction:column;gap:3px;min-width:0}
+.account-identity strong{font-size:11px;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
+.account-identity small{font-size:10px;color:var(--muted);white-space:nowrap}
+.account-chevron{font-size:15px;color:var(--muted);margin-left:3px}
+.account-dropdown{position:absolute;right:0;top:calc(100% + 9px);z-index:80;width:230px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:7px;box-shadow:0 16px 42px rgba(36,22,24,.14)}
+.account-dropdown[hidden]{display:none}
+.account-dropdown-meta{padding:10px 11px 12px;border-bottom:1px solid var(--line);margin-bottom:5px}
+.account-dropdown-meta strong,.account-dropdown-meta small{display:block;overflow-wrap:anywhere}
+.account-dropdown-meta strong{font-size:12px}
+.account-dropdown-meta small{font-size:10px;color:var(--muted);margin-top:4px}
+.account-dropdown-item{display:flex;align-items:center;width:100%;padding:10px 11px;border:0;border-radius:8px;background:#fff;color:var(--ink);font:inherit;font-size:11px;text-align:left}
+.account-dropdown-item:hover{background:#faf5f3}
+.account-dropdown-item.danger{color:var(--red);font-weight:700}
+.staff-management-panel{margin-top:20px}
+.staff-admin-label{font-size:10px;font-weight:700;color:var(--red);background:#fbedef;border-radius:20px;padding:7px 10px;white-space:nowrap}
+.staff-access-notice{background:#fff8e9;border:1px solid #f0dfb9;color:#765b27;border-radius:10px;padding:12px 14px;font-size:11px;line-height:1.6;margin-bottom:18px}
+.staff-invite-form{display:grid;grid-template-columns:1fr 1.2fr 1fr auto;gap:11px;align-items:end;padding:16px;background:#fcfaf9;border:1px solid var(--line);border-radius:11px}
+.staff-invite-form label{display:grid;gap:6px;font-size:10px;font-weight:700;color:#786d6e}
+.staff-invite-form input,.staff-invite-form select{width:100%;min-width:0;border:1px solid #e9dfdb;border-radius:8px;padding:10px;background:#fff;color:var(--ink);font-size:11px}
+.staff-list-heading{display:flex;align-items:center;justify-content:space-between;margin:23px 0 11px}
+.staff-list-heading h3{margin:0;font-size:13px}
+.staff-table{width:100%;border-collapse:collapse;min-width:650px}
+.staff-table th,.staff-table td{padding:12px 10px;text-align:left;border-bottom:1px solid #f0e8e5;font-size:10px;vertical-align:middle}
+.staff-table th{font-size:9px;letter-spacing:.8px;color:#9a8d8d;text-transform:uppercase;background:#fdfbfa}
+.staff-table td strong,.staff-table td small{display:block}
+.staff-table td strong{font-size:11px}
+.staff-table td small{font-size:10px;color:var(--muted);margin-top:4px}
+.staff-role-select{max-width:190px;border:1px solid var(--line);border-radius:7px;padding:7px;background:#fff;font-size:10px;color:var(--ink)}
+.staff-status{display:inline-block;border-radius:20px;padding:5px 8px;font-size:9px;font-weight:700;white-space:nowrap}
+.staff-status.active{background:#e8f5ee;color:#247a57}
+.staff-status.suspended{background:#fbe9ec;color:#b31a32}
+.staff-status.pending{background:#fff4df;color:#9a6a19}
+.owner-role{font-size:10px;font-weight:700;color:var(--red)}
+.staff-error{color:#b31a32}
+@media(max-width:900px){.staff-invite-form{grid-template-columns:1fr 1fr}.staff-invite-form button{grid-column:1/-1}.topbar{padding:0 20px}.top-actions{gap:10px}}
+@media(max-width:560px){.account-identity{display:none}.account-trigger{padding:4px}.account-chevron{display:none}.staff-invite-form{grid-template-columns:1fr}.staff-invite-form button{grid-column:auto}.topbar{padding:0 12px}.status-pill{display:none}.account-dropdown{right:-4px}}

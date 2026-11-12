@@ -46,14 +46,53 @@ export async function onRequest(context) {
   const { request, env } = context;
   const path = new URL(request.url).pathname.replace(/\/+$/, "") || "/";
   // Health reveals only whether the D1 binding can answer a trivial query; Access still protects /command/*.
-  if (path === "/command/api/health" && request.method === "GET") return context.next();
+  if ((path === "/command/api/health" && request.method === "GET") || (path === "/command/api/logout" && request.method === "GET")) return context.next();
   if (!env.DB) return json({ error: "database_not_configured" }, 503);
   try {
     const claims = await verifyAccessJwt(request, env);
-    const staff = await env.DB.prepare(
-      "SELECT id, identity_subject, display_name, email, role, active FROM staff_users WHERE identity_subject = ? AND lower(email) = lower(?) LIMIT 1"
+    let staff = await env.DB.prepare(
+      "SELECT id, identity_subject, display_name, email, role, access_role, active FROM staff_users WHERE identity_subject = ? AND lower(email) = lower(?) LIMIT 1"
     ).bind(claims.sub, claims.email).first();
-    if (!staff || Number(staff.active) !== 1) return json({ error: "staff_account_not_authorized" }, 403);
+
+    // First-login activation: a valid Cloudflare Access identity may claim only
+    // an unexpired invitation for the exact same email address.
+    if (!staff) {
+      const invitation = await env.DB.prepare(
+        "SELECT id, display_name, email, access_role FROM staff_invitations WHERE lower(email)=lower(?) AND accepted_at IS NULL AND expires_at > CURRENT_TIMESTAMP LIMIT 1"
+      ).bind(claims.email).first();
+      if (invitation) {
+        const legacyRole = ({
+          operations_manager: "operations",
+          rental_officer: "operations",
+          finance_officer: "finance",
+          review_moderator: "review_moderator",
+          read_only: "read_only"
+        })[invitation.access_role];
+        const newId = crypto.randomUUID();
+        await env.DB.prepare(
+          "INSERT OR IGNORE INTO staff_users (id, identity_subject, display_name, email, role, access_role, active) VALUES (?, ?, ?, ?, ?, ?, 1)"
+        ).bind(newId, claims.sub, invitation.display_name, invitation.email, legacyRole, invitation.access_role).run();
+        staff = await env.DB.prepare(
+          "SELECT id, identity_subject, display_name, email, role, access_role, active FROM staff_users WHERE lower(email)=lower(?) LIMIT 1"
+        ).bind(claims.email).first();
+        if (staff && staff.identity_subject === claims.sub && Number(staff.active) === 1) {
+          await env.DB.prepare("UPDATE staff_invitations SET accepted_at=CURRENT_TIMESTAMP WHERE id=? AND accepted_at IS NULL").bind(invitation.id).run();
+          await env.DB.prepare(
+            "INSERT INTO audit_log (id, actor_staff_id, action, entity_type, entity_id, after_json) VALUES (?, ?, ?, ?, ?, ?)"
+          ).bind(crypto.randomUUID(), staff.id, "staff_invitation_accepted", "staff_user", staff.id,
+            JSON.stringify({ email: staff.email, role: staff.access_role })).run();
+        }
+      }
+    }
+    if (!staff || Number(staff.active) !== 1 || staff.identity_subject !== claims.sub) return json({ error: "staff_account_not_authorized" }, 403);
+    // APIs use canonical role names. The legacy role column remains for compatibility.
+    staff.role = staff.access_role || ({
+      admin: "super_admin",
+      operations: "operations_manager",
+      finance: "finance_officer",
+      review_moderator: "review_moderator",
+      read_only: "read_only"
+    })[staff.role] || "read_only";
     context.data = context.data || {};
     context.data.staff = staff;
     context.data.accessClaims = { sub: claims.sub, email: claims.email };

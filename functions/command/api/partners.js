@@ -1,5 +1,5 @@
 import { json, readJson, requireRole, audit, errorResponse } from './_utils.js';
-const readRoles = ['admin', 'operations', 'finance', 'read_only'];
+const readRoles = ['super_admin', 'operations_manager', 'finance_officer', 'read_only'];
 
 export async function onRequestGet({ env, data, request }) {
   if (!requireRole(data.staff, readRoles)) return json({ error: 'forbidden' }, 403);
@@ -12,7 +12,7 @@ export async function onRequestGet({ env, data, request }) {
 }
 
 export async function onRequestPost({ env, data, request }) {
-  if (!requireRole(data.staff, ['admin', 'operations'])) return json({ error: 'forbidden', detail: 'Only staff with the admin or operations role can add rental partners.' }, 403);
+  if (!requireRole(data.staff, ['super_admin', 'operations_manager'])) return json({ error: 'forbidden', detail: 'Only staff with the admin or operations role can add rental partners.' }, 403);
   try {
     if (!env.DB) return json({ error: 'database_unavailable', detail: 'The Command Centre D1 binding (DB) is not configured.' }, 503);
     const b = await readJson(request);

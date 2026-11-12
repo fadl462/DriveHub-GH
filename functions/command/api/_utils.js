@@ -18,7 +18,7 @@ export const readJson = async (request) => {
   catch { throw Object.assign(new Error("Invalid JSON"), { status: 400 }); }
 };
 
-export const requireRole = (staff, roles) => roles.includes(staff?.role);
+export const requireRole = (staff, roles) => roles.includes(staff?.role || "");
 
 export const audit = async (db, staff, action, entityType, entityId, after) => {
   await db.prepare(

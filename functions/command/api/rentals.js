@@ -1,6 +1,6 @@
 import { json, readJson, requireRole, audit, errorResponse } from './_utils.js';
-const readRoles=['admin','operations','finance','read_only'];
-const writeRoles=['admin','operations'];
+const readRoles=['super_admin','operations_manager','rental_officer','finance_officer','read_only'];
+const writeRoles=['super_admin','operations_manager','rental_officer'];
 const validDate=s=>/^\d{4}-\d{2}-\d{2}$/.test(String(s||''));
 const moneyMinor=(v,name)=>{const n=Number(v);if(!Number.isSafeInteger(n)||n<0)throw Object.assign(new Error(`${name} must be a non-negative integer`),{status:400});return n;};
 const currentYearCode=()=>String(new Date().getFullYear()).slice(-2);
@@ -123,7 +123,7 @@ export async function onRequestPut({env,data,request}){
 
 
 export async function onRequestDelete({env,data,request}){
- if(!requireRole(data.staff,writeRoles))return json({error:'forbidden'},403);
+ if(!requireRole(data.staff,['super_admin','operations_manager']))return json({error:'forbidden'},403);
  try{
   const url=new URL(request.url),rentalId=String(url.searchParams.get('id')||'').trim();
   if(!rentalId)throw Object.assign(new Error('rental_id_required'),{status:400});

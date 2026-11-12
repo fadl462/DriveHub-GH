@@ -1,11 +1,11 @@
 import { json, readJson, requireRole, audit, errorResponse } from './_utils.js';
-const readable=['admin','operations','finance','read_only'];
+const readable=['super_admin','operations_manager','finance_officer','read_only'];
 export async function onRequestGet({env,data}){
  if(!requireRole(data.staff,readable))return json({error:'forbidden'},403);
  const rows=await env.DB.prepare('SELECT r.*,p.company_name AS partner_name FROM partner_rentals r JOIN rental_partners p ON p.id=r.partner_id ORDER BY r.created_at DESC LIMIT 500').all();return json({data:rows.results||[]});
 }
 export async function onRequestPost({env,data,request}){
- if(!requireRole(data.staff,['admin','operations']))return json({error:'forbidden'},403);
+ if(!requireRole(data.staff,['super_admin','operations_manager']))return json({error:'forbidden'},403);
  try{const b=await readJson(request),customer=String(b.customer_name||'').trim(),partner=String(b.partner_id||''),vehicle=String(b.vehicle_name||'').trim(),plate=String(b.registration_number||'').trim().toUpperCase()||null,pickup=String(b.pickup_date||''),returned=String(b.return_date||''),days=Number(b.billable_days),customerRate=Number(b.customer_daily_rate_minor),supplierRate=Number(b.supplier_daily_rate_minor),status=String(b.status||'upcoming');
  if(customer.length<2||!partner||vehicle.length<2||!/^\d{4}-\d{2}-\d{2}$/.test(pickup)||!/^\d{4}-\d{2}-\d{2}$/.test(returned)||returned<pickup||!Number.isSafeInteger(days)||days<1||!Number.isSafeInteger(customerRate)||customerRate<0||!Number.isSafeInteger(supplierRate)||supplierRate<0||!['upcoming','active','completed','cancelled'].includes(status))return json({error:'Invalid partner rental details'},400);
  const p=await env.DB.prepare("SELECT id FROM rental_partners WHERE id=? AND status='active'").bind(partner).first();if(!p)return json({error:'active_partner_not_found'},400);

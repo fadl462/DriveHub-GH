@@ -6,30 +6,6 @@
   <meta name="theme-color" content="#bd1730">
   <title>DriveHub Command — Operations</title>
   <link rel="stylesheet" href="styles.css?v=20261112-live-only-1">
-
-<style id="drivehub-account-menu-styles">
-.top-actions{display:flex;align-items:center;gap:14px}
-.account-menu{position:relative;z-index:30}
-.account-trigger{display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer;padding:5px 8px 5px 5px;border:1px solid transparent;border-radius:12px;min-height:44px;transition:background .18s ease,border-color .18s ease}
-.account-trigger::-webkit-details-marker{display:none}
-.account-trigger:hover,.account-menu[open] .account-trigger{background:#fff;border-color:#eadfdb}
-.account-avatar{flex:0 0 36px;width:36px;height:36px}
-.account-identity{display:flex;flex-direction:column;align-items:flex-start;gap:2px;white-space:nowrap}
-.account-identity strong{font-size:12px;font-weight:700;color:#29232a}
-.account-identity small{font-size:10px;color:#8b7d84}
-.account-chevron{font-size:17px;color:#8b7d84;line-height:1;margin-left:2px}
-.account-dropdown{position:absolute;right:0;top:calc(100% + 10px);width:240px;padding:9px;background:#fff;border:1px solid #eadfdb;border-radius:14px;box-shadow:0 16px 40px rgba(38,24,30,.14);z-index:60}
-.account-dropdown-heading{display:flex;flex-direction:column;gap:4px;padding:10px 11px 12px}
-.account-dropdown-heading strong{font-size:13px;color:#29232a}
-.account-dropdown-heading small{font-size:11px;color:#8b7d84}
-.account-menu-item,.account-menu-logout{width:100%;display:flex;align-items:center;gap:10px;border:0;background:transparent;border-radius:9px;padding:10px 11px;text-align:left;font:inherit;font-size:12px;color:#5f535a}
-.account-menu-item:disabled{opacity:.62;cursor:default}
-.account-menu-item small{margin-left:auto;font-size:9px;color:#a4979d}
-.account-menu-divider{height:1px;background:#f0e8e5;margin:6px 2px}
-.account-menu-logout{color:#bd1737;font-weight:700;cursor:pointer}
-.account-menu-logout:hover{background:#fff0f2}
-@media(max-width:700px){.top-actions{gap:7px}.account-trigger{gap:6px;padding:4px}.account-identity{display:none}.account-chevron{display:none}.account-dropdown{right:0}}
-</style>
 </head>
 <body>
   <div class="app-shell">
@@ -59,7 +35,7 @@
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" aria-label="Toggle navigation">☰</button>
         <div class="crumb">DriveHub GH <span>/</span> <strong id="crumbCurrent">Overview</strong></div>
-        <div class="top-actions"><span class="status-pill is-preview" id="workspaceMode" role="status" aria-live="polite"><i></i> Connecting to live database…</span><button class="icon-button" aria-label="Notifications" id="notificationsBtn">♧<em></em></button><details class="account-menu" id="accountMenu"><summary class="account-trigger" aria-label="Open account menu"><span class="avatar account-avatar">DH</span><span class="account-identity"><strong>DriveHub Admin</strong><small>Administrator</small></span><span class="account-chevron" aria-hidden="true">⌄</span></summary><div class="account-dropdown"><div class="account-dropdown-heading"><strong>DriveHub Admin</strong><small>Signed in · Administrator</small></div><div class="account-menu-divider"></div><button class="account-menu-logout" id="logoutBtn" type="button"><span aria-hidden="true">↪</span> Log out</button></div></details></div>
+        <div class="top-actions"><span class="status-pill is-preview" id="workspaceMode" role="status" aria-live="polite"><i></i> Connecting to live database…</span><button class="icon-button" aria-label="Notifications" id="notificationsBtn">♧<em></em></button><div class="account-menu" id="accountMenu"><button class="account-trigger" id="accountMenuBtn" type="button" aria-expanded="false" aria-haspopup="true"><span class="avatar top-avatar" id="accountAvatar">DH</span><span class="account-identity"><strong id="accountName">Loading account…</strong><small id="accountRole">Verifying access</small></span><span class="account-chevron">⌄</span></button><div class="account-dropdown" id="accountDropdown" hidden><div class="account-dropdown-meta"><strong id="accountDropdownName">DriveHub Admin</strong><small id="accountDropdownEmail"></small></div><button class="account-dropdown-item" type="button" id="accountProfileBtn">Account details</button><button class="account-dropdown-item danger" id="logoutBtn" type="button"><span aria-hidden="true">↪</span> Log out</button></div></div></div>
       </header>
       <section class="live-connection-gate" id="liveConnectionGate" role="status" aria-live="polite">
         <div class="live-connection-card">
@@ -160,7 +136,22 @@
         </section>
 
         <section class="view" id="view-settings">
-          <div class="settings-grid"><article class="panel settings-panel"><p class="eyebrow">BUSINESS PROFILE</p><h2>Company details</h2><label>Business name<input value="DriveHub GH" id="businessName"></label><label>Contact email<input value="drivehubgh@gmail.com" id="businessEmail"></label><label>Contact phone<input value="020 411 6245" id="businessPhone"></label><button class="btn btn-primary" id="saveSettings">Save preferences</button><p class="helper-note">These profile preferences are saved only in this browser in the current preview.</p></article><article class="panel settings-panel"><p class="eyebrow">ACCESS & SECURITY</p><h2>Production readiness</h2><ul class="checklist"><li><span class="check pending">!</span><div><strong>Staff authentication</strong><small>Not connected in this frontend preview.</small></div></li><li><span class="check pending">!</span><div><strong>Persistent database</strong><small>Demo records are stored in browser storage.</small></div></li><li><span class="check pending">!</span><div><strong>Audit trail</strong><small>Required before live financial operations.</small></div></li><li><span class="check pending">!</span><div><strong>Review form integration</strong><small>Connect public submissions to the moderation queue.</small></div></li></ul></article></div>
+          <div class="settings-grid"><article class="panel settings-panel"><p class="eyebrow">BUSINESS PROFILE</p><h2>Company details</h2><label>Business name<input value="DriveHub GH" id="businessName"></label><label>Contact email<input value="drivehubgh@gmail.com" id="businessEmail"></label><label>Contact phone<input value="020 411 6245" id="businessPhone"></label><button class="btn btn-primary" id="saveSettings">Save preferences</button><p class="helper-note">Business profile preferences are currently stored in this browser.</p></article><article class="panel settings-panel"><p class="eyebrow">ACCESS & SECURITY</p><h2>Staff authentication</h2><ul class="checklist"><li><span class="check pending">✓</span><div><strong>Individual Cloudflare Access PIN</strong><small>Each staff member signs in using their own authorised email address.</small></div></li><li><span class="check pending">✓</span><div><strong>Database-backed roles</strong><small>Permissions are verified by the API on every protected request.</small></div></li><li><span class="check pending">✓</span><div><strong>Audit accountability</strong><small>Staff invitations and access changes are recorded.</small></div></li></ul></article></div>
+          <article class="panel staff-management-panel" id="staffManagementPanel" hidden>
+            <div class="panel-heading"><div><p class="eyebrow">PEOPLE & PERMISSIONS</p><h2>Staff & access management</h2><p>Invite staff, assign their role and control account access.</p></div><span class="staff-admin-label">Super Admin only</span></div>
+            <div class="staff-access-notice"><strong>Before inviting:</strong> Add the staff member's email to the Cloudflare Access application's allow policy. Cloudflare Access sends their One-time PIN; DriveHub activates their invitation after their first verified login.</div>
+            <form id="staffInviteForm" class="staff-invite-form">
+              <label>Full name<input id="staffInviteName" name="display_name" required minlength="2" maxlength="120" placeholder="Staff member's name"></label>
+              <label>Email address<input id="staffInviteEmail" name="email" type="email" required placeholder="name@example.com"></label>
+              <label>Assigned role<select id="staffInviteRole" name="role" required><option value="operations_manager">Operations Manager</option><option value="rental_officer">Rental Officer</option><option value="finance_officer">Finance Officer</option><option value="review_moderator">Review Moderator</option><option value="read_only">Read-only / Auditor</option></select></label>
+              <button class="btn btn-primary" type="submit" id="sendStaffInvite">＋ Create invitation</button>
+            </form>
+            <div class="staff-list-heading"><h3>Staff directory</h3><button class="btn btn-light btn-small" id="refreshStaffBtn" type="button">↻ Refresh</button></div>
+            <div id="staffDirectory"><div class="empty-state">Loading staff accounts…</div></div>
+            <div class="staff-list-heading"><h3>Pending invitations</h3></div>
+            <div id="staffInvitations"><div class="empty-state">No pending invitations loaded.</div></div>
+            <p class="helper-note">Super Admin accounts cannot be invited or modified from this screen. Existing staff access is never deleted; suspend accounts to preserve the audit trail.</p>
+          </article>
         </section>
       </section>
     </main>
@@ -172,6 +163,6 @@
   <div id="profileContent"></div>
 </dialog>
 <dialog id="actionDialog" class="action-dialog"><form method="dialog" id="actionForm"><div class="dialog-head"><div><p class="eyebrow">DRIVEHUB COMMAND</p><h2 id="dialogTitle">Quick action</h2></div><button class="close-dialog" value="cancel" aria-label="Close">×</button></div><div id="dialogFields" class="dialog-fields"></div><div class="dialog-actions"><button class="btn btn-light" value="cancel">Cancel</button><button class="btn btn-primary" id="dialogSubmit" value="default">Save record</button></div></form></dialog>
-  <script src="app.js?v=20261112-invoice-button-removed-1"></script>
+  <script src="app.js?v=20261112-staff-access-1"></script>
 </body>
 </html>

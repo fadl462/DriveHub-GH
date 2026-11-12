@@ -3,7 +3,7 @@ import { json, readJson, requireRole, audit, errorResponse } from "./_utils.js";
 const validStatuses = ["available", "reserved", "rented", "maintenance", "inactive"];
 
 export async function onRequestGet({ env, data, request }) {
-  if (!requireRole(data.staff, ["admin", "operations", "finance", "review_moderator", "read_only"])) return json({ error: "forbidden" }, 403);
+  if (!requireRole(data.staff, ["super_admin", "operations_manager", "rental_officer", "finance_officer", "read_only"])) return json({ error: "forbidden" }, 403);
   try {
     const url = new URL(request.url);
     const status = url.searchParams.get("status") || "";
@@ -19,7 +19,7 @@ export async function onRequestGet({ env, data, request }) {
 }
 
 export async function onRequestPost({ env, data, request }) {
-  if (!requireRole(data.staff, ["admin", "operations"])) return json({ error: "forbidden" }, 403);
+  if (!requireRole(data.staff, ["super_admin", "operations_manager"])) return json({ error: "forbidden" }, 403);
   try {
     const body = await readJson(request);
     const name = String(body.name || "").trim();
@@ -49,7 +49,7 @@ export async function onRequestPost({ env, data, request }) {
 
 
 export async function onRequestPut({ env, data, request }) {
-  if (!requireRole(data.staff, ["admin", "operations"])) return json({ error: "forbidden" }, 403);
+  if (!requireRole(data.staff, ["super_admin", "operations_manager"])) return json({ error: "forbidden" }, 403);
   try {
     const body = await readJson(request);
     const id = String(body.id || "").trim();
@@ -81,7 +81,7 @@ export async function onRequestPut({ env, data, request }) {
 }
 
 export async function onRequestDelete({ env, data, request }) {
-  if (!requireRole(data.staff, ["admin", "operations"])) return json({ error: "forbidden" }, 403);
+  if (!requireRole(data.staff, ["super_admin", "operations_manager"])) return json({ error: "forbidden" }, 403);
   try {
     const id = new URL(request.url).searchParams.get("id") || "";
     if (!id) return json({ error: "vehicle_id_required" }, 400);
