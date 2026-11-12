@@ -5,7 +5,7 @@ export async function onRequestGet({env,data,request}){
  try{
   const url=new URL(request.url),limit=Math.min(500,Math.max(1,Number.parseInt(url.searchParams.get("limit")||"200",10)||200));
   const invoiceId=url.searchParams.get("invoice_id")||"";
-  const rows=await env.DB.prepare("SELECT p.id,p.receipt_number,p.invoice_id,p.customer_id,c.full_name AS customer_name,i.invoice_number,p.amount_minor,p.currency,p.payment_method,p.reference,p.received_at,p.created_at FROM payments p JOIN customers c ON c.id=p.customer_id JOIN invoices i ON i.id=p.invoice_id WHERE (? = '' OR p.invoice_id = ?) ORDER BY p.received_at DESC,p.created_at DESC LIMIT ?").bind(invoiceId,invoiceId,limit).all();
+  const rows=await env.DB.prepare("SELECT p.id,p.receipt_number,p.invoice_id,p.customer_id,c.full_name AS customer_name,i.invoice_number,r.rental_reference,p.amount_minor,p.currency,p.payment_method,p.reference,p.received_at,p.created_at FROM payments p JOIN customers c ON c.id=p.customer_id JOIN invoices i ON i.id=p.invoice_id LEFT JOIN rentals r ON r.id=i.rental_id WHERE (? = '' OR p.invoice_id = ?) ORDER BY p.received_at DESC,p.created_at DESC LIMIT ?").bind(invoiceId,invoiceId,limit).all();
   return json({data:rows.results||[],limit});
  }catch(e){return errorResponse(e)}
 }
