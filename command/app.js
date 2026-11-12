@@ -969,6 +969,12 @@ $('#clearReportDates')?.addEventListener('click',()=>{$('#reportStartDate').valu
 
 $('#saveSettings').onclick=()=>{localStorage.setItem('dh-command-settings',JSON.stringify({name:$('#businessName').value,email:$('#businessEmail').value,phone:$('#businessPhone').value}));toast('Preferences saved in this browser preview.')};
 
+// End the Cloudflare Access session (not just the local Command Centre view).
+$('#logoutBtn')?.addEventListener('click',()=>{
+ if(!window.confirm('Are you sure you want to log out of the DriveHub Command Centre?'))return;
+ window.location.assign('/command/api/logout');
+});
+
 document.addEventListener('click',e=>{const button=e.target.closest('[data-alert-action]');if(!button)return;nav(button.dataset.alertAction);});
 
 const requestedView=(location.hash||'').slice(1);const validViews=['overview','reviews','invoices','payments','rentals','fleet','customers','reports','audit','settings'];nav(validViews.includes(requestedView)?requestedView:'overview');

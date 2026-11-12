@@ -38,7 +38,7 @@ async function verifiedAccessClaims(request, env) {
 export async function onRequest(context) {
   const { request, env } = context;
   const path = new URL(request.url).pathname;
-  if (path.endsWith("/api/health")) return context.next();
+  if (path.endsWith("/api/health") || path.endsWith("/api/logout")) return context.next();
   if (!env.DB) return json({ error: "database_not_configured" }, 503);
   try {
     const claims = await verifiedAccessClaims(request, env);
