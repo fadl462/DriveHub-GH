@@ -82,6 +82,7 @@ export async function onRequestPut({env,data,request}){
    env.DB.prepare('SELECT id,name,status FROM vehicles WHERE id=?').bind(vehicleId).first()
   ]);
   if(!rental)throw Object.assign(new Error('rental_not_found'),{status:404});
+  if(rental.rental_reference&&rentalReference&&rentalReference!==rental.rental_reference)throw Object.assign(new Error('rental_reference_is_immutable_once_issued'),{status:409});
   if(!customer)throw Object.assign(new Error('customer_not_found'),{status:404});
   if(!vehicle)throw Object.assign(new Error('vehicle_not_found'),{status:404});
   if(['inactive','maintenance'].includes(String(vehicle.status||'').toLowerCase()))throw Object.assign(new Error('vehicle_not_available_for_rental'),{status:409});
@@ -89,10 +90,13 @@ export async function onRequestPut({env,data,request}){
   if(conflict)throw Object.assign(new Error(`vehicle_date_conflict:${conflict.id}`),{status:409});
   const days=Math.round((Date.parse(returned+'T12:00:00Z')-Date.parse(pickup+'T12:00:00Z'))/86400000)+1;
   if(days<1)throw Object.assign(new Error('invalid_rental_period'),{status:400});
+  const finalRentalReference=rentalReference||rental.rental_reference||await allocateRentalReference(env.DB);
+  const duplicateReference=await env.DB.prepare('SELECT id FROM rentals WHERE rental_reference=? AND id<>? LIMIT 1').bind(finalRentalReference,rentalId).first();
+  if(duplicateReference)throw Object.assign(new Error('rental_reference_already_in_use'),{status:409});
   const rentalLineTotal=days*rate;
   if(!Number.isSafeInteger(rentalLineTotal))throw Object.assign(new Error('invoice_total_out_of_range'),{status:400});
   const invoice=await env.DB.prepare('SELECT id,discount_minor FROM invoices WHERE rental_id=? ORDER BY created_at DESC LIMIT 1').bind(rentalId).first();
-  const statements=[env.DB.prepare("UPDATE rentals SET customer_id=?,vehicle_id=?,pickup_date=?,return_date=?,daily_rate_minor=?,billable_days=?,status=?,notes=?,rental_reference=COALESCE(NULLIF(?,''),rental_reference),updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(customerId,vehicleId,pickup,returned,rate,days,status,notes||null,rentalReference||'',rentalId)];
+  const statements=[env.DB.prepare("UPDATE rentals SET customer_id=?,vehicle_id=?,pickup_date=?,return_date=?,daily_rate_minor=?,billable_days=?,status=?,notes=?,rental_reference=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(customerId,vehicleId,pickup,returned,rate,days,status,notes||null,finalRentalReference,rentalId)];
   let invoiceNumber=null,updatedTotal=null;
   if(invoice){
    const line=await env.DB.prepare("SELECT id FROM invoice_items WHERE invoice_id=? AND (description LIKE 'Vehicle rental%' OR description LIKE 'Vehicle hire%') ORDER BY rowid LIMIT 1").bind(invoice.id).first();
@@ -111,9 +115,9 @@ export async function onRequestPut({env,data,request}){
    statements.push(env.DB.prepare('UPDATE invoices SET customer_id=?,vehicle_id=?,due_on=?,subtotal_minor=?,total_minor=?,status=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(customerId,vehicleId,returned,subtotal,total,invoiceStatus,invoice.id));
   }
   await env.DB.batch(statements);
-  if(rentalReference)await syncRentalReferenceSequence(env.DB,rentalReference);
-  await audit(env.DB,data.staff,'rental.updated','rental',rentalId,{customer_id:customerId,vehicle_id:vehicleId,pickup_date:pickup,return_date:returned,billable_days:days,daily_rate_minor:rate,invoice_number:invoiceNumber,total_minor:updatedTotal});
-  return json({data:{rental_id:rentalId,rental_reference:rentalReference||rental.rental_reference||null,customer_id:customerId,vehicle_id:vehicleId,pickup_date:pickup,return_date:returned,billable_days:days,daily_rate_minor:rate,invoice_number:invoiceNumber,total_minor:updatedTotal,updated:true}});
+  await syncRentalReferenceSequence(env.DB,finalRentalReference);
+  await audit(env.DB,data.staff,'rental.updated','rental',rentalId,{rental_reference:finalRentalReference,customer_id:customerId,vehicle_id:vehicleId,pickup_date:pickup,return_date:returned,billable_days:days,daily_rate_minor:rate,invoice_number:invoiceNumber,total_minor:updatedTotal});
+  return json({data:{rental_id:rentalId,rental_reference:finalRentalReference,customer_id:customerId,vehicle_id:vehicleId,pickup_date:pickup,return_date:returned,billable_days:days,daily_rate_minor:rate,invoice_number:invoiceNumber,total_minor:updatedTotal,updated:true}});
  }catch(e){return errorResponse(e)}
 }
 
