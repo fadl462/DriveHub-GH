@@ -1,12 +1,9 @@
-DriveHub GH — Partial Payment Date Validation Fix
-UPDATED FILES ONLY
+DriveHub GH — Rentals table text-wrapping fix
 
-Replace: functions/command/api/payments.js
+Replace command/styles.css with the included file.
 
-Cause: The payment API date validator was incorrectly escaped and rejected valid YYYY-MM-DD dates from the payment form. This blocked partial-payment submission.
+Desktop: all eight Rentals columns fit within the available table width. Booking references and vehicle descriptions wrap onto additional lines instead of being shortened with ellipses. Action buttons can wrap within their cell.
 
-Fix: Corrected received_at validation. Existing GET, POST, DELETE handlers, role checks, balance checks and audit logic are retained.
+Mobile: the table retains horizontal scrolling so all fields remain readable.
 
-Deploy the file at the exact path above to Cloudflare Pages. Then test a partial payment below the remaining invoice balance and confirm the receipt appears and the balance decreases.
-
-Code package only; not deployed or tested against live D1 from this environment.
+This package contains only the updated stylesheet. It does not alter rental records, invoices, payments, filters, or action logic.

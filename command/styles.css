@@ -227,100 +227,26 @@ body:has(#view-fleet.active) #fleetAlerts{display:block}
 .customer-row-actions .danger{color:#a3132a;border-color:#e6b9c0}
 @media(max-width:760px){.vehicle-card-actions{justify-content:flex-start}.customer-row-actions{min-width:190px}}
 
-/* Payments & receipts — outstanding balance workflow */
-.payment-metric-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-.payment-outstanding-panel{margin-bottom:20px}
-.payment-outstanding-panel .panel-heading{align-items:center}
-.payment-row-actions{flex-wrap:wrap;min-width:190px}
-.payment-row-actions .table-action{white-space:nowrap}
-.payment-full-action{border-color:#c8102e;color:#c8102e}
-.balance-due{color:#b42335}
-#outstandingInvoiceRows td small{display:block;margin-top:4px;color:#8a7d80;font-size:11px}
-@media(max-width:900px){.payment-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.payment-metric-grid{grid-template-columns:1fr}}
 
-/* Payment-history correction action */
-.payment-history-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.payment-delete-action{color:#b4233b;border-color:#e7b9c1;background:#fff}
-.payment-delete-action:hover{background:#fff1f2;border-color:#c8102e}
-.payment-delete-action:disabled{opacity:.55;cursor:wait}
-
-
-/* Payments page: keep all four summary cards on one row on desktop. */
-.metric-grid.compact.payment-metric-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+/* Rentals table: wrap full values instead of truncating booking and vehicle details. */
+@media (min-width: 761px){
+  #view-rentals .table-wrap{overflow-x:hidden;width:100%}
+  #view-rentals table{width:100%;min-width:0;table-layout:fixed;white-space:normal}
+  #view-rentals th,#view-rentals td{white-space:normal;overflow-wrap:anywhere;word-break:normal;vertical-align:middle;line-height:1.45;padding:12px 10px}
+  #view-rentals th:nth-child(1),#view-rentals td:nth-child(1){width:18%}
+  #view-rentals th:nth-child(2),#view-rentals td:nth-child(2){width:14%}
+  #view-rentals th:nth-child(3),#view-rentals td:nth-child(3){width:19%}
+  #view-rentals th:nth-child(4),#view-rentals td:nth-child(4){width:10%}
+  #view-rentals th:nth-child(5),#view-rentals td:nth-child(5){width:10%}
+  #view-rentals th:nth-child(6),#view-rentals td:nth-child(6){width:8%}
+  #view-rentals th:nth-child(7),#view-rentals td:nth-child(7){width:8%}
+  #view-rentals th:nth-child(8),#view-rentals td:nth-child(8){width:13%}
+  #view-rentals td:nth-child(1) strong{display:block;font-size:10px;overflow-wrap:anywhere;word-break:break-word}
+  #view-rentals td:nth-child(3){font-size:10px}
+  #view-rentals .row-actions{display:flex;flex-wrap:wrap;gap:5px}
+  #view-rentals .row-actions .table-action{white-space:nowrap;padding:6px 8px;font-size:10px}
 }
-@media (max-width: 900px) {
-  .metric-grid.compact.payment-metric-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 560px) {
-  .metric-grid.compact.payment-metric-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-/* Annual revenue chart: twelve-month comparison with persistent data labels */
-.revenue-panel .chart{height:205px;gap:clamp(3px,1vw,10px);padding:24px 7px 0;overflow:visible}
-.revenue-panel .bar-wrap{min-width:0}
-.revenue-panel .bar{width:min(25px,76%);min-width:5px}
-.revenue-panel .bar-value{position:absolute;bottom:calc(var(--bar-height,0%) + 5px);left:50%;transform:translateX(-50%);white-space:nowrap;font-size:8px;line-height:1.1;font-weight:700;color:#8f2638;z-index:2}
-.revenue-panel .chart-axis{gap:clamp(3px,1vw,10px);padding:9px 7px 0}
-.revenue-panel .chart-axis span{flex:1;min-width:0;text-align:center;font-size:9px}
-@media(max-width:640px){
- .revenue-panel .chart{height:190px;gap:2px;padding-left:2px;padding-right:2px}
- .revenue-panel .bar{min-width:4px}
- .revenue-panel .bar-value{font-size:7px;letter-spacing:-.2px}
- .revenue-panel .chart-axis{padding-left:2px;padding-right:2px}
- .revenue-panel .chart-axis span{font-size:8px}
-}
-
-
-/* Rentals table — compact desktop layout so every operational column is visible */
-#view-rentals .table-wrap{overflow-x:auto}
-#view-rentals .rental-table{width:100%;min-width:0;table-layout:fixed;white-space:normal}
-#view-rentals .rental-table th,
-#view-rentals .rental-table td{box-sizing:border-box;padding-left:9px;padding-right:9px}
-#view-rentals .rental-table th:nth-child(1),
-#view-rentals .rental-table td:nth-child(1){width:15%}
-#view-rentals .rental-table th:nth-child(2),
-#view-rentals .rental-table td:nth-child(2){width:14%}
-#view-rentals .rental-table th:nth-child(3),
-#view-rentals .rental-table td:nth-child(3){width:19%}
-#view-rentals .rental-table th:nth-child(4),
-#view-rentals .rental-table td:nth-child(4),
-#view-rentals .rental-table th:nth-child(5),
-#view-rentals .rental-table td:nth-child(5){width:10%}
-#view-rentals .rental-table th:nth-child(6),
-#view-rentals .rental-table td:nth-child(6){width:8%}
-#view-rentals .rental-table th:nth-child(7),
-#view-rentals .rental-table td:nth-child(7){width:9%}
-#view-rentals .rental-table th:nth-child(8),
-#view-rentals .rental-table td:nth-child(8){width:15%}
-#view-rentals .rental-table td:nth-child(-n+3){overflow:hidden}
-#view-rentals .rental-booking-label,
-#view-rentals .rental-customer-label,
-#view-rentals .rental-vehicle-label{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#view-rentals .rental-table td:nth-child(4),
-#view-rentals .rental-table td:nth-child(5),
-#view-rentals .rental-table td:nth-child(6),
-#view-rentals .rental-table td:nth-child(7){white-space:nowrap}
-#view-rentals .rental-table .row-actions{gap:4px}
-#view-rentals .rental-table .table-action{padding:5px 7px;font-size:10px}
-@media(max-width:1050px) and (min-width:761px){
- #view-rentals .rental-table th,
- #view-rentals .rental-table td{padding-left:6px;padding-right:6px}
- #view-rentals .rental-table th:nth-child(1),
- #view-rentals .rental-table td:nth-child(1){width:13%}
- #view-rentals .rental-table th:nth-child(2),
- #view-rentals .rental-table td:nth-child(2){width:13%}
- #view-rentals .rental-table th:nth-child(3),
- #view-rentals .rental-table td:nth-child(3){width:17%}
- #view-rentals .rental-table th:nth-child(8),
- #view-rentals .rental-table td:nth-child(8){width:17%}
-}
-@media(max-width:760px){
- #view-rentals .rental-table{min-width:900px;table-layout:fixed}
+@media (max-width: 760px){
+  #view-rentals .table-wrap{overflow-x:auto}
+  #view-rentals table{min-width:980px;table-layout:auto;white-space:nowrap}
 }
