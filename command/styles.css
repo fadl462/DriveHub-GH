@@ -392,3 +392,6 @@ body.live-workspace-ready .live-connection-gate{display:none!important}
 .staff-error{color:#b31a32}
 @media(max-width:900px){.staff-invite-form{grid-template-columns:1fr 1fr}.staff-invite-form button{grid-column:1/-1}.topbar{padding:0 20px}.top-actions{gap:10px}}
 @media(max-width:560px){.account-identity{display:none}.account-trigger{padding:4px}.account-chevron{display:none}.staff-invite-form{grid-template-columns:1fr}.staff-invite-form button{grid-column:auto}.topbar{padding:0 12px}.status-pill{display:none}.account-dropdown{right:-4px}}
+
+/* Stage 18.1 — Settings navigation placement and page reset */
+.nav-item[hidden]{display:none!important}
