@@ -1,9 +1,15 @@
-DriveHub GH — Signature alignment fix
+DriveHub GH — Receipt Improvements (Updated Files Only)
 
-Replace these files in your repository:
-- command/app.js
-- command/fadl-signature.png (retain this asset; included for completeness)
+Updated file:
+  command/app.js
 
-The Authorised By label is now followed by a dedicated signature line. The handwritten signature is positioned over that line rather than sitting separately to its right. This is applied to both invoice and receipt print layouts. No typed name is added.
+Changes:
+1. Receipt booking/rental reference now resolves from the linked D1 rental record when it is absent from the payment and invoice payloads.
+2. Cash receipts display "Cash payment" as the transaction reference instead of "Not provided".
+3. The existing Authorised By signature image reference remains unchanged:
+   /command/fadl-signature.png
 
-Commit and push the files, wait for Cloudflare Pages deployment, then test one invoice and one receipt print preview.
+No D1 schema, payment, invoice, receipt-number, or existing financial records were changed.
+
+Deployment:
+Replace only command/app.js in the existing DriveHub GH project, then deploy the Pages project. Keep the existing command/fadl-signature.png asset in place.
