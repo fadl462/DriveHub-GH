@@ -6,6 +6,30 @@
   <meta name="theme-color" content="#bd1730">
   <title>DriveHub Command — Operations</title>
   <link rel="stylesheet" href="styles.css?v=20261112-live-only-1">
+
+<style id="drivehub-account-menu-styles">
+.top-actions{display:flex;align-items:center;gap:14px}
+.account-menu{position:relative;z-index:30}
+.account-trigger{display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer;padding:5px 8px 5px 5px;border:1px solid transparent;border-radius:12px;min-height:44px;transition:background .18s ease,border-color .18s ease}
+.account-trigger::-webkit-details-marker{display:none}
+.account-trigger:hover,.account-menu[open] .account-trigger{background:#fff;border-color:#eadfdb}
+.account-avatar{flex:0 0 36px;width:36px;height:36px}
+.account-identity{display:flex;flex-direction:column;align-items:flex-start;gap:2px;white-space:nowrap}
+.account-identity strong{font-size:12px;font-weight:700;color:#29232a}
+.account-identity small{font-size:10px;color:#8b7d84}
+.account-chevron{font-size:17px;color:#8b7d84;line-height:1;margin-left:2px}
+.account-dropdown{position:absolute;right:0;top:calc(100% + 10px);width:240px;padding:9px;background:#fff;border:1px solid #eadfdb;border-radius:14px;box-shadow:0 16px 40px rgba(38,24,30,.14);z-index:60}
+.account-dropdown-heading{display:flex;flex-direction:column;gap:4px;padding:10px 11px 12px}
+.account-dropdown-heading strong{font-size:13px;color:#29232a}
+.account-dropdown-heading small{font-size:11px;color:#8b7d84}
+.account-menu-item,.account-menu-logout{width:100%;display:flex;align-items:center;gap:10px;border:0;background:transparent;border-radius:9px;padding:10px 11px;text-align:left;font:inherit;font-size:12px;color:#5f535a}
+.account-menu-item:disabled{opacity:.62;cursor:default}
+.account-menu-item small{margin-left:auto;font-size:9px;color:#a4979d}
+.account-menu-divider{height:1px;background:#f0e8e5;margin:6px 2px}
+.account-menu-logout{color:#bd1737;font-weight:700;cursor:pointer}
+.account-menu-logout:hover{background:#fff0f2}
+@media(max-width:700px){.top-actions{gap:7px}.account-trigger{gap:6px;padding:4px}.account-identity{display:none}.account-chevron{display:none}.account-dropdown{right:0}}
+</style>
 </head>
 <body>
   <div class="app-shell">
@@ -28,15 +52,14 @@
       <div class="sidebar-bottom">
         <div class="support-card"><span class="support-icon">✦</span><strong>Keep every journey moving.</strong><p>One clear view of your rental business.</p></div>
         <button class="nav-item" data-view="settings"><span>⚙</span> Settings</button>
-        <div class="profile"><div class="avatar">DH</div><div><strong>DriveHub Admin</strong><small>Live operations</small></div><span class="profile-dots">•••</span></div>
-        <button class="logout-button" id="logoutBtn" type="button"><span aria-hidden="true">↪</span> Log out</button>
+
       </div>
     </aside>
     <main class="main">
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" aria-label="Toggle navigation">☰</button>
         <div class="crumb">DriveHub GH <span>/</span> <strong id="crumbCurrent">Overview</strong></div>
-        <div class="top-actions"><span class="status-pill is-preview" id="workspaceMode" role="status" aria-live="polite"><i></i> Connecting to live database…</span><button class="icon-button" aria-label="Notifications" id="notificationsBtn">♧<em></em></button><div class="avatar top-avatar">DH</div></div>
+        <div class="top-actions"><span class="status-pill is-preview" id="workspaceMode" role="status" aria-live="polite"><i></i> Connecting to live database…</span><button class="icon-button" aria-label="Notifications" id="notificationsBtn">♧<em></em></button><details class="account-menu" id="accountMenu"><summary class="account-trigger" aria-label="Open account menu"><span class="avatar account-avatar">DH</span><span class="account-identity"><strong>DriveHub Admin</strong><small>Administrator</small></span><span class="account-chevron" aria-hidden="true">⌄</span></summary><div class="account-dropdown"><div class="account-dropdown-heading"><strong>DriveHub Admin</strong><small>Signed in · Administrator</small></div><div class="account-menu-divider"></div><button class="account-menu-logout" id="logoutBtn" type="button"><span aria-hidden="true">↪</span> Log out</button></div></details></div>
       </header>
       <section class="live-connection-gate" id="liveConnectionGate" role="status" aria-live="polite">
         <div class="live-connection-card">
