@@ -395,3 +395,170 @@ body.live-workspace-ready .live-connection-gate{display:none!important}
 
 /* Stage 18.1 — Settings navigation placement and page reset */
 .nav-item[hidden]{display:none!important}
+
+
+/* Stage 18.2 — premium executive account bar */
+.topbar{
+  position:relative;
+  z-index:30;
+  background:linear-gradient(105deg,#fff 0%,#fff 62%,#fffaf9 100%);
+}
+.top-actions{
+  gap:10px;
+  padding:6px 8px 6px 11px;
+  border:1px solid rgba(232,216,211,.9);
+  border-radius:17px;
+  background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(255,248,247,.96));
+  box-shadow:0 5px 18px rgba(73,35,39,.055),inset 0 1px 0 rgba(255,255,255,.95);
+  transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease;
+}
+.top-actions:hover{
+  border-color:#e4cbc9;
+  box-shadow:0 8px 24px rgba(73,35,39,.085),inset 0 1px 0 rgba(255,255,255,.98);
+}
+.top-actions .status-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:8px 11px;
+  border-radius:11px;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.12px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+}
+.top-actions .status-pill i{
+  width:7px;height:7px;margin:0;
+  box-shadow:0 0 0 3px rgba(57,163,110,.12),0 0 9px rgba(57,163,110,.38);
+}
+.top-actions .icon-button{
+  width:37px;height:37px;
+  display:grid;place-items:center;
+  border:1px solid transparent;
+  border-radius:11px;
+  background:transparent;
+  color:#766164;
+  transition:background .18s ease,border-color .18s ease,color .18s ease,transform .18s ease;
+}
+.top-actions .icon-button:hover{
+  color:var(--red);
+  background:#fff0f1;
+  border-color:#f1dadd;
+  transform:translateY(-1px);
+}
+.top-actions .icon-button svg{
+  width:18px;height:18px;
+  fill:none;stroke:currentColor;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+.top-actions .icon-button em{
+  right:7px;top:6px;
+  width:7px;height:7px;
+  background:#c8102e;
+  box-shadow:0 0 0 2px #fff;
+}
+.account-menu{
+  padding-left:9px;
+  margin-left:1px;
+  border-left:1px solid #eee2df;
+}
+.account-trigger{
+  gap:10px;
+  min-height:43px;
+  padding:5px 9px 5px 6px;
+  border:1px solid transparent;
+  border-radius:12px;
+  background:linear-gradient(135deg,#fff 0%,#fff8f7 100%);
+  transition:background .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.account-trigger:hover,.account-menu.open .account-trigger{
+  border-color:#ead6d5;
+  background:#fff;
+  box-shadow:0 4px 13px rgba(70,31,36,.07);
+}
+.account-trigger .top-avatar{
+  width:36px;height:36px;
+  color:#fff;
+  font-size:11px;
+  letter-spacing:.2px;
+  background:linear-gradient(145deg,#d64b62 0%,#a80f2b 58%,#741126 100%);
+  border:2px solid #fff;
+  box-shadow:0 0 0 1px rgba(189,23,48,.18),0 4px 10px rgba(150,16,42,.2);
+}
+.account-identity{gap:4px;padding:1px 0}
+.account-identity strong{
+  max-width:180px;
+  color:#282022;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.05px;
+}
+.account-identity small{
+  display:flex;align-items:center;gap:5px;
+  width:max-content;
+  padding:3px 7px;
+  border-radius:20px;
+  color:#a51a32;
+  background:#fbedef;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.18px;
+}
+.account-identity small:before{
+  content:"";width:5px;height:5px;border-radius:50%;
+  background:#c12b45;
+}
+.account-chevron{
+  margin-left:2px;
+  color:#a58e91;
+  font-size:14px;
+  transition:transform .18s ease;
+}
+.account-menu.open .account-chevron{transform:rotate(180deg)}
+.account-dropdown{
+  top:calc(100% + 12px);
+  width:258px;
+  padding:8px;
+  border:1px solid #eadbd8;
+  border-radius:15px;
+  box-shadow:0 20px 55px rgba(42,20,24,.16),0 3px 10px rgba(42,20,24,.05);
+  animation:accountDropIn .16s ease-out;
+}
+.account-dropdown-meta{
+  padding:13px 12px 14px;
+  background:linear-gradient(135deg,#fff8f7,#fff);
+  border:1px solid #f3e7e4;
+  border-radius:10px;
+  margin-bottom:7px;
+}
+.account-dropdown-meta strong{font-size:12px;color:#2b2022}
+.account-dropdown-meta small{font-size:10px;line-height:1.5}
+.account-dropdown-item{padding:11px 12px;border-radius:9px;font-size:11px;transition:background .16s ease,color .16s ease}
+.account-dropdown-item:hover{background:#fff1f2;color:var(--red)}
+.account-dropdown-item.danger:hover{background:#fff0f1;color:#a90f2b}
+@keyframes accountDropIn{
+  from{opacity:0;transform:translateY(-5px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@media(max-width:900px){
+  .top-actions{gap:7px;padding:5px 6px 5px 8px}
+  .account-menu{padding-left:6px}
+  .account-identity strong{max-width:145px}
+}
+@media(max-width:760px){
+  .top-actions{gap:5px;padding:4px;border-radius:13px}
+  .top-actions .icon-button{width:34px;height:34px}
+  .account-menu{padding-left:5px}
+  .account-trigger{min-height:38px;gap:6px;padding:3px}
+  .account-trigger .top-avatar{width:32px;height:32px}
+  .account-identity{display:flex}
+  .account-identity strong{max-width:108px;font-size:10px}
+  .account-identity small{font-size:8px;padding:2px 6px}
+  .account-chevron{display:none}
+  .top-actions .status-pill{display:none}
+}
+@media(max-width:420px){
+  .account-identity{display:none}
+  .account-trigger{padding:3px}
+  .top-actions .icon-button{width:32px;height:32px}
+}
